@@ -29,7 +29,7 @@ namespace UnitTests
     public partial class H5SWMRTest
     {
         public herr_t DOappend_func
-            (hid_t dataset_id, hsize_t[] cur_dims, IntPtr op_data)
+            (hid_t dataset_id, IntPtr cur_dims, IntPtr op_data)
         {
             Assert.IsTrue(op_data.ToInt32() == 99);
             return 0;

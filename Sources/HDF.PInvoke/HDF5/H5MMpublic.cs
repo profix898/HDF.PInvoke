@@ -40,8 +40,7 @@ namespace HDF.PInvoke
         /// </summary>
         /// <param name="mem">The address of the memory block to resize or release.</param>
         /// <param name="free_info">The opaque caller-provided callback context.</param>
-        /// <returns>The resulting native memory address, or zero if allocation fails.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr free_t(IntPtr mem, IntPtr free_info);
+        public delegate void free_t(IntPtr mem, IntPtr free_info);
     }
 }

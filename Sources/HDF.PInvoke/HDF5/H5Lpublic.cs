@@ -395,8 +395,8 @@ namespace HDF.PInvoke
         [UnmanagedFunctionPointer(CallingConvention.Cdecl,
             CharSet = CharSet.Ansi)]
         public delegate herr_t elink_traverse_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string parent_file_name, byte[] parent_group_name,
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string child_file_name, byte[] child_object_name,
+        ([MarshalAs(UnmanagedType.LPUTF8Str)] string parent_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string parent_group_name,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string child_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string child_object_name,
         ref uint acc_flags, hid_t fapl_id, IntPtr op_data);
 
         /// <summary>

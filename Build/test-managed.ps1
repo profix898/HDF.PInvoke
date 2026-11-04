@@ -55,6 +55,8 @@ try {
         Run dotnet @($smoke, '--globals-first', $abi)
         Run dotnet @($smoke, $native, $abi)
         Run dotnet @($smoke, '--context')
+        Run dotnet @($smoke, '--dont-atexit')
+        Run dotnet @($smoke, '--late-dont-atexit')
         Run dotnet @($smoke, '--missing', $missing)
         Run dotnet @($smoke, '--invalid', $invalid)
         Run dotnet @($smoke, '--invalid', $empty)

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Alpine build and package checks; shares pinned CMake inputs with desktop builds.
 # Usage: Build/alpine.sh [build|consumer]; JOBS controls native parallelism (default 4).
-# Usage: Build/alpine.sh [build|consumer]; JOBS controls native parallelism (default 4).
 set -euo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root"
@@ -58,6 +57,8 @@ EOF
     cd /tmp
     dotnet "$work/publish/Consumer.dll" --auto
     dotnet "$work/publish/Consumer.dll" --context
+    dotnet "$work/publish/Consumer.dll" --dont-atexit
+    dotnet "$work/publish/Consumer.dll" --late-dont-atexit
     exit 0
 fi
 [[ "$phase" == build ]] || {
@@ -112,7 +113,7 @@ smoke="$publish/HDF.PInvoke.Smoke.dll"
 abi="$interop/abi-layout.txt"
 cd "$work"
 for mode in --auto --globals-first "$stage"; do dotnet "$smoke" "$mode" "$abi"; done
-for mode in --context --relative; do dotnet "$smoke" "$mode"; done
+for mode in --context --relative --dont-atexit --late-dont-atexit; do dotnet "$smoke" "$mode"; done
 mkdir missing invalid empty
 printf 'invalid ELF' >invalid/libhdf5.so
 : >empty/libhdf5.so

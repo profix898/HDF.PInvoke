@@ -18,9 +18,8 @@
     <RequiredNativeRids Condition="'$(RequiredNativeRids)' == ''">win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64</RequiredNativeRids>
   </PropertyGroup>
   <ItemGroup>
-    <NativeRuntime Include="../../Build/Native/runtimes/**/*" />
-    <NativeRuntime Remove="../../Build/Native/runtimes/linux-musl-x64/**/*" Condition="!$([System.String]::Copy('$(RequiredNativeRids)').Contains('linux-musl-x64'))" />
-    <NativeRuntime Remove="../../Build/Native/runtimes/linux-musl-arm64/**/*" Condition="!$([System.String]::Copy('$(RequiredNativeRids)').Contains('linux-musl-arm64'))" />
+    <ExcludedNativeRid Include="win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64" Exclude="$([MSBuild]::Unescape('$(RequiredNativeRids)'))" />
+    <NativeRuntime Include="../../Build/Native/runtimes/**/*" Exclude="@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
     <None Include="@(NativeRuntime)" Link="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../README_ADVANCED.md" Pack="true" PackagePath="/" />
@@ -33,5 +32,12 @@
       <RequiredNativeRid Include="$([MSBuild]::Unescape('$(RequiredNativeRids)'))" />
     </ItemGroup>
     <Error Condition="!Exists('$(MSBuildProjectDirectory)/../../Build/Native/runtimes/%(RequiredNativeRid.Identity)/native/build-info.json')" Text="Missing verified runtime %(RequiredNativeRid.Identity). Build all required RIDs before packing." />
+  </Target>
+  <!-- NuGet's timestamp check otherwise misses changes to the selected RID/file set. -->
+  <Target Name="TrackNativePackageInputs" BeforeTargets="_CalculateInputsOutputsForPack">
+    <WriteLinesToFile File="$(IntermediateOutputPath)native-pack-inputs.txt" Lines="$([MSBuild]::Unescape('$(RequiredNativeRids)'));@(NativeRuntime)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <NuGetPackInput Include="$(IntermediateOutputPath)native-pack-inputs.txt" />
+    </ItemGroup>
   </Target>
 </Project>

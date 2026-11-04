@@ -82,25 +82,28 @@ namespace UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OutOfMemoryException))]
         public void H5resize_memoryTest3()
         {
-            IntPtr size = new IntPtr(1024 * 1024);
+            Assert.ThrowsExactly<OutOfMemoryException>(() =>
+            {
+                IntPtr size = new IntPtr(1024 * 1024);
 
-            // reallocate from NULL -> allocation
-            IntPtr ptr = Marshal.ReAllocHGlobal(IntPtr.Zero, size);
-            Assert.IsFalse(ptr == IntPtr.Zero);
-            Assert.IsTrue(H5.free_memory(ptr) >= 0);
+                // reallocate from NULL -> allocation
+                IntPtr ptr = Marshal.ReAllocHGlobal(IntPtr.Zero, size);
+                Assert.IsFalse(ptr == IntPtr.Zero);
+                Assert.IsTrue(H5.free_memory(ptr) >= 0);
+            });
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OutOfMemoryException))]
         public void H5resize_memoryTest4()
         {
-            // H5resize_memory(NULL, 0)	Returns NULL (undefined in C standard).
-            IntPtr size = new IntPtr(0);
-            Assert.IsTrue(
-                Marshal.ReAllocHGlobal(IntPtr.Zero, size) == IntPtr.Zero);
+            Assert.ThrowsExactly<OutOfMemoryException>(() =>
+            {
+                // H5resize_memory(NULL, 0) returns NULL (undefined in C standard).
+                IntPtr size = new IntPtr(0);
+                Assert.IsTrue(Marshal.ReAllocHGlobal(IntPtr.Zero, size) == IntPtr.Zero);
+            });
         }
     }
 }

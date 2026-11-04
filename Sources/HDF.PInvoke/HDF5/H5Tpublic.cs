@@ -889,14 +889,14 @@ namespace HDF.PInvoke
         /// </summary>
         /// <param name="src_id">Identifier for the source datatype.</param>
         /// <param name="dst_id">Identifier for the destination datatype.</param>
-        /// <param name="pcdata">Pointer to type conversion data.</param>
+        /// <param name="pcdata">Receives a native-owned pointer to conversion data. Do not free it; its lifetime is controlled by HDF5.</param>
         /// <returns>Returns a pointer to a suitable conversion function if
         /// successful. Otherwise returns <code>NULL</code>.</returns>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Tfind",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern conv_t find
-            (hid_t src_id, hid_t dst_id, ref cdata_t pcdata);
+            (hid_t src_id, hid_t dst_id, out IntPtr pcdata);
 
 
         /// <summary>

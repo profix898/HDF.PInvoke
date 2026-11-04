@@ -945,17 +945,32 @@ namespace HDF.PInvoke
         /// and raw data accesses that bypass the page buffer</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fget_page_buffering_stats",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_page_buffering_stats
-            (hid_t file_id,
-            [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)] int accesses,
-            [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)] int hits,
-            [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)] int misses,
-            [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)] int evictions,
-            [MarshalAs(UnmanagedType.LPArray, SizeConst = 2)] int bypasses);
+        /// <exception cref="ArgumentNullException">An output array is null.</exception>
+        /// <exception cref="ArgumentException">An output array has fewer than two elements.</exception>
+        public static herr_t get_page_buffering_stats(hid_t file_id, uint[] accesses,
+            uint[] hits, uint[] misses, uint[] evictions, uint[] bypasses)
+        {
+            // Native HDF5 writes metadata and raw-data counters into each output.
+            ValidatePageCounters(accesses, nameof(accesses));
+            ValidatePageCounters(hits, nameof(hits));
+            ValidatePageCounters(misses, nameof(misses));
+            ValidatePageCounters(evictions, nameof(evictions));
+            ValidatePageCounters(bypasses, nameof(bypasses));
+            return GetPageBufferingStats(file_id, accesses, hits, misses, evictions, bypasses);
+        }
+
+        private static void ValidatePageCounters(uint[] counters, string name)
+        {
+            ArgumentNullException.ThrowIfNull(counters, name);
+            if (counters.Length < 2)
+                throw new ArgumentException("Two counters are required (metadata and raw data).", name);
+        }
+
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_page_buffering_stats",
+            CallingConvention = CallingConvention.Cdecl)]
+        private static extern herr_t GetPageBufferingStats(hid_t file_id,
+            [Out] uint[] accesses, [Out] uint[] hits, [Out] uint[] misses,
+            [Out] uint[] evictions, [Out] uint[] bypasses);
 
 
         /// <summary>

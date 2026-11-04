@@ -37,7 +37,7 @@ $xml = @"
 "@
 [IO.File]::WriteAllText("$work/Consumer.csproj", $xml)
 Copy-Item "$root/Tests/HDF.PInvoke.Smoke/Program.cs", "$root/Tests/HDF.PInvoke.Smoke/LoaderScenarios.cs" -Destination $work
-[IO.File]::WriteAllText("$work/NuGet.Config", "<configuration><packageSources><clear /><add key='local' value='$PSScriptRoot/Artifacts/packages' /><add key='nuget.org' value='https://api.nuget.org/v3/index.json' /></packageSources></configuration>")
+[IO.File]::WriteAllText("$work/NuGet.Config", "<configuration><packageSources><clear /><add key='local' value='$PSScriptRoot/Artifacts/packages' /><add key='nuget.org' value='https://api.nuget.org/v3/index.json' /></packageSources><packageSourceMapping><packageSource key='local'><package pattern='HDF.PInvoke' /></packageSource><packageSource key='nuget.org'><package pattern='*' /></packageSource></packageSourceMapping></configuration>")
 Run dotnet @('restore', "$work/Consumer.csproj", '-r', $Rid, '--configfile', "$work/NuGet.Config")
 Run dotnet @('publish', "$work/Consumer.csproj", '-c', 'Release', '-r', $Rid, '--self-contained', 'false', '--no-restore', '-o', "$work/publish")
 if (-not $BuildOnly) {
@@ -48,6 +48,8 @@ if (-not $BuildOnly) {
     try {
         Run dotnet @("$work/publish/Consumer.dll", '--auto')
         Run dotnet @("$work/publish/Consumer.dll", '--context')
+        Run dotnet @("$work/publish/Consumer.dll", '--dont-atexit')
+        Run dotnet @("$work/publish/Consumer.dll", '--late-dont-atexit')
     }
     finally { Pop-Location; $env:HDF5_NATIVE_PATH = $savedOverride }
 }

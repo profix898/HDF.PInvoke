@@ -1,6 +1,6 @@
 # HDF.PInvoke: integration and contributor guide
 
-Start with [README.md](README.md) for installation and public usage. [Modernization.md](Modernization.md) records the review findings and migration decisions.
+Start with [README.md](README.md) for installation and public usage.
 
 ## Repository layout
 
@@ -18,7 +18,7 @@ Start with [README.md](README.md) for installation and public usage. [Modernizat
 
 ## Managed and native loading
 
-NuGet supplies the managed assembly and platform libraries under `runtimes/<rid>/native`. .NET resolves the managed assembly through its normal dependency/load-context mechanisms. A module initializer in the binding registers its native import resolver without eagerly opening HDF5.
+NuGet supplies the managed assembly and platform libraries under `runtimes/<rid>/native`. .NET resolves the managed assembly through its normal dependency/load-context mechanisms. A module initializer in the binding registers its native import resolver without eagerly opening HDF5. Call `H5.dont_atexit()` before any other HDF5 operation to opt out of automatic shutdown; the loader invokes the native opt-out before its version query initializes HDF5. The opt-out succeeds only once, and subsequent/late calls return a negative status. Call `H5.close()` explicitly when finished if automatic shutdown was disabled.
 
 Functions imported from logical names `hdf5` and `hdf5_hl`, and exported globals such as `H5P.FILE_ACCESS`, share cached native handles. Globals use `NativeLibrary.GetExport` against the same core handle rather than a separate operating-system loader path. This prevents a successful function call from being followed by a failed global lookup against a fixed Linux path.
 
@@ -44,7 +44,7 @@ Before binding globals, the loader checks that the native library reports HDF5 2
 
 The package supplies shared core and high-level libraries with statically linked zlib. Canonical names are `hdf5.dll` / `hdf5_hl.dll`, `libhdf5.so` / `libhdf5_hl.so`, and `libhdf5.dylib` / `libhdf5_hl.dylib`. SONAME aliases are materialized as real files before upload and packaging, avoiding broken symlinks or empty placeholders.
 
-Linux artifacts use the Ubuntu 24.04/glibc 2.39 baseline. Alpine 3.24 builds provide `linux-musl-x64` and `linux-musl-arm64`; neither Linux variant is an Android build. macOS ARM64 uses deployment target 13.0; Windows needs the matching Visual C++ runtime. Native dependencies must match the process architecture. Mobile targets are outside the supported matrix.
+Linux artifacts use the Ubuntu 24.04/glibc 2.39 baseline. Alpine 3.24 builds provide `linux-musl-x64` and `linux-musl-arm64`; neither Linux variant is an Android build. macOS ARM64 uses deployment target 13.0; Windows needs the Microsoft Visual C++ v14 Redistributable for the process architecture, at least as recent as the MSVC toolset used for the native build. Visual Studio 2026 builds use the dynamic C runtime (`/MD`); the redistributable is installed separately. See the [version table and runtime downloads](README.md#versioning-and-file-compatibility). Native dependencies must match the process architecture. Mobile targets are outside the supported matrix.
 
 The build intentionally disables MPI, SZIP/libaec, ROS3, HDFS and the C++/Fortran/Java bindings. Thread safety is disabled because upstream does not support the high-level/thread-safe combination without an unsupported-build override. Applications must serialize calls across all users of the library in a process.
 
@@ -89,13 +89,13 @@ Native builds default to upstream full mode (level 1), which runs the registered
 
 `build-native.ps1` configures and builds the pinned upstream source, runs its CTest suite, installs/stages the native assets, and builds/runs the ABI probe. It invalidates the previous build manifest before starting. Only a successful run writes the new manifest with source revisions, feature settings, hashes and the upstream test result.
 
-The upstream suite uses full iterations (`HDF_TEST_EXPRESS=1`) for enabled components, including C/API, SWMR and high-level tests. Tests for components not built are excluded. CTest entries may include fixtures and internal feature skips; the entry count is not a count of individual assertions. The removed standalone native roundtrip test is not part of this workflow.
+The upstream suite uses full iterations (`HDF_TEST_EXPRESS=1`) for enabled components, including C/API, SWMR and high-level tests. Tests for components not built are excluded. CTest entries may include fixtures and internal feature skips; the entry count is not a count of individual assertions. Managed package consumers separately validate compressed core/high-level data round-trips.
 
 `test-managed.ps1` performs a locked restore, Release build, integration tests and separate-process loading checks. These cover automatic and explicit loading, globals-first initialization, a private AssemblyLoadContext, unrelated working directories, invalid/empty libraries, incompatible native versions and rejected configuration changes. The ABI contract is in `Build/Native/interop/<rid>/abi-layout.txt`.
 
 CI runs native and managed checks on Windows/Linux x64 and ARM64 and macOS ARM64. It then collects all runtime assets, packs them and runs clean package consumers on every target. Failed native tests prevent staging and downstream packaging. Logs are uploaded even on failure; upstream JUnit results are in `Build/Artifacts/tests/<rid>/native-upstream.xml`, and detailed CTest logs are under the native build's `Testing/Temporary` directory.
 
-The existing integration suite has 417 active tests and 17 disabled legacy tests. Disabled allocator/threading tests are not claimed as coverage. Local Windows and WSL runs have validated the managed suite, 147 layout checks and 569 required imports. See [Modernization.md](Modernization.md) for current validation limits. NativeAOT, trimming and single-file deployment are not currently validated.
+The integration suite exercises actual native calls, Unicode data, callbacks and ABI regressions. Legacy allocator/threading tests remain disabled and are not counted as coverage. The ABI probe checks structure layouts; the export audit checks every required import. NativeAOT, trimming and single-file deployment are outside the validated configurations.
 
 ## Packaging
 
@@ -148,3 +148,11 @@ dotnet build HDF.PInvoke.slnx -c Release --no-restore
 Keep formatting and documentation changes separate from signature, marshalling and behavior changes. Preserve the native API names. Document public types, methods, parameters, return values, constants and fields with XML comments, including ownership, encoding and callback contracts where relevant. The library emits XML documentation for IntelliSense and packaging; missing public documentation, malformed XML and mismatched parameter documentation fail its build.
 
 Use short comments to explain interop constraints and non-obvious decisions. Helper scripts expose parameter help through `Get-Help ./Build/<script>.ps1 -Full`. PowerShell scripts can be formatted with PSScriptAnalyzer's `Invoke-Formatter`, Bash with `shfmt -i 4`, and workflow YAML with Prettier. Validate Bash with `bash -n Build/alpine.sh` and workflows with actionlint. Do not format or edit the upstream `Native/hdf5` checkout as part of wrapper cleanup.
+
+## Interop and package regression checks
+
+`InteropRegressionTests` covers negative chunk-count status, error-detection settings, identifier-type reference counts, conversion-data pointers, page-buffer outputs, and reverse P/Invoke callback arguments. Append callbacks receive a read-only native pointer to one `ulong` per dataset dimension; filter callbacks receive a pointer to `cd_nelmts` `uint` values. Read those pointers only during the callback and keep the delegate alive while HDF5 can invoke it. External-link group/object names are UTF-8 strings. `H5T.find` returns a native-owned conversion-data pointer; never free it. Page-buffer statistics validate all five arrays before native code can write two counters into each.
+
+`Build/validate-package.ps1` checks the completed archive for the exact requested runtime set, managed assembly/XML documentation, native source pins, full-suite test records, native hashes and licenses. `Build/test-package-validation.ps1` checks rejection of missing managed/native/license files, corrupt libraries, extra RIDs, unverified files, wrong source pins and failed test records. A local `-RequiredRids` selection excludes other staged supported RIDs consistently on every operating system. `Build/test-pack-selection.ps1` switches repeatedly between partial and combined packages to detect stale incremental-pack output; the project tracks the RID/file selection as a pack input.
+
+Clean consumers map `HDF.PInvoke` exclusively to the local candidate feed and use isolated caches. They reopen and read a compressed UTF-8-named dataset written with `H5DO.append`, exercising both libraries and zlib, then check load contexts and shutdown ordering in separate processes. GitHub Actions keeps `nuget-packages-candidate` separate from the final `nuget-packages` artifact; the final job depends on all seven consumer checks and validates the archive again. No public-feed publishing is performed.

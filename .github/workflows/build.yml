@@ -131,10 +131,14 @@ jobs:
           if-no-files-found: error
       - name: Pack all supported native runtimes
         shell: pwsh
-        run: ./Build/pack.ps1
+        run: |
+          ./Build/pack.ps1
+          $package = (Get-ChildItem Build/Artifacts/packages/*.nupkg).FullName
+          ./Build/test-package-validation.ps1 -Package $package
+          ./Build/test-pack-selection.ps1
       - uses: actions/upload-artifact@v7
         with:
-          name: nuget-packages
+          name: nuget-packages-candidate
           path: Build/Artifacts/packages/*.nupkg
           if-no-files-found: error
   # Restore the actual package into clean consumers to verify deployment.
@@ -161,7 +165,7 @@ jobs:
           global-json-file: global.json
       - uses: actions/download-artifact@v8
         with:
-          name: nuget-packages
+          name: nuget-packages-candidate
           path: Build/Artifacts/packages
       - name: Restore, publish and load a clean package consumer
         shell: pwsh
@@ -183,8 +187,31 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@v8
         with:
-          name: nuget-packages
+          name: nuget-packages-candidate
           path: Build/Artifacts/packages
       - run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
       - name: Verify clean musl package consumer
         run: docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" hdf-pinvoke-alpine consumer
+  # Only promote an archive after every platform has consumed that exact candidate.
+  validate-package:
+    needs: [collect-native, package-consumer, package-consumer-musl]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: nuget-packages-candidate
+          path: Build/Artifacts/packages
+      - name: Validate the final archive
+        shell: pwsh
+        run: |
+          $package = (Get-ChildItem Build/Artifacts/packages/*.nupkg).FullName
+          ./Build/validate-package.ps1 -Package $package
+      - uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages
+          path: Build/Artifacts/packages/*.nupkg
+          if-no-files-found: error

@@ -137,7 +137,7 @@ namespace UnitTests
         public herr_t append_func
             (
             hid_t dset_id,
-            hsize_t[] cur_dims,
+            IntPtr cur_dims,
             IntPtr op_data
             )
         {

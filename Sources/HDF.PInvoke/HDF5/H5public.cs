@@ -32,11 +32,6 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5
     {
-        static H5()
-        {
-            NativeDependencies.ResolvePathToExternalDependencies();
-        }
-
         /// <summary>
         /// The sentinel representing an undefined native size.
         /// </summary>
@@ -184,10 +179,7 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5dont_atexit",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t dont_atexit();
+        public static herr_t dont_atexit() => NativeDependencies.DisableAutomaticShutdown();
 
         /// <summary>
         /// Frees memory allocated by the HDF5 Library.

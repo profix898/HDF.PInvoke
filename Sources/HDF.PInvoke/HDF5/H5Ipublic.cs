@@ -280,7 +280,7 @@ namespace HDF.PInvoke
         /// is to be retrieved</param>
         /// <returns>Returns the current reference count on success, negative
         /// on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_type",
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_type_ref",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static int H5Iget_type_ref(type_t type);

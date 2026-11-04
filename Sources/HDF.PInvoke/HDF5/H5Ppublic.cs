@@ -745,7 +745,7 @@ namespace HDF.PInvoke
         /// <returns>Returns <code>H5Z_ENABLE_EDC</code> or
         /// <code>H5Z_DISABLE_EDC</code>  if successful; otherwise returns a
         /// negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_driver_info",
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_edc_check",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern H5Z.EDC_t get_edc_check(hid_t plist);

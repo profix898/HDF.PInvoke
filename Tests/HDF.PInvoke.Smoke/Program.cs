@@ -70,6 +70,7 @@ static class Program
             if (plist < 0 || H5P.close(plist) < 0)
                 throw new Exception("Exported-global property-list test failed");
             Console.WriteLine($"PASS: {imports} entry points and exported globals");
+            VerifyDatasetRoundTrip();
             if (Environment.CurrentDirectory != originalCwd || Environment.GetEnvironmentVariable("PATH") != originalPath)
                 throw new Exception("Native loading changed process-wide state");
             bool rejected = false;
@@ -83,5 +84,53 @@ static class Program
             return 0;
         }
         catch (Exception e) { Console.Error.WriteLine(e); return 1; }
+    }
+
+    static void VerifyDatasetRoundTrip()
+    {
+        string path = Path.Combine(Path.GetTempPath(), "hdf-package-" + Guid.NewGuid() + ".h5");
+        long file = -1, space = -1, properties = -1, dataset = -1;
+        GCHandle pinned = default;
+        try
+        {
+            file = H5F.create(path, H5F.ACC_TRUNC);
+            space = H5S.create_simple(1, new ulong[] { 0 }, new ulong[] { H5S.UNLIMITED });
+            properties = H5P.create(H5P.DATASET_CREATE);
+            if (file < 0 || space < 0 || properties < 0 || H5P.set_chunk(properties, 1, new ulong[] { 3 }) < 0 ||
+                H5P.set_deflate(properties, 6) < 0)
+                throw new Exception("Cannot create compressed dataset properties");
+            dataset = H5D.create(file, "données_数据", H5T.NATIVE_INT, space, H5P.DEFAULT, properties);
+            int[] values = { 17, -42, 12345 };
+            pinned = GCHandle.Alloc(values, GCHandleType.Pinned);
+            // The high-level library must share the core library's identifier registry.
+            if (dataset < 0 || H5DO.append(dataset, H5P.DEFAULT, 0, (IntPtr)values.Length, H5T.NATIVE_INT, pinned.AddrOfPinnedObject()) < 0)
+                throw new Exception("High-level append failed");
+            if (H5D.close(dataset) < 0)
+                throw new Exception("Dataset close failed");
+            dataset = -1;
+            if (H5F.close(file) < 0)
+                throw new Exception("File close failed");
+            file = H5F.open(path, H5F.ACC_RDONLY);
+            dataset = H5D.open(file, "données_数据");
+            Array.Clear(values);
+            if (dataset < 0 || H5D.read(dataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, pinned.AddrOfPinnedObject()) < 0 ||
+                !values.SequenceEqual(new[] { 17, -42, 12345 }))
+                throw new Exception("Compressed dataset round-trip failed");
+            Console.WriteLine("PASS: core/high-level compressed UTF-8 dataset round-trip");
+        }
+        finally
+        {
+            if (pinned.IsAllocated)
+                pinned.Free();
+            if (dataset >= 0)
+                H5D.close(dataset);
+            if (properties >= 0)
+                H5P.close(properties);
+            if (space >= 0)
+                H5S.close(space);
+            if (file >= 0)
+                H5F.close(file);
+            File.Delete(path);
+        }
     }
 }

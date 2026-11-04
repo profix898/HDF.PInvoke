@@ -1,6 +1,6 @@
 # Modernization review
 
-This document records the assessment and decisions for the unreleased 2.2.0 migration. It describes the final intended behavior for reviewers and identifies validation still outstanding.
+This document records the assessment and decisions for the unreleased 2.2.0 migration. It describes the implementation, compatibility boundaries and validation requirements for reviewers.
 
 ## Previous-state assessment
 
@@ -29,7 +29,7 @@ Native builds materialize symlinks and retain library SONAME aliases as actual f
 - Corrected H5Dread_chunk1, H5Tdecode1, H5Iregister_type1, H5Fformat_convert, and the misspelled H5Pset_gc_references export. Optional Direct-I/O and Windows VFD methods now check availability explicitly.
 - String arguments and reverse-P/Invoke strings are explicitly UTF-8. StringBuilder outputs use byte buffers and explicit UTF-8 decoding instead of the Windows ANSI code page. An output-only get_filter2 argument no longer uses immutable string storage. Error push messages escape percent signs so literal messages are not interpreted as missing varargs.
 
-The native probe covers 17 exposed structures and 147 size/field-offset checks. The managed smoke test checks all 569 required P/Invoke declarations against the loaded libraries and initializes exported global classes. Compatibility exports remain intentionally enabled; complete bindings for new async/VOL/token APIs are outside this migration.
+The native probe covers 17 exposed structures and 147 size/field-offset checks. The managed smoke test checks all required P/Invoke declarations against the loaded libraries and initializes exported global classes. Compatibility exports remain intentionally enabled; complete bindings for new async/VOL/token APIs are outside this migration.
 
 ## Versioning and framework decision
 
@@ -45,11 +45,11 @@ Default RIDs are win-x64, win-arm64, linux-x64, linux-arm64, linux-musl-x64, lin
 
 ## Validation scope
 
-Windows x64 passed all 131 registered upstream CTest entries in exhaustive mode (416 seconds). Ubuntu/WSL Linux x64 passed all 131 in full mode (104 seconds). Alpine/musl x64 also passed all 130 registered upstream entries in full mode. All three retained ABI probes pass. The registered entries include setup/cleanup fixtures; individual native tests may internally skip unavailable features.
+Every supported runtime has a native-architecture CI job that builds the pinned source, runs the upstream CTest suite and ABI probe, and exercises the managed integration and loader tests. Native test entries include setup/cleanup fixtures; individual tests may internally skip unavailable features. Full or exhaustive upstream success is required before staging and packaging. WSL native build and test outputs should use the Linux filesystem to avoid slow mounted-Windows storage tests.
 
-Local Windows x64, Ubuntu/WSL Linux x64 and Alpine/musl x64 integration validation passed against the staged libraries: 417 active managed integration tests per OS, with 17 pre-existing disabled tests. All 147 layout checks and 569 required import declarations pass on all three. Clean NuGet consumers pass on Windows, glibc Linux and Alpine/musl Linux, including Unix execution from read-only publish directories. The local 2.2.0 validation package contains Windows x64, glibc Linux x64 and musl Linux x64 assets; the seven-RID release package still requires CI artifacts from all target hosts. Empty, invalid and incompatible-version libraries are rejected before globals are bound. The active integration suite includes Unicode roundtrips and literal UTF-8 error messages. Loader scenarios check function-first/global-first initialization, explicit private directories, unrelated working directories, invalid locations, rejection of late/relative configuration, and a separate managed load context. Existing disabled memory-allocation/threading tests remain excluded rather than being used to claim coverage.
+Managed validation covers native calls, Unicode round-trips, literal UTF-8 error messages, callback marshalling, negative error returns and output-buffer validation. Loader scenarios exercise function-first/global-first initialization, explicit private directories, unrelated working directories, invalid/empty/incompatible libraries, late/relative configuration rejection, shutdown ordering and a separate managed load context. Legacy disabled allocator/threading tests are excluded from coverage.
 
-ARM64 and macOS checks are configured in CI but require their first remote execution. The upstream suite for enabled components now gates native staging and packaging, with full iterations; the standalone native roundtrip smoke test was removed. ABI probes and managed deployment tests remain. NativeAOT/trimming/single-file scenarios are not covered.
+Clean consumers restore the actual NuGet archive from an isolated local feed and cache, publish for their target RID, and exercise compressed core/high-level I/O, loading and shutdown. Unix consumers execute from read-only publish directories. Archive validation checks the exact selected RID set, source pins, native hashes, license files and managed assets. The final seven-RID NuGet artifact is available only after all platform consumers pass. Local partial packages are explicitly selected through `-RequiredRids` and are not release packages.
 
 ## Native test-suite decision
 
@@ -59,12 +59,11 @@ The standalone C roundtrip smoke test has been removed. Native builds now enable
 
 The header-derived ABI probe and deliberately incompatible test library remain because they validate the managed/native boundary. Managed loader and clean NuGet-consumer tests remain because upstream tests do not validate .NET deployment. Components not shipped (MPI, C++, Fortran, Java and tools) are outside this suite configuration. Platform-specific skips within upstream tests must be distinguished from passing coverage.
 
-## Deferred work
+## Scope exclusions
 
-- Run the configured ARM64/macOS jobs remotely and review their test results before release.
-- Add a dedicated compatibility corpus generated by actual older HDF5 releases, including reading newly generated V110-bounded files with an old reader.
-- Assess mobile targets separately; Android/iOS require distinct toolchains, packaging and managed interop validation.
-- Review NativeAOT, trimming, single-file publishing and additional current HDF5 APIs separately.
+- A dedicated compatibility corpus generated by older HDF5 releases, including reading newly generated V110-bounded files with an old reader, is not included.
+- Android/iOS require distinct toolchains, packaging and managed interop validation and are not supported targets.
+- NativeAOT, trimming, single-file publishing and complete coverage of current HDF5 APIs are outside this migration.
 
 ## References
 
@@ -73,8 +72,14 @@ The header-derived ABI probe and deliberately incompatible test library remain b
 - [NativeLibrary.Load and load contexts](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativelibrary.load?view=net-10.0)
 - [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
 
-## Formatting and documentation pass
+## Formatting and documentation conventions
 
 The wrapper and tests use a shared `.editorconfig` and `dotnet format whitespace`. Public wrapper members now have XML documentation, including native constants, enum values, structure fields and callback contracts. Parameter documentation follows managed names and UTF-8 marshalling where applicable. The library produces an XML documentation file and treats missing or invalid public documentation as build errors. Strategic comments explain native initialization and UTF-8 buffer handling.
 
-This pass preserves wrapper declarations and implementation: C# token hashes, excluding comments and whitespace, were compared before and after cleanup. Helper scripts have usage and parameter documentation, consistent formatting, and syntax validation; CI comments explain runtime collection and clean package-consumer checks.
+Helper scripts provide usage and parameter documentation and use consistent formatting and syntax validation. CI comments explain runtime collection, archive validation and clean package-consumer checks.
+
+## Follow-up interop and packaging corrections
+
+The implementation review found declarations that could resolve valid symbols while still returning incorrect data: `H5P.get_edc_check` and `H5I.H5Iget_type_ref` imported the wrong functions; `H5D.get_num_chunks` used a 64-bit return for a 32-bit signed status; `H5T.find` marshalled a pointer-to-pointer as an inline structure. These are corrected. Page-buffer statistics now expose five unsigned two-counter arrays and reject null or undersized outputs before calling native code. The free callback has a void return. Callback dimension/client-data arrays are native pointers rather than implicit one-element arrays, and external-link names are decoded as complete UTF-8 strings. These declaration corrections are intentional source-breaking changes in 2.2.0.
+
+The old eager initialization made `H5.dont_atexit()` fail even as the first user call. The managed opt-out now loads the core and calls the native opt-out before querying its version. Default loading remains lazy and version-checked; fresh-process tests verify early, repeated and late calls.

@@ -5,6 +5,9 @@
 - HDF5 2.2.x is required. Updated native boolean widths, C long fields, callbacks, enums and versioned entry points.
 - Windows/Linux x64 and ARM64 plus macOS ARM64.
 - Removed Paket, old native binaries and HDF5 1.8 conditional compilation.
+- Breaking interop corrections: `H5T.find` returns conversion data through `out IntPtr`; append/filter callbacks expose native arrays as `IntPtr`; external-link callbacks use UTF-8 strings; `H5MM.free_t` returns `void`; page-buffer statistics take five `uint[]` outputs of at least two elements; chunk-count status returns `int`.
+- Corrected error-detection and identifier-type reference-count entry points, and allowed `H5.dont_atexit()` before initialization.
+- Added wrapper regressions, exact runtime selection, finished-archive validation, and core/high-level compressed data round-trips in clean package consumers. CI exposes the final NuGet artifact only after all seven consumers pass, including glibc and musl Linux.
 
 ##### 1.10.11
 

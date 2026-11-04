@@ -197,14 +197,14 @@ namespace HDF.PInvoke
         /// </summary>
         /// <param name="flags">The native flags controlling the filter operation, including reverse filtering when decoding.</param>
         /// <param name="cd_nelmts">The number of filter client-data values.</param>
-        /// <param name="cd_values">The filter client-data values.</param>
+        /// <param name="cd_values">Pointer to cd_nelmts unsigned 32-bit client-data values. Read only during the callback.</param>
         /// <param name="nbytes">The buffer or value size in bytes.</param>
         /// <param name="buf_size">The buffer or value size in bytes.</param>
         /// <param name="buf">The data buffer supplied to the native operation.</param>
         /// <returns>The number of valid bytes in the transformed buffer, or zero on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate size_t func_t
-        (uint flags, size_t cd_nelmts, uint[] cd_values, size_t nbytes,
+        (uint flags, size_t cd_nelmts, IntPtr cd_values, size_t nbytes,
                  ref size_t buf_size, ref IntPtr buf);
 
         /// <summary>

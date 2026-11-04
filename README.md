@@ -4,15 +4,14 @@
 
 Low-level C# bindings for HDF5, with native libraries included for supported desktop platforms. The 2.x wrapper targets **.NET 10+** and **native HDF5 2.2.x**.
 
-**Status:** `2.2.0` is an unreleased modernization version. CI builds package artifacts; it does not publish them to NuGet.org. Obtain a package from the build artifacts or your own package feed before using the commands below.
+CI produces `2.2.0` package artifacts but does not publish them to NuGet.org. Configure a package feed containing the built package before using the installation command below.
 
 ## Quick start
 
-Create a .NET 10 application and add the package from the feed containing it:
+Create a .NET 10 application, then add the **HDF.PInvoke** package:
 
 ```sh
-dotnet new console -f net10.0
-dotnet add package HDF.PInvoke --version 2.2.0 --source /path/to/package-feed
+dotnet add package HDF.PInvoke --version 2.2.0
 ```
 
 Create an HDF5 file:
@@ -37,24 +36,16 @@ finally
 
 `ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-Publish for the machine that will run the application:
-
-```sh
-dotnet publish -c Release -r linux-arm64 --self-contained false
-```
-
-Normal NuGet deployments need no custom resolver or system HDF5 installation. Keep the published native assets with the application. A framework-dependent deployment also needs .NET 10 installed.
-
 ## Supported platforms
 
 | Platform | Runtime identifiers | Requirements |
 | --- | --- | --- |
-| Windows | `win-x64`, `win-arm64` | Matching Visual C++ runtime |
+| Windows | `win-x64`, `win-arm64` | Microsoft Visual C++ v14 Redistributable for the process architecture |
 | Linux | `linux-x64`, `linux-arm64` | Ubuntu 24.04/glibc 2.39 build baseline |
 | Alpine Linux | `linux-musl-x64`, `linux-musl-arm64` | Alpine 3.24/musl build baseline |
 | macOS | `osx-arm64` | macOS 13 or later |
 
-macOS x64, 32-bit processes, iOS and Android are not supported by this package. ARM64 and macOS CI jobs are configured; their first remote validation is still pending. Alpine/musl x64 and ARM64 are included in the default CI and package matrix. Alpine uses native-architecture containers rather than glibc compatibility packages.
+macOS x64, 32-bit processes, iOS and Android are not supported by this package. Alpine/musl x64 and ARM64 are included in the default CI and package matrix. Alpine uses native-architecture containers rather than glibc compatibility packages.
 
 The native build includes the C core, high-level APIs and zlib/Deflate compression. **Calls must be serialized:** this build is not thread-safe. MPI and SZIP/libaec are not included. Close individual resources; avoid calling `H5.close()` while other code still uses the library.
 
@@ -68,12 +59,15 @@ The bundled core/high-level library is not thread-safe: serialize all HDF5 calls
 
 ## Versioning and file compatibility
 
-| Version   | Meaning                                          |
-| --------- | ------------------------------------------------ |
-| `2.2.0`   | Managed wrapper/package version                  |
-| `2.2.0.0` | Managed assembly version                         |
-| `2.2.0`   | Pinned native HDF5 release shipped by this build |
-| `.NET 10` | Required managed runtime                         |
+| Version | Meaning |
+| --- | --- |
+| `2.2.0` | Managed wrapper/package version |
+| `2.2.0.0` | Managed assembly version |
+| `2.2.0` | Pinned native HDF5 release shipped by this build |
+| `.NET 10` | Required managed runtime |
+| VC++ v14 | Required Windows native runtime: Microsoft Visual C++ v14 Redistributable |
+
+On Windows, install the latest supported [Microsoft Visual C++ v14 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist/) for the process architecture ([x64](https://aka.ms/vc14/vc_redist.x64.exe) or [ARM64](https://aka.ms/vc14/vc_redist.arm64.exe)). Its version must be at least as recent as the MSVC toolset used to build the native libraries. Windows builds use Visual Studio 2026 with the dynamic C runtime (`/MD`); the redistributable is a separate prerequisite and is not bundled in the NuGet package.
 
 Starting with 2.2.0, wrapper major/minor numbers match the wrapped native HDF5 major/minor. The patch number counts wrapper releases: 2.2.0, 2.2.1, 2.2.2, and so on. It does not identify the native patch release; the exact native version is recorded separately in Build/HDF5.props. A wrapper version is not a file-format version. The historical wrapper `1.10.11` already shipped HDF5 1.14.3 with compatibility APIs; consult [release notes](RELEASE_NOTES.md) rather than inferring native versions from package numbers.
 
@@ -108,7 +102,7 @@ For a private native installation, call `NativeDependencies.Configure(absoluteDi
 
 ## Contributing
 
-[README_ADVANCED.md](README_ADVANCED.md) covers builds, tests, packaging and native/managed integration. [Modernization.md](Modernization.md) records the previous-state assessment and the decisions behind version 2.
+[README_ADVANCED.md](README_ADVANCED.md) covers builds, tests, packaging and native/managed integration.
 
 ## License
 

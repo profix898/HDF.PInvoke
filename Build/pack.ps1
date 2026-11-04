@@ -11,6 +11,7 @@ Required runtime identifiers. Override only for local, partial-package validatio
 #>
 param([string[]]$RequiredRids = @('win-x64', 'win-arm64', 'linux-x64', 'linux-arm64', 'linux-musl-x64', 'linux-musl-arm64', 'osx-arm64'))
 $ErrorActionPreference = 'Stop'
+if ($RequiredRids.Count -eq 0 -or @($RequiredRids | Select-Object -Unique).Count -ne $RequiredRids.Count) { throw 'Expected a nonempty, unique RID set.' }
 $root = Split-Path $PSScriptRoot -Parent
 [xml]$pins = Get-Content "$PSScriptRoot/HDF5.props"
 foreach ($rid in $RequiredRids) {
@@ -38,3 +39,7 @@ foreach ($rid in $RequiredRids) {
 $ridProperty = $RequiredRids -join '%3B'
 dotnet pack "$root/Sources/HDF.PInvoke/HDF.PInvoke.csproj" -c Release -o "$PSScriptRoot/Artifacts/packages" '-p:RestoreLockedMode=true' "-p:RequiredNativeRids=$ridProperty"
 if ($LASTEXITCODE -ne 0) { throw 'NuGet packing failed' }
+
+[xml]$project = Get-Content "$root/Sources/HDF.PInvoke/HDF.PInvoke.csproj"
+$package = "$PSScriptRoot/Artifacts/packages/HDF.PInvoke.$($project.Project.PropertyGroup.Version).nupkg"
+& "$PSScriptRoot/validate-package.ps1" -Package $package -RequiredRids $RequiredRids

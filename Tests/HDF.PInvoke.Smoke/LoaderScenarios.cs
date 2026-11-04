@@ -10,6 +10,18 @@ internal static class LoaderScenarios
     {
         if (args.Length == 0)
             return false;
+        if (args[0] == "--dont-atexit" || args[0] == "--late-dont-atexit")
+        {
+            if (args[0] == "--dont-atexit")
+            {
+                if (H5.dont_atexit() != 0 || H5.dont_atexit() >= 0)
+                    throw new Exception("Automatic shutdown opt-out must succeed exactly once before initialization");
+            }
+            if (H5.open() < 0 || H5.dont_atexit() >= 0 || H5.close() < 0)
+                throw new Exception("Late shutdown opt-out or explicit shutdown behaved incorrectly");
+            Console.WriteLine("PASS: automatic shutdown opt-out ordering");
+            return true;
+        }
         if (args[0] == "--missing" || args[0] == "--invalid")
         {
             NativeDependencies.Configure(args[1]);

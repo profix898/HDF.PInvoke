@@ -73,8 +73,22 @@ namespace HDF.PInvoke
             _ => IntPtr.Zero
         };
 
-        internal static IntPtr GetLibraryHandle(bool high)
+        internal static int DisableAutomaticShutdown()
         {
+            lock (Sync)
+            {
+                if (core != IntPtr.Zero)
+                    return -1;
+                LoadLibraryHandle(false, true, out int status);
+                return status;
+            }
+        }
+
+        internal static IntPtr GetLibraryHandle(bool high) => LoadLibraryHandle(high, false, out _);
+
+        private static IntPtr LoadLibraryHandle(bool high, bool disableAutomaticShutdown, out int shutdownStatus)
+        {
+            shutdownStatus = -1;
             lock (Sync)
             {
                 string rid = RuntimeIdentifier;
@@ -121,6 +135,10 @@ namespace HDF.PInvoke
                     }
                     try
                     {
+                        // This opt-out must precede even the version query, which initializes HDF5.
+                        if (disableAutomaticShutdown)
+                            shutdownStatus = Marshal.GetDelegateForFunctionPointer<DisableAtExit>(
+                                NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
                         ValidateVersion(candidate);
                     }
                     catch { NativeLibrary.Free(candidate); loadedDirectory = null; throw; }
@@ -178,6 +196,9 @@ namespace HDF.PInvoke
                 throw new DllNotFoundException($"Cannot load {file} for {RuntimeIdentifier}. Check binary architecture and its native dependencies. {e.Message}", e);
             }
         }
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int DisableAtExit();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int GetVersion(out uint major, out uint minor, out uint release);

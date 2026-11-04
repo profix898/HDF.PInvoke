@@ -267,12 +267,12 @@ namespace HDF.PInvoke
         /// property list
         /// </summary>
         /// <param name="dataset_id">The dataset identifier.</param>
-        /// <param name="cur_dims">The current dataset dimensions, one value per dimension.</param>
+        /// <param name="cur_dims">Pointer to the current dataset dimensions (unsigned 64-bit values), one per dataset dimension. Read only during the callback.</param>
         /// <param name="op_data">The caller-provided callback state.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t append_cb_t
-        (hid_t dataset_id, hsize_t[] cur_dims, IntPtr op_data);
+        (hid_t dataset_id, IntPtr cur_dims, IntPtr op_data);
 
         /// <summary>
         /// Delegate for H5Dgather() callback
@@ -658,7 +658,7 @@ namespace HDF.PInvoke
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_num_chunks",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_num_chunks(hid_t dset_id, hid_t fspace_id, ref hsize_t nchunks);
+        public static extern herr_t get_num_chunks(hid_t dset_id, hid_t fspace_id, ref hsize_t nchunks);
 
         /// <summary>
         /// Returns dataset address in file.
