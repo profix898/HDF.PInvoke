@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>HDF.PInvoke</RootNamespace>
+    <AssemblyName>HDF.PInvoke</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>HDF.PInvoke.snk</AssemblyOriginatorKeyFile>
+    <Version>2.2.0</Version>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
+    <Description>.NET 10 bindings for HDF5 2.2, with native libraries for Windows and Linux x64/ARM64 and macOS ARM64.</Description>
+    <Authors>The HDF Group;HDF.PInvoke contributors</Authors>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1570;CS1572;CS1573;CS1591</WarningsAsErrors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <RequiredNativeRids Condition="'$(RequiredNativeRids)' == ''">win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64</RequiredNativeRids>
+  </PropertyGroup>
+  <ItemGroup>
+    <NativeRuntime Include="../../Build/Native/runtimes/**/*" />
+    <NativeRuntime Remove="../../Build/Native/runtimes/linux-musl-x64/**/*" Condition="!$([System.String]::Copy('$(RequiredNativeRids)').Contains('linux-musl-x64'))" />
+    <NativeRuntime Remove="../../Build/Native/runtimes/linux-musl-arm64/**/*" Condition="!$([System.String]::Copy('$(RequiredNativeRids)').Contains('linux-musl-arm64'))" />
+    <None Include="@(NativeRuntime)" Link="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../README_ADVANCED.md" Pack="true" PackagePath="/" />
+    <None Include="../../Modernization.md" Pack="true" PackagePath="/" />
+    <None Include="../../RELEASE_NOTES.md" Pack="true" PackagePath="/" />
+    <None Include="../../LICENSE.txt" Pack="true" PackagePath="/" />
+  </ItemGroup>
+  <Target Name="RequireNativeRuntimes" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <RequiredNativeRid Include="$([MSBuild]::Unescape('$(RequiredNativeRids)'))" />
+    </ItemGroup>
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)/../../Build/Native/runtimes/%(RequiredNativeRid.Identity)/native/build-info.json')" Text="Missing verified runtime %(RequiredNativeRid.Identity). Build all required RIDs before packing." />
+  </Target>
+</Project>

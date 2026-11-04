@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <!-- Temporary v3 bridge: v4 removes ExpectedException used in untouched legacy tests. -->
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.11.1" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.11.1" />
+  </ItemGroup>
+</Project>

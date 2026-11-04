@@ -1,83 +1,117 @@
-![AppVeyor Project status badge](https://ci.appveyor.com/api/projects/status/github/HDFGroup/HDF.PInvoke?branch=master&svg=true)
-[![Gitter](https://badges.gitter.im/HDFGroup/HDF.PInvoke.svg)](https://gitter.im/HDFGroup/HDF.PInvoke?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# HDF.PInvoke
 
-# What it is (not)
+[![NuGet](https://img.shields.io/nuget/v/HDF.PInvoke?style=flat-square&logo=nuget&color=blue)](https://www.nuget.org/packages/HDF.PInvoke)
 
-HDF.PInvoke is a collection of [PInvoke](https://en.wikipedia.org/wiki/Platform_Invocation_Services)
-signatures for the [HDF5 C-API](https://docs.hdfgroup.org/hdf5/develop/).
-It's practically *code-free*, which means we can blame all the bugs on Microsoft or [The HDF Group](https://www.hdfgroup.org/) :smile:
+Low-level C# bindings for HDF5, with native libraries included for supported desktop platforms. The 2.x wrapper targets **.NET 10+** and **native HDF5 2.2.x**.
 
-It is **not** a high-level .NET interface for HDF5. "It's the [GCD](https://en.wikipedia.org/wiki/Greatest_common_divisor)
-of .NET bindings for HDF5, not the [LCM](https://en.wikipedia.org/wiki/Least_common_multiple)." :bowtie:
+**Status:** `2.2.0` is an unreleased modernization version. CI builds package artifacts; it does not publish them to NuGet.org. Obtain a package from the build artifacts or your own package feed before using the commands below.
 
-## Current Release Version(s)
+## Quick start
 
-| HDF5 Release Version                                                   | Assembly Version | Assembly File Version | Git Tag |
-| ---------------------------------------------------------------------- | ---------------- | --------------------------------------------------------------- | ------- |
-| [1.8.21](https://portal.hdfgroup.org/downloads/index.html)  | 1.8.21.1         | [1.8.21.1](https://www.nuget.org/packages/HDF.PInvoke/1.8.21.1) | v1.8.21.1  |
-| [1.10.11](https://portal.hdfgroup.org/downloads/index.html) | 1.10.11         | [1.10.11](https://www.nuget.org/packages/HDF.PInvoke/1.10.11) | v1.10.11 |
+Create a .NET 10 application and add the package from the feed containing it:
 
-[How "stuff" is versioned.](../../wiki/Versioning-and-Releases)
-
-## Quick Install:
-
-To install the latest HDF.PInvoke 1.8, run the following command in the
-[Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
-```
-    Install-Package HDF.PInvoke -Version 1.8.21.1
-```
-To install the latest HDF.PInvoke 1.10, run the following command in the
-[Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console)
-```
-    Install-Package HDF.PInvoke -Version 1.10.11
+```sh
+dotnet new console -f net10.0
+dotnet add package HDF.PInvoke --version 2.2.0 --source /path/to/package-feed
 ```
 
-# Prerequisites
+Create an HDF5 file:
 
-The ``HDF.PInvoke.dll`` managed assembly depends on the following native DLLs (32-bit and 64-bit):
-- HDF5 core API, ``hdf5.dll``
-- HDF5 high-level APIs, ``hdf5_hl.dll``
-- Gzip compression, ``zlib.dll``
-- Szip compression, ``szip.dll``
-- The C-runtime of the Visual Studio version used to build the former, e.g., ``msvcr120.dll`` for Visual Studio 2013
+```csharp
+using HDF.PInvoke;
 
-All native dependencies, built with [thread-safety enabled](https://support.hdfgroup.org/HDF5/faq/threadsafe.html),
-are included in the NuGet packages,
-**except** the Visual Studio C-runtime, which is available from Microsoft as [Visual C++ Redistributable Packages for Visual Studio 2013](https://www.microsoft.com/en-us/download/details.aspx?id=40784). In the unlikely event that
-they aren't already installed on your system, go get 'em!
-(See [this link](https://msdn.microsoft.com/en-us/library/ms235299.aspx) for the rationale behind not
-distributing the Visual Studio C-runtime in the NuGet package.)
+long file = H5F.create("example.h5", H5F.ACC_TRUNC);
+if (file < 0)
+    throw new InvalidOperationException("Could not create the HDF5 file.");
 
-## The DLL Resolution Process
+try
+{
+    // Create groups, datasets and attributes using the HDF5 APIs.
+}
+finally
+{
+    if (H5F.close(file) < 0)
+        throw new InvalidOperationException("Could not close the HDF5 file.");
+}
+```
 
-On the first call to an ``H5*`` function, the application's configuration file
-(e.g., ``YourApplication.exe.config``) is searched for the key ``NativeDependenciesAbsolutePath``,
-whose value, if found, is added to the DLL-search path. If this key is not
-specified in the application's config-file, then the ``HDF.PInvoke.dll`` assembly
-detects the processor architecture (32- or 64-bit) of the hosting process and expects
-to find the native DLLs in the ``bin32`` or ``bin64`` subdirectories, relative to its
-location. For example, if ``HDF.PInvoke.dll`` lives in ``C:\bin``, it looks for
-the native DLLs in ``C:\bin\bin32`` and ``C:\bin\bin64``.
-Finally, the ``PATH`` environment variable of the running process is searched for other locations,
-such as installed by the [HDF5 installers](https://www.hdfgroup.org/HDF5/).
+`ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-# One Major HDF5 Version
+Publish for the machine that will run the application:
 
-The HDF Group currently maintains **one** major HDF5 release family, HDF5 1.14. The Visual Studio Solution is set up to build the `HDF.PInvoke.dll` .NET assemblies for the `"Any CPU"` platform in the `Debug` and `Release` configurations. Support for the HDF5 1.8 or 1.10 API is toggled via the `HDF5_VER1_10` conditional compilation symbol in the *Build* properties of the *HDF.PInvoke* and *UnitTest* projects.
+```sh
+dotnet publish -c Release -r linux-arm64 --self-contained false
+```
 
-# License
+Normal NuGet deployments need no custom resolver or system HDF5 installation. Keep the published native assets with the application. A framework-dependent deployment also needs .NET 10 installed.
 
-HDF.PInvoke is part of [HDF5](https://www.hdfgroup.org/HDF5/). It is subject to
-the *same* terms and conditions as HDF5. Please review [COPYING](COPYING) or
-[https://www.hdfgroup.org/licenses/](https://www.hdfgroup.org/licenses/)
-for the details. If you have any questions, please [contact us](https://www.hdfgroup.org/about/contact.html).
+## Supported platforms
 
-# Supporting HDF.PInvoke
+| Platform | Runtime identifiers | Requirements |
+| --- | --- | --- |
+| Windows | `win-x64`, `win-arm64` | Matching Visual C++ runtime |
+| Linux | `linux-x64`, `linux-arm64` | Ubuntu 24.04/glibc 2.39 build baseline |
+| Alpine Linux | `linux-musl-x64`, `linux-musl-arm64` | Alpine 3.24/musl build baseline |
+| macOS | `osx-arm64` | macOS 13 or later |
 
-The best way to support HDF.Pinvoke is to contribute to it either by reporting
-bugs, writing documentation (e.g., the [cookbook](https://github.com/HDFGroup/HDF.PInvoke/wiki/Cookbook)),
-or sending pull requests.
+macOS x64, 32-bit processes, iOS and Android are not supported by this package. ARM64 and macOS CI jobs are configured; their first remote validation is still pending. Alpine/musl x64 and ARM64 are included in the default CI and package matrix. Alpine uses native-architecture containers rather than glibc compatibility packages.
 
-***
+The native build includes the C core, high-level APIs and zlib/Deflate compression. **Calls must be serialized:** this build is not thread-safe. MPI and SZIP/libaec are not included. Close individual resources; avoid calling `H5.close()` while other code still uses the library.
 
-![The HDF Group logo](https://github.com/HDFGroup/HDF.PInvoke/blob/master/images/The%20HDF%20Group.jpg)
+## Threads, SWMR and compression
+
+The bundled core/high-level library is not thread-safe: serialize all HDF5 calls within a process, including calls involving different files. HDF5 can be built with `HDF5_ENABLE_THREADSAFE=ON`, but upstream does not support combining that option with the high-level library; a supported thread-safe variant would be a separate core-only build. The native thread-safe option protects library state and is not a promise of parallel execution.
+
+**Single-writer/multiple-reader (SWMR) is available in this build.** It coordinates one writer process and multiple reader processes accessing the same file. Create groups/datasets before starting SWMR writing, use 1.10-or-newer format bounds, call `H5F.start_swmr_write`, open readers with `H5F.ACC_SWMR_READ`, and use writer flushes/reader refreshes to publish and observe changes. SWMR has operation/datatype restrictions and requires appropriate filesystem write semantics. It does not make concurrent calls within one process safe. See the [upstream SWMR guide](https://portal.hdfgroup.org/documentation/hdf5/latest/_s_w_m_r_t_n.html).
+
+**zlib/Deflate is included**, statically linked into native HDF5. SZIP is a separate optional filter; its open-source implementation is libaec. SZIP/libaec is not currently bundled, so datasets compressed with that filter need a compatible build or filter implementation before their data can be read. See [HDF5 compression documentation](https://support.hdfgroup.org/documentation/hdf5/latest/_comp_t_s.html).
+
+## Versioning and file compatibility
+
+| Version   | Meaning                                          |
+| --------- | ------------------------------------------------ |
+| `2.2.0`   | Managed wrapper/package version                  |
+| `2.2.0.0` | Managed assembly version                         |
+| `2.2.0`   | Pinned native HDF5 release shipped by this build |
+| `.NET 10` | Required managed runtime                         |
+
+Starting with 2.2.0, wrapper major/minor numbers match the wrapped native HDF5 major/minor. The patch number counts wrapper releases: 2.2.0, 2.2.1, 2.2.2, and so on. It does not identify the native patch release; the exact native version is recorded separately in Build/HDF5.props. A wrapper version is not a file-format version. The historical wrapper `1.10.11` already shipped HDF5 1.14.3 with compatibility APIs; consult [release notes](RELEASE_NOTES.md) rather than inferring native versions from package numbers.
+
+HDF5 2.2 can read files produced by HDF5 1.8 and 1.10, provided any required compression filters and external data are available. To create files restricted to 1.10-compatible format features, set an upper format bound on the file-access property list before creating the file:
+
+```csharp
+long fapl = H5P.create(H5P.FILE_ACCESS);
+if (fapl < 0) throw new InvalidOperationException("Cannot create file properties.");
+try
+{
+    if (H5P.set_libver_bounds(fapl, H5F.libver_t.EARLIEST, H5F.libver_t.V110) < 0)
+        throw new InvalidOperationException("Cannot set format bounds.");
+    long file = H5F.create("compatible.h5", H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
+    if (file < 0) throw new InvalidOperationException("Cannot create file.");
+    if (H5F.close(file) < 0) throw new InvalidOperationException("Cannot close file.");
+}
+finally { H5P.close(fapl); }
+```
+
+Bounds constrain new format structures; they do not downgrade an existing file. Features requiring newer formats can fail under these bounds. See the [HDF Group's compatibility guidance](https://portal.hdfgroup.org/documentation/hdf5/latest/_accessibility.html).
+
+## Breaking changes since the 1.10.x wrapper series
+
+- **Recompile consumers.** Version 2 is not a binary replacement for the 1.x assembly. .NET Framework and .NET Standard are no longer targets; .NET 10 is required.
+- **Use the supplied HDF5 2.2.x libraries.** The loader rejects other native release families. Old `bin32`/`bin64` deployments and app.config configuration are removed.
+- **Review interop declarations in calling code.** Native booleans are `byte` (0 or 1), IDs are 64-bit, and platform-dependent C fields use `CLong`/`CULong`. Several structures, enums and callback signatures were corrected.
+- **Strings are UTF-8 across platforms.** Buffer lengths are byte counts. Raw `byte[]` name arguments remain C buffers and need a NUL terminator, such as `Encoding.UTF8.GetBytes(name + "\0")`. Keep callbacks alive for as long as native code may call them.
+- **Optional native features are checked.** Unavailable driver APIs throw `PlatformNotSupportedException`.
+- **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. The binding retains compatibility entry points but does not expose every new HDF5 2.2 API.
+
+For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](README_ADVANCED.md) for configuration, loading and troubleshooting.
+
+## Contributing
+
+[README_ADVANCED.md](README_ADVANCED.md) covers builds, tests, packaging and native/managed integration. [Modernization.md](Modernization.md) records the previous-state assessment and the decisions behind version 2.
+
+## License
+
+HDF.PInvoke is licensed under the terms in [LICENSE.txt](LICENSE.txt), which identifies the [3-clause BSD license](https://opensource.org/license/bsd-3-clause). Preserve the copyright notices, conditions and disclaimers when redistributing source or binaries.
+
+Bundled native HDF5 and zlib libraries retain their respective license terms. Their notices are included under `runtimes/<rid>/native/Licenses` in the package.

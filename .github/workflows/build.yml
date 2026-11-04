@@ -1,0 +1,190 @@
+name: build
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    name: Native ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2025-vs2026, rid: win-x64 }
+          - { os: windows-11-vs2026-arm, rid: win-arm64 }
+          - { os: ubuntu-24.04, rid: linux-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-arm64 }
+          - { os: macos-15, rid: osx-arm64 }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - name: Install Linux build tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Install macOS build tools
+        if: runner.os == 'macOS'
+        run: brew list ninja || brew install ninja
+      - name: Build and verify native runtime
+        shell: pwsh
+        run: |
+          $arguments = @{ Rid = '${{ matrix.rid }}'; Jobs = 4 }
+          if ($IsWindows) { $arguments.Generator = 'Visual Studio 18 2026' }
+          ./Build/build-native.ps1 @arguments
+      - name: Verify managed bindings and loader scenarios
+        shell: pwsh
+        run: ./Build/test-managed.ps1 -Rid ${{ matrix.rid }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: native-${{ matrix.rid }}
+          path: Build/Native/runtimes/
+          if-no-files-found: error
+      - name: Upload native test logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-${{ matrix.rid }}
+          path: |
+            Build/Native/interop/**/Testing/Temporary/*.log
+            Build/Native/artifacts/**/CMakeFiles/CMakeConfigureLog.yaml
+            Build/Native/artifacts/**/Testing/Temporary/*
+            Build/Artifacts/tests/**/native-upstream.xml
+            Build/Artifacts/tests/**/*.trx
+          if-no-files-found: ignore
+  # Native-architecture Alpine containers exercise musl rather than glibc.
+  native-musl:
+    name: Native ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, rid: linux-musl-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-musl-arm64 }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Build Alpine toolchain image
+        run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
+      - name: Build and test native and managed libraries on musl
+        run: docker run --rm --user "$(id -u):$(id -g)" -e CI=true -v "$PWD:/src" hdf-pinvoke-alpine build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: native-${{ matrix.rid }}
+          path: Build/Native/runtimes/
+          if-no-files-found: error
+      - name: Upload musl test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-${{ matrix.rid }}
+          path: Build/Artifacts/tests/${{ matrix.rid }}/
+          if-no-files-found: ignore
+  # Packing waits for every native runtime and its upstream test results.
+  collect-native:
+    needs: [native, native-musl]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: native-*
+          merge-multiple: true
+          path: Build/Native/runtimes
+      - name: Verify all runtime manifests
+        shell: pwsh
+        run: |
+          $rids = @('win-x64','win-arm64','linux-x64','linux-arm64','osx-arm64')
+          $rids += 'linux-musl-x64','linux-musl-arm64'
+          foreach ($rid in $rids) {
+            $dir = "Build/Native/runtimes/$rid/native"
+            $manifest = Get-Content "$dir/build-info.json" -Raw | ConvertFrom-Json
+            if ($manifest.rid -ne $rid) { throw "Wrong manifest for $rid" }
+            foreach ($file in $manifest.files) {
+              if ((Get-FileHash "$dir/$($file.name)" -Algorithm SHA256).Hash -ne $file.sha256) { throw "Hash mismatch: $rid/$($file.name)" }
+            }
+          }
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hdf5-native-runtimes
+          path: Build/Native/runtimes
+          if-no-files-found: error
+      - name: Pack all supported native runtimes
+        shell: pwsh
+        run: ./Build/pack.ps1
+      - uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages
+          path: Build/Artifacts/packages/*.nupkg
+          if-no-files-found: error
+  # Restore the actual package into clean consumers to verify deployment.
+  package-consumer:
+    needs: collect-native
+    name: Package consumer ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2025-vs2026, rid: win-x64 }
+          - { os: windows-11-vs2026-arm, rid: win-arm64 }
+          - { os: ubuntu-24.04, rid: linux-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-arm64 }
+          - { os: macos-15, rid: osx-arm64 }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: nuget-packages
+          path: Build/Artifacts/packages
+      - name: Restore, publish and load a clean package consumer
+        shell: pwsh
+        run: ./Build/test-package.ps1 -Rid ${{ matrix.rid }}
+  package-consumer-musl:
+    needs: collect-native
+    name: Package consumer ${{ matrix.rid }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, rid: linux-musl-x64 }
+          - { os: ubuntu-24.04-arm, rid: linux-musl-arm64 }
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: nuget-packages
+          path: Build/Artifacts/packages
+      - run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
+      - name: Verify clean musl package consumer
+        run: docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" hdf-pinvoke-alpine consumer

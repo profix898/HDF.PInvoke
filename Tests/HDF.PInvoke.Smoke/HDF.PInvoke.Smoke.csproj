@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Sources/HDF.PInvoke/HDF.PInvoke.csproj" />
+  </ItemGroup>
+</Project>

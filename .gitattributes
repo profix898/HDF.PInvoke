@@ -1,0 +1,18 @@
+* text=auto
+*.cs text eol=crlf
+*.ps1 text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.slnx text eol=lf
+*.snk binary
+*.xlsx binary
+
+*.sh text eol=lf
+*.yaml text eol=lf
+*.props text eol=lf
+*.csproj text eol=lf
+*.md text eol=lf
+*.MD text eol=lf
+*.Dockerfile text eol=lf

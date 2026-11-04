@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Hdf5Version>2.2.0</Hdf5Version>
+    <Hdf5Revision>49df1b4e5ca4108d56e80f06321a749da1535268</Hdf5Revision>
+    <!-- HDF5's upstream-tested zlib fork, v1.3.2-cmakefix. -->
+    <ZlibRevision>42eefedb635b3eda77ac974ac08aed78d91ef4d6</ZlibRevision>
+  </PropertyGroup>
+</Project>

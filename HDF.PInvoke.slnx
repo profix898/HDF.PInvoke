@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Sources/">
+    <Project Path="Sources/HDF.PInvoke/HDF.PInvoke.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/HDF.PInvoke.Smoke/HDF.PInvoke.Smoke.csproj" />
+    <Project Path="Tests/HDF.PInvoke.Tests/HDF.PInvoke.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Build/">
+    <File Path="Build/HDF5.props" />
+    <File Path="Build/build-native.ps1" />
+    <File Path="Build/test-managed.ps1" />
+    <File Path="Build/pack.ps1" />
+    <File Path="Build/test-package.ps1" />
+    <File Path="Native/HDF5Options.cmake" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+</Solution>
