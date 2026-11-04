@@ -42,6 +42,8 @@ jobs:
         run: |
           $arguments = @{ Rid = '${{ matrix.rid }}'; Jobs = 4 }
           if ($IsWindows) { $arguments.Generator = 'Visual Studio 18 2026' }
+          # MSVC 14.51 crashes on HDF5 ARM64: https://github.com/actions/runner-images/issues/15052
+          if ($arguments.Rid -eq 'win-arm64') { $arguments.Toolset = 'v143,version=14.44' }
           ./Build/build-native.ps1 @arguments
       - name: Verify managed bindings and loader scenarios
         shell: pwsh

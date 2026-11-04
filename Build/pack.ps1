@@ -32,9 +32,6 @@ foreach ($rid in $RequiredRids) {
     foreach ($file in $manifest.files) {
         if ((Get-FileHash "$dir/$($file.name)" -Algorithm SHA256).Hash -ne $file.sha256) { throw "Native hash mismatch: $rid/$($file.name)" }
     }
-    foreach ($license in @('HDF5.txt', 'zlib.txt')) {
-        if (-not (Test-Path "$dir/Licenses/$license")) { throw "Missing native license: $rid/$license" }
-    }
 }
 $ridProperty = $RequiredRids -join '%3B'
 dotnet pack "$root/Sources/HDF.PInvoke/HDF.PInvoke.csproj" -c Release -o "$PSScriptRoot/Artifacts/packages" '-p:RestoreLockedMode=true' "-p:RequiredNativeRids=$ridProperty"

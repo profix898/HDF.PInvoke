@@ -84,14 +84,22 @@ ctest --test-dir "$build" -C Release --parallel "$jobs" --output-on-failure --no
 cmake --install "$build" --config Release
 # This exact generated RID directory is derived above, not a command-line path.
 rm -rf -- "$stage"
-mkdir -p "$stage/Licenses"
+mkdir -p "$stage"
 cp -L "$install"/lib/*hdf5*.so* "$stage/"
 [[ -s "$stage/libhdf5.so" && -s "$stage/libhdf5_hl.so" ]]
 cmake -S Native/Tests -B "$interop" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$install"
 cmake --build "$interop" --parallel "$jobs"
 ctest --test-dir "$interop" --output-on-failure --no-tests=error
-cp Native/hdf5/LICENSE "$stage/Licenses/HDF5.txt"
-cp "$build/_deps/hdf5_zlib-src/LICENSE" "$stage/Licenses/zlib.txt"
+# Keep upstream notices intact in the single redistribution license.
+combined=$(tr -d '\r' <LICENSE.txt)
+for license in Native/hdf5/LICENSE "$build/_deps/hdf5_zlib-src/LICENSE"; do
+    notice=$(tr -d '\r' <"$license")
+    [[ "$combined" == *"$notice"* ]] || {
+        echo "Combined LICENSE.txt is missing the full notice from $license" >&2
+        exit 1
+    }
+done
+cp LICENSE.txt "$root/Build/Native/runtimes/LICENSE.txt"
 files='[]'
 for library in "$stage"/*.so*; do
     hash=$(sha256sum "$library" | cut -d' ' -f1)

@@ -18,7 +18,7 @@ $work = Join-Path ([IO.Path]::GetTempPath()) "hdf-package-tests-$([Guid]::NewGui
 $null = New-Item -ItemType Directory $work
 try {
     $prefix = "runtimes/$($RequiredRids[0])/native/"
-    $cases = @('missing-managed', 'missing-library', 'missing-license', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'wrong-pin', 'unverified-suite')
+    $cases = @('missing-managed', 'missing-library', 'missing-license', 'corrupt-license', 'duplicate-runtime-license', 'extra-documentation', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'wrong-pin', 'unverified-suite')
     foreach ($case in $cases) {
         $copy = Join-Path $work "$case.nupkg"
         Copy-Item $Package $copy
@@ -31,7 +31,10 @@ try {
             $target = switch ($case) {
                 'missing-managed' { 'lib/net10.0/HDF.PInvoke.dll' }
                 'missing-library' { $library }
-                'missing-license' { "${prefix}Licenses/zlib.txt" }
+                'missing-license' { 'LICENSE.txt' }
+                'corrupt-license' { 'LICENSE.txt' }
+                'duplicate-runtime-license' { "${prefix}Licenses/zlib.txt" }
+                'extra-documentation' { 'README_ADVANCED.md' }
                 'corrupt-library' { $library }
                 'extra-rid' { 'runtimes/unexpected/native/fake.so' }
                 'extra-runtime-file' { "${prefix}unverified.so" }

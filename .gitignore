@@ -199,3 +199,13 @@ FakesAssemblies/
 /Build/Native/
 /Build/Artifacts/
 CMakeUserPresets.json
+
+# Ignore generated build trees; keep root build tooling available for tracking.
+[Bb]uild/
+!/Build/
+/Build/*
+!/Build/*.ps1
+!/Build/*.sh
+!/Build/*.props
+!/Build/*.Dockerfile
+[Tt]est[Rr]esults/

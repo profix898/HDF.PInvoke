@@ -10,6 +10,8 @@ hash manifest. Use native-architecture tooling; this script does not cross-compi
 Target runtime identifier. Defaults to the current host OS and architecture.
 .PARAMETER Generator
 CMake generator override. Unix builds default to Ninja.
+.PARAMETER Toolset
+Optional Visual Studio toolset selection, for example v143,version=14.44.
 .PARAMETER BuildDirectory
 Absolute native build directory. Prefer a Linux filesystem when running under WSL.
 .PARAMETER TestExpressLevel
@@ -21,6 +23,7 @@ param(
     [ValidateSet('win-x64', 'win-arm64', 'linux-x64', 'linux-arm64', 'linux-musl-x64', 'linux-musl-arm64', 'osx-arm64')]
     [string]$Rid,
     [string]$Generator = '',
+    [string]$Toolset = '',
     [string]$BuildDirectory = '',
     [ValidateSet(0, 1)][int]$TestExpressLevel = 1,
     [ValidateRange(1, 128)][int]$Jobs = 4
@@ -52,6 +55,10 @@ if ($IsWindows) {
     $cmakeArch = if ($architecture -eq 'arm64') { 'ARM64' } else { 'x64' }
     $configure += @('-A', $cmakeArch)
     $consumer += @('-A', $cmakeArch)
+    if ($Toolset) {
+        $configure += @('-T', $Toolset)
+        $consumer += @('-T', $Toolset)
+    }
 }
 else {
     if (-not $Generator) { $Generator = 'Ninja' }
@@ -102,12 +109,15 @@ Run cmake $consumer
 Run cmake @('--build', $interop, '--config', 'Release', '--parallel', "$Jobs")
 Run ctest @('--test-dir', $interop, '-C', 'Release', '--output-on-failure', '--no-tests=error')
 [xml]$pins = Get-Content -LiteralPath "$PSScriptRoot/HDF5.props"
-$notices = Join-Path $stage 'Licenses'
-New-Item -ItemType Directory -Force $notices | Out-Null
-Copy-Item -LiteralPath "$root/Native/hdf5/LICENSE" -Destination "$notices/HDF5.txt"
 $zlibLicense = Get-ChildItem -Path "$build/_deps/hdf5_zlib-src/LICENSE*" -File | Select-Object -First 1
 if (-not $zlibLicense) { throw 'Missing zlib redistribution license' }
-Copy-Item -LiteralPath $zlibLicense.FullName -Destination "$notices/zlib.txt"
+# Keep upstream notices intact in the single redistribution license.
+$combined = (Get-Content "$root/LICENSE.txt" -Raw).Replace("`r", '')
+foreach ($license in @("$root/Native/hdf5/LICENSE", $zlibLicense.FullName)) {
+    $notice = (Get-Content -LiteralPath $license -Raw).Replace("`r", '').TrimEnd()
+    if (-not $combined.Contains($notice)) { throw "Combined LICENSE.txt is missing the full notice from $license" }
+}
+Copy-Item -LiteralPath "$root/LICENSE.txt" -Destination "$root/Build/Native/runtimes/LICENSE.txt"
 $manifest = [ordered]@{
     rid           = $Rid
     hdf5Version   = $pins.Project.PropertyGroup.Hdf5Version

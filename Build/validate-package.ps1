@@ -34,9 +34,12 @@ try {
         $reader = [IO.StreamReader]::new((RequireEntry $Name).Open())
         try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
     }
-    foreach ($name in @('lib/net10.0/HDF.PInvoke.dll', 'lib/net10.0/HDF.PInvoke.xml', 'LICENSE.txt', 'README.md', 'README_ADVANCED.md', 'Modernization.md', 'RELEASE_NOTES.md', 'HDF.PInvoke.nuspec')) {
+    foreach ($name in @('lib/net10.0/HDF.PInvoke.dll', 'lib/net10.0/HDF.PInvoke.xml', 'LICENSE.txt', 'README.md', 'HDF.PInvoke.nuspec')) {
         $null = RequireEntry $name
     }
+    $expectedLicense = (Get-Content "$PSScriptRoot/../LICENSE.txt" -Raw).Replace("`r", '').TrimEnd()
+    if ((ReadEntry 'LICENSE.txt').Replace("`r", '').TrimEnd() -cne $expectedLicense) { throw 'Package license differs from the complete repository license.' }
+    foreach ($name in $entries.Keys | Where-Object { $_ -match '^[^/]+\.md$' -and $_ -ne 'README.md' }) { throw "Unexpected package documentation: $name" }
     $actualRids = @($entries.Keys | Where-Object { $_.StartsWith('runtimes/') } | ForEach-Object { $_.Split('/')[1] } | Sort-Object -Unique)
     if (@(Compare-Object $RequiredRids $actualRids).Count -ne 0) { throw "Package runtime set differs: expected $RequiredRids; found $actualRids" }
     foreach ($rid in $RequiredRids) {
@@ -49,7 +52,7 @@ try {
         $libraries = if ($rid.StartsWith('win-')) { @('hdf5.dll', 'hdf5_hl.dll') }
         elseif ($rid.StartsWith('linux-')) { @('libhdf5.so', 'libhdf5_hl.so') }
         else { @('libhdf5.dylib', 'libhdf5_hl.dylib') }
-        $allowed = @("${prefix}build-info.json", "${prefix}Licenses/HDF5.txt", "${prefix}Licenses/zlib.txt")
+        $allowed = @("${prefix}build-info.json")
         foreach ($name in $allowed) { $null = RequireEntry $name }
         foreach ($name in $libraries) { if ($name -notin $manifest.files.name) { throw "Required library absent from manifest: $rid/$name" } }
         $seen = @{}

@@ -19,12 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ExcludedNativeRid Include="win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64" Exclude="$([MSBuild]::Unescape('$(RequiredNativeRids)'))" />
-    <NativeRuntime Include="../../Build/Native/runtimes/**/*" Exclude="@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
+    <NativeRuntime Include="../../Build/Native/runtimes/**/*" Exclude="../../Build/Native/runtimes/LICENSE.txt;../../Build/Native/runtimes/**/Licenses/**;@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
     <None Include="@(NativeRuntime)" Link="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
-    <None Include="../../README_ADVANCED.md" Pack="true" PackagePath="/" />
-    <None Include="../../Modernization.md" Pack="true" PackagePath="/" />
-    <None Include="../../RELEASE_NOTES.md" Pack="true" PackagePath="/" />
     <None Include="../../LICENSE.txt" Pack="true" PackagePath="/" />
   </ItemGroup>
   <Target Name="RequireNativeRuntimes" BeforeTargets="GenerateNuspec">

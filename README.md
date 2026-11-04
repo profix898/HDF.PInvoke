@@ -1,5 +1,7 @@
 # HDF.PInvoke
 
+<img src="https://raw.githubusercontent.com/profix898/HDF.PInvoke/master/HDF5.png" alt="HDF5" width="200" />
+
 [![NuGet](https://img.shields.io/nuget/v/HDF.PInvoke?style=flat-square&logo=nuget&color=blue)](https://www.nuget.org/packages/HDF.PInvoke)
 
 Low-level C# bindings for HDF5, with native libraries included for supported desktop platforms. The 2.x wrapper targets **.NET 10+** and **native HDF5 2.2.x**.
@@ -98,14 +100,14 @@ Bounds constrain new format structures; they do not downgrade an existing file. 
 - **Optional native features are checked.** Unavailable driver APIs throw `PlatformNotSupportedException`.
 - **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. The binding retains compatibility entry points but does not expose every new HDF5 2.2 API.
 
-For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](README_ADVANCED.md) for configuration, loading and troubleshooting.
+For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](https://github.com/profix898/HDF.PInvoke/blob/master/README_ADVANCED.md) for configuration, loading and troubleshooting.
 
 ## Contributing
 
-[README_ADVANCED.md](README_ADVANCED.md) covers builds, tests, packaging and native/managed integration.
+[README_ADVANCED.md](https://github.com/profix898/HDF.PInvoke/blob/master/README_ADVANCED.md) covers builds, tests, packaging and native/managed integration.
 
 ## License
 
 HDF.PInvoke is licensed under the terms in [LICENSE.txt](LICENSE.txt), which identifies the [3-clause BSD license](https://opensource.org/license/bsd-3-clause). Preserve the copyright notices, conditions and disclaimers when redistributing source or binaries.
 
-Bundled native HDF5 and zlib libraries retain their respective license terms. Their notices are included under `runtimes/<rid>/native/Licenses` in the package.
+Bundled native HDF5 and zlib libraries retain their respective license terms. The complete HDF.PInvoke, HDF5 and zlib notices are combined in the repository and package root `LICENSE.txt`.
