@@ -184,6 +184,9 @@ namespace HDF.PInvoke
             return status;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5close</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5close", CallingConvention = CallingConvention.Cdecl)]
         private static extern herr_t CloseNative();
 

@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5Z API.
+    /// </summary>
     public partial class H5ZTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Zfilter_avail</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Zfilter_availTest1()
         {

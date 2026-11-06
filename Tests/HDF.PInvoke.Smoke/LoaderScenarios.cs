@@ -4,8 +4,14 @@ using System.Reflection;
 using System.Runtime.Loader;
 using HDF.PInvoke;
 
+/// <summary>
+/// Exercises loader state transitions in isolated processes so one scenario cannot initialize another.
+/// </summary>
 internal static class LoaderScenarios
 {
+    /// <summary>
+    /// Registers a collectable callback and returns a weak reference for shutdown lifetime checks.
+    /// </summary>
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private static WeakReference RegisterShutdownCallback()
     {
@@ -22,6 +28,9 @@ internal static class LoaderScenarios
         return new WeakReference(callback);
     }
 
+    /// <summary>
+    /// Runs a requested loader scenario and indicates whether the arguments selected one.
+    /// </summary>
     internal static bool Run(string[] args)
     {
         if (args.Length == 0)

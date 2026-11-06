@@ -11,14 +11,27 @@ namespace HDF.PInvoke
     /// </summary>
     internal sealed class H5DLLImporter
     {
+        /// <summary>
+        /// Provides the shared accessor for identifiers exported by the selected core library.
+        /// </summary>
         internal static readonly H5DLLImporter Instance = new H5DLLImporter();
+
+        /// <summary>
+        /// Retains the core library handle used to read native globals.
+        /// </summary>
         private readonly IntPtr handle;
 
         // Prevent eager CLR initialization before a caller actually requests a global.
+        /// <summary>
+        /// Defers access to native globals until the importer is first used and HDF5 is initialized.
+        /// </summary>
         static H5DLLImporter()
         {
         }
 
+        /// <summary>
+        /// Defers access to native globals until the importer is first used and HDF5 is initialized.
+        /// </summary>
         private H5DLLImporter()
         {
             handle = NativeDependencies.GetLibraryHandle(false);

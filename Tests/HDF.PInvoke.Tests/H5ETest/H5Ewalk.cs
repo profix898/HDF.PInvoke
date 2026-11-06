@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5E API.
+    /// </summary>
     public partial class H5ETest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Ewalk</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5EwalkTest1()
         {
@@ -34,6 +40,9 @@ namespace UnitTests
                 walk_cb, IntPtr.Zero) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Ewalk</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5EwalkTest2()
         {
@@ -57,6 +66,9 @@ namespace UnitTests
                 walk_cb, IntPtr.Zero) >= 0);
         }
 
+        /// <summary>
+        /// Receives native error notifications for the error-stack callback tests.
+        /// </summary>
         public herr_t ErrorDelegateMethod
             (
             hid_t estack,
@@ -66,6 +78,9 @@ namespace UnitTests
             return 0;
         }
 
+        /// <summary>
+        /// Receives each error record while the test walks a native error stack.
+        /// </summary>
         public herr_t WalkDelegateMethod
             (
             uint n,

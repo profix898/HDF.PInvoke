@@ -29,6 +29,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5R
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5R()
         {
             H5.open();
@@ -187,6 +190,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Rget_name</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Rget_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_name_utf8(hid_t loc_id, type_t ref_type, IntPtr refer, [Out] byte[] buffer,
             size_t size);

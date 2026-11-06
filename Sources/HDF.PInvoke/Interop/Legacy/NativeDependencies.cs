@@ -20,10 +20,30 @@ namespace HDF.PInvoke
         /// The environment variable for an absolute directory containing private HDF5 native libraries.
         /// </summary>
         public const string NativePathEnvironmentVariable = "HDF5_NATIVE_PATH";
+
+        /// <summary>
+        /// Serializes configuration, library selection, and first-load initialization.
+        /// </summary>
         private static readonly object Sync = new object();
+
+        /// <summary>
+        /// Retains the validated core library handle for the lifetime of the binding.
+        /// </summary>
         private static IntPtr core;
+
+        /// <summary>
+        /// Retains the high-level library handle associated with the selected core library.
+        /// </summary>
         private static IntPtr highLevel;
+
+        /// <summary>
+        /// Stores the explicit directory selected before the first native load.
+        /// </summary>
         private static string configuredDirectory;
+
+        /// <summary>
+        /// Pins subsequent loads to the directory of the successfully loaded core library.
+        /// </summary>
         private static string loadedDirectory;
 
         /// <summary>
@@ -96,6 +116,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Loads HDF5 without initialization when necessary and requests suppression of its exit handler.
+        /// </summary>
         internal static int DisableAutomaticShutdown()
         {
             lock (Sync)
@@ -110,8 +133,14 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Gets the retained core or high-level handle, loading and validating it on first use.
+        /// </summary>
         internal static IntPtr GetLibraryHandle(bool high) => LoadLibraryHandle(high, false, out _);
 
+        /// <summary>
+        /// Selects and validates a coherent native library pair under the configuration lock.
+        /// </summary>
         private static IntPtr LoadLibraryHandle(bool high, bool disableAutomaticShutdown, out int shutdownStatus)
         {
             shutdownStatus = -1;
@@ -123,7 +152,7 @@ namespace HDF.PInvoke
                 if (core == IntPtr.Zero)
                 {
                     string directory = configuredDirectory ?? AppContext.GetData(NativePathSetting) as string ??
-                                                                Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
+                        Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
                     IntPtr candidate;
 
                     if (!string.IsNullOrEmpty(directory))
@@ -156,7 +185,7 @@ namespace HDF.PInvoke
                         if (candidate == IntPtr.Zero)
                         {
                             throw new DllNotFoundException($"Cannot load HDF5 for {rid}. Deploy runtimes/{rid}/native beside the managed assembly, " +
-                                                                                        $"or configure an absolute native directory. Probed: {string.Join(", ", ProbeDirectories(rid))}");
+                                $"or configure an absolute native directory. Probed: {string.Join(", ", ProbeDirectories(rid))}");
                         }
                     }
 
@@ -166,7 +195,7 @@ namespace HDF.PInvoke
                         if (disableAutomaticShutdown)
                         {
                             shutdownStatus = Marshal.GetDelegateForFunctionPointer<DisableAtExit>(
-                                                                                                                    LegacyNativeLibrary.GetExport(candidate, "H5dont_atexit"))();
+                                LegacyNativeLibrary.GetExport(candidate, "H5dont_atexit"))();
                         }
 
                         ValidateVersion(candidate);
@@ -196,6 +225,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Enumerates explicit and packaged native directories in deterministic precedence order.
+        /// </summary>
         private static IEnumerable<string> ProbeDirectories(string rid)
         {
             string assemblyDirectory = Path.GetDirectoryName(typeof(NativeDependencies).Assembly.Location);
@@ -219,15 +251,24 @@ namespace HDF.PInvoke
         }
 
         // Full paths only: Path.IsPathRooted also accepts drive-relative Windows paths.
+        /// <summary>
+        /// Checks for a fully qualified path, rejecting Windows drive-relative and root-relative paths.
+        /// </summary>
         private static bool IsAbsolutePath(string path) => !string.IsNullOrEmpty(path) &&
             Path.IsPathRooted(path) && (!LegacyNativeLibrary.IsWindows ||
                 path.StartsWith(@"\\", StringComparison.Ordinal) ||
                 (path.Length >= 3 && path[1] == ':' && (path[2] == '\\' || path[2] == '/')));
 
+        /// <summary>
+        /// Creates a typed delegate for a required export from the selected native library.
+        /// </summary>
         internal static T GetFunction<T>(string library, string symbol) where T : Delegate =>
             Marshal.GetDelegateForFunctionPointer<T>(LegacyNativeLibrary.GetExport(
                 GetLibraryHandle(library == Constants.HLDLLFileName), symbol));
 
+        /// <summary>
+        /// Returns a typed delegate for an optional core export, or null if it is unavailable.
+        /// </summary>
         internal static T GetOptionalFunction<T>(string symbol) where T : Delegate
         {
             if (!LegacyNativeLibrary.TryGetExport(GetLibraryHandle(false), symbol, out IntPtr address))
@@ -238,12 +279,18 @@ namespace HDF.PInvoke
             return Marshal.GetDelegateForFunctionPointer<T>(address);
         }
 
+        /// <summary>
+        /// Selects the platform filename for the core or high-level native library.
+        /// </summary>
         private static string FileName(bool high)
         {
             string name = high ? "hdf5_hl" : "hdf5";
             return LegacyNativeLibrary.IsWindows ? name + ".dll" : "lib" + name + (LegacyNativeLibrary.IsMacOS ? ".dylib" : ".so");
         }
 
+        /// <summary>
+        /// Loads a nonempty native file and adds architecture and dependency context to loader errors.
+        /// </summary>
         private static IntPtr LoadFromDirectory(string directory, bool high)
         {
             string file = Path.Combine(directory, FileName(high));
@@ -263,12 +310,21 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Calls H5dont_atexit before any operation that initializes HDF5.
+        /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int DisableAtExit();
 
+        /// <summary>
+        /// Reads the version components exported by the selected core library.
+        /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int GetVersion(out uint major, out uint minor, out uint release);
 
+        /// <summary>
+        /// Rejects native libraries outside the supported HDF5 2.2 ABI series.
+        /// </summary>
         private static void ValidateVersion(IntPtr handle)
         {
             var getVersion = Marshal.GetDelegateForFunctionPointer<GetVersion>(LegacyNativeLibrary.GetExport(handle, "H5get_libversion"));

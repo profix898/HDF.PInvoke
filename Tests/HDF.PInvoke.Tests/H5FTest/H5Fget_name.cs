@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_name</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_nameTest1()
         {
@@ -44,6 +50,9 @@ namespace UnitTests
             Assert.AreEqual(m_v2_test_file_name, name);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_name</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_nameTest2()
         {

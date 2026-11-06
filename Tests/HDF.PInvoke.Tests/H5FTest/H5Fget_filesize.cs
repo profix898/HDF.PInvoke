@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_filesize</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_filesizeTest1()
         {
@@ -33,6 +39,9 @@ namespace UnitTests
             Assert.IsTrue(size == 65536, String.Format("File size: {0}", size));
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_filesize</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_filesizeTest2()
         {

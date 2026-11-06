@@ -17,8 +17,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fmount</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5FmountTest1()
         {
@@ -42,6 +48,9 @@ namespace UnitTests
             Assert.IsTrue(H5F.unmount(m_v0_class_file, "A") >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fmount</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5FmountTest2()
         {

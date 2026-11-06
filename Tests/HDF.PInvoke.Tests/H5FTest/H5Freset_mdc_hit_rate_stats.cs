@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Freset_mdc_hit_rate_stats</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Freset_mdc_hit_rate_statsTest1()
         {
@@ -27,6 +33,9 @@ namespace UnitTests
                 H5F.reset_mdc_hit_rate_stats(m_v2_class_file) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Freset_mdc_hit_rate_stats</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Freset_mdc_hit_rate_statsTest2()
         {

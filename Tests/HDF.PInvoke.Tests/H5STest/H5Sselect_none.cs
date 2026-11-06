@@ -21,8 +21,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5S API.
+    /// </summary>
     public partial class H5STest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Sselect_none</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Sselect_noneTest1()
         {
@@ -34,6 +40,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Sselect_none</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Sselect_noneTest2()
         {
@@ -41,6 +50,9 @@ namespace UnitTests
                                         H5S.select_all(Utilities.RandomInvalidHandle()) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Sselect_none</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5Sselect_noneTest3()
         {
@@ -51,6 +63,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Sselect_none</c> operation in scenario 4.
+        /// </summary>
         [TestMethod]
         public void H5Sselect_noneTest4()
         {

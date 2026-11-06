@@ -7,4 +7,4 @@ ARG BUILD_GID=1000
 RUN addgroup -g "$BUILD_GID" builder && adduser -D -u "$BUILD_UID" -G builder builder
 ENV DOTNET_CLI_HOME=/tmp/dotnet-home NUGET_PACKAGES=/tmp/nuget-packages
 WORKDIR /src
-ENTRYPOINT ["bash", "Build/alpine.sh"]
+ENTRYPOINT ["bash", "Build/Alpine/alpine.sh"]

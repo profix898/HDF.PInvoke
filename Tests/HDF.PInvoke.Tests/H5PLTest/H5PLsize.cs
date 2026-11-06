@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5PL API.
+    /// </summary>
     public partial class H5PLTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5PLsize</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5PLsizeTest1()
         {

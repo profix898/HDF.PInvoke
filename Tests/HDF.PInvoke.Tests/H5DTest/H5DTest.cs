@@ -23,9 +23,15 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5D API.
+    /// </summary>
     [TestClass]
     public partial class H5DTest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
@@ -115,6 +121,9 @@ namespace UnitTests
             Assert.IsTrue(H5T.close(dtype) >= 0);
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
@@ -129,6 +138,9 @@ namespace UnitTests
             Assert.IsTrue(m_v2_test_file >= 0);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
@@ -139,6 +151,9 @@ namespace UnitTests
             File.Delete(m_v2_test_file_name);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
@@ -158,38 +173,86 @@ namespace UnitTests
             File.Delete(m_v2_class_file_name);
         }
 
+        /// <summary>
+        /// Retains the fixture's v0 class file identifier.
+        /// </summary>
         private static hid_t m_v0_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 class file name path.
+        /// </summary>
         private static string m_v0_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file identifier.
+        /// </summary>
         private static hid_t m_v2_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file name path.
+        /// </summary>
         private static string m_v2_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file identifier.
+        /// </summary>
         private hid_t m_v0_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file name path.
+        /// </summary>
         private string m_v0_test_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file identifier.
+        /// </summary>
         private hid_t m_v2_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file name path.
+        /// </summary>
         private string m_v2_test_file_name;
 
+        /// <summary>
+        /// Retains the null dataspace shared by the fixture.
+        /// </summary>
         private static hid_t m_space_null = -1;
 
+        /// <summary>
+        /// Retains the scalar dataspace shared by the fixture.
+        /// </summary>
         private static hid_t m_space_scalar = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 ascii dataset identifier.
+        /// </summary>
         private static hid_t m_v0_ascii_dset = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 ascii dataset identifier.
+        /// </summary>
         private static hid_t m_v2_ascii_dset = -1;
 
+        /// <summary>
+        /// Provides multilingual strings that exercise UTF-8 encoding beyond ASCII.
+        /// </summary>
         private static ArrayList m_utf8strings = new ArrayList() { "Ελληνικά", "日本語", "العربية", "экземпляр", "סקרן" };
 
+        /// <summary>
+        /// Retains the fixture's v0 utf8 dataset identifier.
+        /// </summary>
         private static hid_t m_v0_utf8_dset = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 utf8 dataset identifier.
+        /// </summary>
         private static hid_t m_v2_utf8_dset = -1;
 
         // Callback for H5D.iterate
         // op_data is a pointer to a counter and we keep adding the elements
+        /// <summary>
+        /// Provides the dataset-iteration callback used to verify native callback dispatch.
+        /// </summary>
         private herr_t DelegateMethod
             (
             IntPtr elem,

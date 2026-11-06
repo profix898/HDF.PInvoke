@@ -21,8 +21,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5S API.
+    /// </summary>
     public partial class H5STest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Sencode</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5SencodeTest1()
         {
@@ -39,6 +45,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Sencode</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5SencodeTest2()
         {

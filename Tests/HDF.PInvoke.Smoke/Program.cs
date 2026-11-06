@@ -6,8 +6,14 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using HDF.PInvoke;
 
+/// <summary>
+/// Validates native loading, ABI compatibility, and data operations in an isolated process.
+/// </summary>
 static class Program
 {
+    /// <summary>
+    /// Validates binding selection, native exports, ABI layouts, and data operations in an isolated process.
+    /// </summary>
     static int Main(string[] args)
     {
         try
@@ -180,6 +186,9 @@ static class Program
         }
     }
 
+    /// <summary>
+    /// Writes and reads compressed dataset values to verify the selected native core and high-level libraries.
+    /// </summary>
     static void VerifyDatasetRoundTrip()
     {
         string path = Path.Combine(Path.GetTempPath(), "hdf-package-" + Guid.NewGuid() + ".h5");

@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_access_plist</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_access_plistTest1()
         {
@@ -29,6 +35,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.close(fapl) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_access_plist</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_access_plistTest2()
         {

@@ -5,9 +5,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for Library.
+    /// </summary>
     [TestClass]
     public class LibraryTests
     {
+        /// <summary>
+        /// Verifies native Allocation Can Be Zero Initialized.
+        /// </summary>
         [TestMethod]
         public void NativeAllocationCanBeZeroInitialized()
         {
@@ -27,6 +33,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies native Resize Preserves Existing Bytes.
+        /// </summary>
         [TestMethod]
         public void NativeResizePreservesExistingBytes()
         {
@@ -56,6 +65,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies zero Sized Native Allocations Return Null.
+        /// </summary>
         [TestMethod]
         public void ZeroSizedNativeAllocationsReturnNull()
         {
@@ -69,6 +81,9 @@ namespace UnitTests
             Assert.AreEqual(IntPtr.Zero, pointer);
         }
 
+        /// <summary>
+        /// Verifies native Library Reports The Pinned Release Family.
+        /// </summary>
         [TestMethod]
         public void NativeLibraryReportsThePinnedReleaseFamily()
         {
@@ -78,6 +93,9 @@ namespace UnitTests
             Assert.AreEqual(2u, minor);
         }
 
+        /// <summary>
+        /// Verifies packaged Library Requires Serialized Calls.
+        /// </summary>
         [TestMethod]
         public void PackagedLibraryRequiresSerializedCalls()
         {
@@ -86,6 +104,9 @@ namespace UnitTests
             Assert.AreEqual((byte)0, threadSafe);
         }
 
+        /// <summary>
+        /// Verifies native Garbage Collection Succeeds.
+        /// </summary>
         [TestMethod]
         public void NativeGarbageCollectionSucceeds()
         {

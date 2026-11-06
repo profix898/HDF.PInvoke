@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_mdc_hit_rate</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_mdc_hit_rateTest1()
         {
@@ -28,6 +34,9 @@ namespace UnitTests
             Assert.IsTrue(H5F.get_mdc_hit_rate(m_v2_test_file, ref rate) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_mdc_hit_rate</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_mdc_hit_rateTest2()
         {

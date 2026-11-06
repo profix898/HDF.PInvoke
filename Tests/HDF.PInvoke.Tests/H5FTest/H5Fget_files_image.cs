@@ -22,8 +22,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_files_image</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_files_imageTest1()
         {
@@ -47,6 +53,9 @@ namespace UnitTests
             File.Delete(fname);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_files_image</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_files_imageTest2()
         {

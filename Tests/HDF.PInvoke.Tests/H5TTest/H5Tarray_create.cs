@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5T API.
+    /// </summary>
     public partial class H5TTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Tarray_create</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Tarray_createTest1()
         {
@@ -30,6 +36,9 @@ namespace UnitTests
             Assert.IsTrue(H5T.close(dtype) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Tarray_create</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Tarray_createTest2()
         {
@@ -38,6 +47,9 @@ namespace UnitTests
             Assert.IsFalse(dtype >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Tarray_create</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5Tarray_createTest3()
         {

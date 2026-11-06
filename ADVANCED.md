@@ -17,6 +17,8 @@ This guide covers the modern `net8.0` implementation, native builds and package 
 | `Build/Native` | Ignored native build, install and runtime outputs |
 | `Build/Artifacts` | Ignored test results, packages and consumer deployments |
 
+The root `Build` directory contains versioned build scripts and configuration. Its `Artifacts` and `Native` subdirectories contain generated output and are ignored by Git; they are distinct from the versioned top-level `Native` source directory.
+
 ## Managed and native loading
 
 NuGet supplies the managed assembly and platform libraries under `runtimes/<rid>/native`. .NET resolves the managed assembly through its normal dependency/load-context mechanisms. A module initializer registers its native import resolver without eagerly opening HDF5. Call `H5.dont_atexit()` before any other HDF5 operation to opt out of automatic shutdown; the loader invokes the native opt-out before its version query initializes HDF5. The opt-out succeeds only once, and subsequent/late calls return a negative status. Call `H5.close()` explicitly when finished if automatic shutdown was disabled.
@@ -63,15 +65,15 @@ Install the .NET SDK selected by `global.json`, PowerShell 7.4 or later, Git, CM
 
 ```sh
 git submodule update --init --recursive
-pwsh -File Build/build-native.ps1
-pwsh -File Build/test-managed.ps1
+pwsh -File Build/buildNative.ps1
+pwsh -File Build/testManaged.ps1
 ```
 
 For Windows with Visual Studio 2026:
 
 ```powershell
-./Build/build-native.ps1 -Rid win-x64 -Generator 'Visual Studio 18 2026' -Jobs 4
-./Build/test-managed.ps1 -Rid win-x64
+./Build/buildNative.ps1 -Rid win-x64 -Generator 'Visual Studio 18 2026' -Jobs 4
+./Build/testManaged.ps1 -Rid win-x64
 ```
 
 Windows ARM64 CI selects the installed stable MSVC 14.44 toolset through Visual Studio 2026 (`-Toolset 'v143,version=14.44'`). MSVC 14.51 has a confirmed [ARM64 compiler crash in HDF5 2.2](https://github.com/actions/runner-images/issues/15052). This toolset selection preserves upstream sources, Release optimization and the full native test suite; the resulting libraries and tests run natively on ARM64. Use a fresh `-BuildDirectory` when changing CMake generators or toolsets.
@@ -81,7 +83,7 @@ For Linux under WSL, install the prerequisites inside the distribution and run t
 When keeping the checkout on a Windows drive, place the native build and upstream test files on the Linux filesystem:
 
 ```sh
-pwsh -File Build/build-native.ps1 -Rid linux-x64 -BuildDirectory /tmp/hdf5-pinvoke-native-linux-x64
+pwsh -File Build/buildNative.ps1 -Rid linux-x64 -BuildDirectory /tmp/hdf5-pinvoke-native-linux-x64
 ```
 
 `-BuildDirectory` must be absolute. Installed/staged assets and JUnit summaries still go under the checkout; detailed upstream CTest logs stay in the selected build directory.
@@ -90,11 +92,11 @@ pwsh -File Build/build-native.ps1 -Rid linux-x64 -BuildDirectory /tmp/hdf5-pinvo
 
 Native builds default to upstream full mode (level 1), which runs the registered suite with reduced stress repetition counts. Use `-TestExpressLevel 0` for exhaustive stress iterations. Packaging accepts levels 0 and 1, not quick/smoke levels 2 and 3. No individual test exclusions are added.
 
-`build-native.ps1` configures and builds the pinned upstream source, runs its CTest suite, installs/stages the native assets, and builds/runs the ABI probe. It invalidates the previous build manifest before starting. Only a successful run writes the new manifest with source revisions, feature settings, hashes and the upstream test result.
+`buildNative.ps1` configures and builds the pinned upstream source, runs its CTest suite, installs/stages the native assets, and builds/runs the ABI probe. It invalidates the previous build manifest before starting. Only a successful run writes the new manifest with source revisions, feature settings, hashes and the upstream test result.
 
 The upstream suite uses full-suite mode with reduced stress repetition (`HDF_TEST_EXPRESS=1`) for enabled components, including C/API, SWMR and high-level tests. Tests for components not built are excluded. CTest entries may include fixtures and internal feature skips; the entry count is not a count of individual assertions. Managed package consumers separately validate compressed core/high-level data round-trips.
 
-`test-managed.ps1` performs a locked restore, Release build, integration tests and separate-process loading checks. These cover automatic and explicit loading, globals-first initialization, a private AssemblyLoadContext, unrelated working directories, invalid/empty libraries, incompatible native versions and rejected configuration changes. The ABI contract is in `Build/Native/interop/<rid>/abi-layout.txt`.
+`testManaged.ps1` performs a locked restore, Release build, integration tests and separate-process loading checks. These cover automatic and explicit loading, globals-first initialization, a private AssemblyLoadContext, unrelated working directories, invalid/empty libraries, incompatible native versions and rejected configuration changes. The ABI contract is in `Build/Native/interop/<rid>/abi-layout.txt`.
 
 CI runs native checks and both managed implementations on Windows/Linux x64 and ARM64 and macOS ARM64. Native Linux jobs cover glibc and musl. Package consumers exercise the modern assembly on .NET 8 and .NET 10, plus the .NET Standard assembly; Windows x64 also runs a net472 consumer on the installed Framework runtime. It then collects all runtime assets, packs them and runs clean package consumers on every target. Failed native tests prevent staging and downstream packaging. Logs are uploaded even on failure; upstream JUnit results are in `Build/Artifacts/tests/<rid>/native-upstream.xml`, and detailed CTest logs are under the native build's `Testing/Temporary` directory.
 
@@ -106,10 +108,19 @@ After collecting verified native assets for all seven default runtime identifier
 
 ```powershell
 ./Build/pack.ps1
-./Build/test-package.ps1 -Rid win-x64
+./Build/testPack.ps1 -Rid win-x64
 ```
 
 The packaging script checks successful full or exhaustive upstream testing, source pins, file hashes, canonical libraries and licenses. The package includes `README.md` and the combined `LICENSE.txt` at its root; contributor documentation stays in the repository. Native runtime artifacts carry the same combined license once at their root, outside the platform directories. Native builds verify that it contains the full upstream HDF5 and zlib notices. `-RequiredRids` allows an explicitly limited local test package; CI requires all seven targets. Use this script rather than bypassing validation with a direct pack command.
+
+For a local Windows-only build, explicitly select the runtime you have built:
+
+```powershell
+./Build/pack.ps1 -RequiredRids win-x64
+./Build/testPack.ps1 -Rid win-x64
+```
+
+This produces a partial package for local verification, not the all-platform release artifact. If multiple verified runtimes are staged, pass their identifiers as a PowerShell array to `-RequiredRids`.
 
 The package consumer uses an isolated NuGet cache and an actual PackageReference, without a project reference. It publishes and checks ordinary loading and a separate managed load context. Unix consumer checks also run from a read-only publish directory. CI uploads package artifacts but does not publish to a feed.
 
@@ -123,10 +134,10 @@ Managed dependency versions live in `Directory.Packages.props`. Regenerate and r
 
 Musl builds and package-consumer checks run by default on both architectures. The build uses Bash, CMake, jq and .NET; no Python is required.
 
-`Build/Alpine.Dockerfile` selects the official .NET 10.0.403 SDK on Alpine 3.24. `Build/alpine.sh` runs the same pinned native configuration, upstream suite, ABI/export checks, managed integration tests and loader scenarios. This Bash entry point avoids a PowerShell dependency in the ARM64 Alpine SDK image. Run on the target architecture; CI uses native x64 and ARM64 Ubuntu hosts with Alpine containers.
+`Build/Alpine/Alpine.Dockerfile` selects the official .NET 10.0.403 SDK on Alpine 3.24. `Build/Alpine/alpine.sh` runs the same pinned native configuration, upstream suite, ABI/export checks, managed integration tests and loader scenarios. This Bash entry point avoids a PowerShell dependency in the ARM64 Alpine SDK image. Run on the target architecture; CI uses native x64 and ARM64 Ubuntu hosts with Alpine containers.
 
 ```sh
-docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
+docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine/Alpine.Dockerfile -t hdf-pinvoke-alpine Build/Alpine
 docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" hdf-pinvoke-alpine build
 # After downloading/building the NuGet package:
 docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" hdf-pinvoke-alpine consumer
@@ -150,12 +161,12 @@ dotnet build HDF.PInvoke.slnx -c Release --no-restore
 
 Keep formatting and documentation changes separate from signature, marshalling and behavior changes. Preserve the native API names. Document public types, methods, parameters, return values, constants and fields with XML comments, including ownership, encoding and callback contracts where relevant. The library emits XML documentation for IntelliSense and packaging; missing public documentation, malformed XML and mismatched parameter documentation fail its build.
 
-Use short comments to explain interop constraints and non-obvious decisions. Helper scripts expose parameter help through `Get-Help ./Build/<script>.ps1 -Full`. PowerShell scripts can be formatted with PSScriptAnalyzer's `Invoke-Formatter`, Bash with `shfmt -i 4`, and workflow YAML with Prettier. Validate Bash with `bash -n Build/alpine.sh` and workflows with actionlint. Do not format or edit the upstream `Native/hdf5` checkout as part of wrapper cleanup.
+Use short comments to explain interop constraints and non-obvious decisions. Helper scripts expose parameter help through `Get-Help ./Build/<script>.ps1 -Full`. PowerShell scripts can be formatted with PSScriptAnalyzer's `Invoke-Formatter`, Bash with `shfmt -i 4`, and workflow YAML with Prettier. Validate Bash with `bash -n Build/Alpine/alpine.sh` and workflows with actionlint. Do not format or edit the upstream `Native/hdf5` checkout as part of wrapper cleanup.
 
 ## Interop and package regression checks
 
 `InteropRegressionTests` covers negative chunk-count status, error-detection settings, identifier-type reference counts, conversion-data pointers, page-buffer outputs, and reverse P/Invoke callback arguments. Append callbacks receive a read-only native pointer to one `ulong` per dataset dimension; filter callbacks receive a pointer to `cd_nelmts` `uint` values. Read those pointers only during the callback and keep the delegate alive while HDF5 can invoke it. External-link group/object names are UTF-8 strings. `H5T.find` returns a native-owned conversion-data pointer; never free it. Page-buffer statistics validate all five arrays before native code can write two counters into each.
 
-`Build/validate-package.ps1` checks the completed archive for the exact requested runtime set, the exact managed framework groups, parseable XML API documentation, matching package metadata and README, native source pins, full-suite test records, native hashes and the combined root license. `Build/test-package-validation.ps1` checks rejection of missing managed/native/license files, altered licenses, duplicate runtime licenses, extra documentation, corrupt API documentation and README, incorrect framework or license metadata, unexpected managed assets, corrupt libraries, extra RIDs, unverified files, wrong source pins and failed test records. A local `-RequiredRids` selection excludes other staged supported RIDs consistently on every operating system. `Build/test-pack-selection.ps1` switches repeatedly between partial and combined packages to detect stale incremental-pack output; the project tracks the RID/file selection as a pack input.
+`Build/validatePack.ps1` checks the completed archive for the exact requested runtime set, the exact managed framework groups, parseable XML API documentation, matching package metadata and README, native source pins, full-suite test records, native hashes and the combined root license. `Build/testPackValidation.ps1` checks rejection of missing managed/native/license files, altered licenses, duplicate runtime licenses, extra documentation, corrupt API documentation and README, incorrect framework or license metadata, unexpected managed assets, corrupt libraries, extra RIDs, unverified files, wrong source pins and failed test records. A local `-RequiredRids` selection excludes other staged supported RIDs consistently on every operating system. `Build/testPackSelection.ps1` switches repeatedly between partial and combined packages to detect stale incremental-pack output; the project tracks the RID/file selection as a pack input.
 
 Clean consumers map `HDF.PInvoke` exclusively to the local candidate feed and use isolated caches. They reopen and read a compressed UTF-8-named dataset written with `H5DO.append`, exercising both libraries and zlib, then check load contexts and shutdown ordering in separate processes. GitHub Actions keeps `nuget-packages-candidate` separate from the final `nuget-packages` artifact; the final job depends on all seven consumer checks and validates the archive again. No public-feed publishing is performed.

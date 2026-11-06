@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5O API.
+    /// </summary>
     public partial class H5OTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Oclose</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5OcloseTest1()
         {
@@ -30,6 +36,9 @@ namespace UnitTests
             Assert.IsTrue(H5O.close(gid) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Oclose</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5OcloseTest2()
         {
@@ -44,6 +53,9 @@ namespace UnitTests
             Assert.IsTrue(H5O.close(gid) < 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Oclose</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5OcloseTest3()
         {
@@ -51,6 +63,9 @@ namespace UnitTests
             Assert.IsTrue(H5O.close(gid) < 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Oclose</c> operation in scenario 4.
+        /// </summary>
         [TestMethod]
         public void H5OcloseTest4()
         {

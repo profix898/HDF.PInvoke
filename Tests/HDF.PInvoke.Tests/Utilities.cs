@@ -17,8 +17,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Provides native fixture creation and error-output helpers for integration tests.
+    /// </summary>
     class Utilities
     {
+        /// <summary>
+        /// Suppresses automatic native error output for tests that intentionally exercise failure cases.
+        /// </summary>
         public static void DisableErrorPrinting()
         {
             H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero);

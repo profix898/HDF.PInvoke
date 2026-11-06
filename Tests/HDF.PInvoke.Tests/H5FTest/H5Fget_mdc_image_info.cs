@@ -17,8 +17,14 @@ using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_mdc_image_info</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_mdc_image_infoTest1()
         {

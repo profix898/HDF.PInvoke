@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5E API.
+    /// </summary>
     public partial class H5ETest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Eget_auto</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Eget_autoTest1()
         {

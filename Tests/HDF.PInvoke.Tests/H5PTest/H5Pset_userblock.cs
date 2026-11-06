@@ -19,8 +19,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5P API.
+    /// </summary>
     public partial class H5PTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Pset_userblock</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Pset_userblockTest1()
         {
@@ -30,6 +36,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.close(fcpl) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Pset_userblock</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Pset_userblockTest2()
         {
@@ -50,6 +59,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.close(fcpl) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Pset_userblock</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5Pset_userblockTest3()
         {

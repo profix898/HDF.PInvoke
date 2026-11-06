@@ -6,9 +6,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for Interop Regression.
+    /// </summary>
     [TestClass]
     public unsafe class InteropRegressionTests
     {
+        /// <summary>
+        /// Verifies chunk Count Failure Remains Negative.
+        /// </summary>
         [TestMethod]
         public void ChunkCountFailureRemainsNegative()
         {
@@ -16,6 +22,9 @@ namespace UnitTests
             Assert.IsTrue(H5D.get_num_chunks(-1, H5S.ALL, ref chunks) < 0);
         }
 
+        /// <summary>
+        /// Verifies error Detection Setting Round Trips.
+        /// </summary>
         [TestMethod]
         public void ErrorDetectionSettingRoundTrips()
         {
@@ -34,6 +43,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies identifier Type Reference Count Round Trips.
+        /// </summary>
         [TestMethod]
         public void IdentifierTypeReferenceCountRoundTrips()
         {
@@ -52,6 +64,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies conversion Data Is Returned As Native Owned Pointer.
+        /// </summary>
         [TestMethod]
         public void ConversionDataIsReturnedAsNativeOwnedPointer()
         {
@@ -64,6 +79,9 @@ namespace UnitTests
             GC.KeepAlive(converter);
         }
 
+        /// <summary>
+        /// Verifies page Buffer Counters Fill Both Elements And Reject Short Arrays.
+        /// </summary>
         [TestMethod]
         public void PageBufferCountersFillBothElementsAndRejectShortArrays()
         {
@@ -116,6 +134,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies append Callback Reads All Dimensions.
+        /// </summary>
         [TestMethod]
         public void AppendCallbackReadsAllDimensions()
         {
@@ -134,6 +155,9 @@ namespace UnitTests
             GC.KeepAlive(callback);
         }
 
+        /// <summary>
+        /// Verifies filter Callback Reads All Client Data.
+        /// </summary>
         [TestMethod]
         public void FilterCallbackReadsAllClientData()
         {
@@ -155,6 +179,9 @@ namespace UnitTests
             GC.KeepAlive(callback);
         }
 
+        /// <summary>
+        /// Verifies external Link Callback Decodes Complete Utf8 Names.
+        /// </summary>
         [TestMethod]
         public void ExternalLinkCallbackDecodesCompleteUtf8Names()
         {
@@ -184,6 +211,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies free Callback Has Void Return And Preserves Arguments.
+        /// </summary>
         [TestMethod]
         public void FreeCallbackHasVoidReturnAndPreservesArguments()
         {

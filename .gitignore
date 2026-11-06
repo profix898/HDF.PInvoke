@@ -23,7 +23,10 @@ CMakeUserPresets.json
 !/Build/*.ps1
 !/Build/*.sh
 !/Build/*.props
-!/Build/*.Dockerfile
+!/Build/Alpine/
+/Build/Alpine/*
+!/Build/Alpine/alpine.sh
+!/Build/Alpine/Alpine.Dockerfile
 
 # Local IDE state and package caches.
 .vs/

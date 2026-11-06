@@ -30,6 +30,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5L
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5L()
         {
             H5.open();
@@ -903,6 +906,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Lget_name_by_idx</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_name_by_idx_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
             H5.iter_order_t order, hsize_t n, [Out] byte[] buffer, size_t size,

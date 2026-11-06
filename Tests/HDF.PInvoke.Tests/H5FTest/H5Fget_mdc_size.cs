@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_mdc_size</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_mdc_sizeTest1()
         {
@@ -36,6 +42,9 @@ namespace UnitTests
                 ref min_clean_size, ref cur_size, ref cur_num_entries) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_mdc_size</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_mdc_sizeTest2()
         {

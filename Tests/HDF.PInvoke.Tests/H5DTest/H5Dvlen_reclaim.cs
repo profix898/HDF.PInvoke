@@ -23,8 +23,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5D API.
+    /// </summary>
     public partial class H5DTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Dvlen_reclaim</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Dvlen_reclaimTest1()
         {

@@ -134,7 +134,7 @@ Use the supplied typed API methods for these conversions. In particular, the raw
 
 ### UTF-8 strings and memory ownership
 
-[Utf8Marshaler](Sources/HDF.PInvoke/Interop/Legacy/Utf8Marshaler.cs) implements `ICustomMarshaler`. The generator replaces UTF-8 parameter annotations with this custom marshaler so the legacy path does not depend on modern built-in UTF-8 marshalling behavior. Encoding and decoding operate directly on native buffers without temporary byte arrays.
+[UTF8Marshaler](Sources/HDF.PInvoke/Interop/Legacy/UTF8Marshaler.cs) implements `ICustomMarshaler`. The generator replaces UTF-8 parameter annotations with this custom marshaler so the legacy path does not depend on modern built-in UTF-8 marshalling behavior. Encoding and decoding operate directly on native buffers without temporary byte arrays.
 
 For a managed-to-native input string, the marshaler allocates a NUL-terminated buffer with `Marshal.AllocHGlobal`, encodes UTF-8 into it, and releases it through `Marshal.FreeHGlobal` when the call's marshalling cleanup runs. A null string becomes a null pointer; an empty string becomes a non-null pointer to a terminator. These temporary input buffers are not suitable for an API that retains a pointer after returning.
 
@@ -181,7 +181,7 @@ Legacy support is isolated in its target, loader files and generator integration
 After building native libraries, run:
 
 ```sh
-pwsh -File Build/test-legacy.ps1 -Rid win-x64
+pwsh -File Build/testLegacy.ps1 -Rid win-x64
 dotnet run --project Tools/BindingGenerator -c Release -- --self-test
 ```
 
@@ -196,6 +196,6 @@ Validation covers distinct failure classes:
 | Separate-process loader scenarios | Check first-use ordering, path failures, retry of direct initialization, version rejection, globals, load contexts and shutdown behavior |
 | Clean package consumers | Verify NuGet asset selection, native deployment, compression, core/high-level integration and both managed implementations |
 
-The [legacy test script](Build/test-legacy.ps1) runs the shared integration suite against `netstandard2.0`, adds a net472 run on Windows x64, and checks loader behavior in separate processes. `-SkipAbi` is available only for local reuse of previously validated native binaries. The native upstream suite validates HDF5 itself; it does not replace tests of managed signatures and marshalling.
+The [legacy test script](Build/testLegacy.ps1) runs the shared integration suite against `netstandard2.0`, adds a net472 run on Windows x64, and checks loader behavior in separate processes. `-SkipAbi` is available only for local reuse of previously validated native binaries. The native upstream suite validates HDF5 itself; it does not replace tests of managed signatures and marshalling.
 
 CI tests the legacy assembly on every supported native RID. Unix legacy tests execute on modern .NET hosts; they do not establish Mono or Unity compatibility. Clean consumers explicitly force the .NET Standard asset where NuGet would otherwise prefer the modern asset, then verify which implementation was loaded. See [ADVANCED.md](ADVANCED.md#validation-and-ci) for the shared native suite and package-validation process.

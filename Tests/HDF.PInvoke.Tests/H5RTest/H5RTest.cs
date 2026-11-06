@@ -22,9 +22,15 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5R API.
+    /// </summary>
     [TestClass]
     public partial class H5RTest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
@@ -43,6 +49,9 @@ namespace UnitTests
                 H5P.set_char_encoding(m_lcpl_utf8, H5T.cset_t.UTF8) >= 0);
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
@@ -57,6 +66,9 @@ namespace UnitTests
             Assert.IsTrue(m_v2_test_file >= 0);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
@@ -67,6 +79,9 @@ namespace UnitTests
             File.Delete(m_v2_test_file_name);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
@@ -80,26 +95,59 @@ namespace UnitTests
             File.Delete(m_v2_class_file_name);
         }
 
+        /// <summary>
+        /// Retains the fixture's v0 class file identifier.
+        /// </summary>
         private static hid_t m_v0_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 class file name path.
+        /// </summary>
         private static string m_v0_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file identifier.
+        /// </summary>
         private static hid_t m_v2_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file name path.
+        /// </summary>
         private static string m_v2_class_file_name;
 
+        /// <summary>
+        /// Retains the link-creation property list used for ASCII link names.
+        /// </summary>
         private static hid_t m_lcpl;
 
+        /// <summary>
+        /// Retains the link-creation property list configured for UTF-8 link names.
+        /// </summary>
         private static hid_t m_lcpl_utf8;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file identifier.
+        /// </summary>
         private hid_t m_v0_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file name path.
+        /// </summary>
         private string m_v0_test_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file identifier.
+        /// </summary>
         private hid_t m_v2_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file name path.
+        /// </summary>
         private string m_v2_test_file_name;
 
+        /// <summary>
+        /// Provides multilingual strings that exercise UTF-8 encoding beyond ASCII.
+        /// </summary>
         private static string[] m_utf8strings = new string[] { "Ελληνικά", "日本語", "العربية", "экземпляр", "סקרן" };
     }
 }

@@ -28,6 +28,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed partial class H5E
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5E()
         {
             H5.open();
@@ -272,6 +275,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Eget_class_name</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_class_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_class_name_utf8(
             hid_t class_id, [Out] byte[] buffer, size_t size);
@@ -312,6 +318,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Eget_msg</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_msg", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_msg_utf8(
             hid_t msg_id, ref type_t msg_type, [Out] byte[] buffer, size_t size);

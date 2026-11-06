@@ -22,48 +22,90 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5VDS API.
+    /// </summary>
     [TestClass]
     public partial class H5VDSTest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
             createVDS();
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
             Utilities.DisableErrorPrinting();
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
             cleanupVDS();
         }
 
+        /// <summary>
+        /// Retains the fixture's vds class file identifier.
+        /// </summary>
         private static hid_t m_vds_class_file = 1;
 
+        /// <summary>
+        /// Retains the fixture's vds class file name path.
+        /// </summary>
         private static string m_vds_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's a class file identifier.
+        /// </summary>
         private static hid_t m_a_class_file = 1;
 
+        /// <summary>
+        /// Retains the fixture's a class file name path.
+        /// </summary>
         private static string m_a_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's b class file identifier.
+        /// </summary>
         private static hid_t m_b_class_file = 1;
 
+        /// <summary>
+        /// Retains the fixture's b class file name path.
+        /// </summary>
         private static string m_b_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's c class file identifier.
+        /// </summary>
         private static hid_t m_c_class_file = 1;
 
+        /// <summary>
+        /// Retains the fixture's c class file name path.
+        /// </summary>
         private static string m_c_class_file_name;
 
+        /// <summary>
+        /// Creates the source datasets and virtual mappings used by the virtual-dataset tests.
+        /// </summary>
         private static void createVDS()
         {
             // create files
@@ -154,6 +196,9 @@ namespace UnitTests
             Assert.IsTrue(H5F.close(m_c_class_file) >= 0);
         }
 
+        /// <summary>
+        /// Closes and removes the source and virtual-dataset fixtures.
+        /// </summary>
         private static void cleanupVDS()
         {
             Assert.IsTrue(H5F.close(m_vds_class_file) >= 0);

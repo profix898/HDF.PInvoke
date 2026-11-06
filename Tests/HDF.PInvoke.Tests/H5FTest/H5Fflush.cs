@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fflush</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5FflushTest1()
         {
@@ -31,6 +37,9 @@ namespace UnitTests
                 H5F.flush(m_v2_class_file, H5F.scope_t.LOCAL) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fflush</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5FflushTest2()
         {

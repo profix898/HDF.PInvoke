@@ -21,9 +21,15 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5T API.
+    /// </summary>
     [TestClass]
     public partial class H5TTest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
@@ -35,6 +41,9 @@ namespace UnitTests
             Assert.IsTrue(m_v2_class_file >= 0);
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
@@ -59,6 +68,9 @@ namespace UnitTests
             Assert.IsTrue(H5T.ALPHA_F32 == H5T.IEEE_F32LE);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
@@ -69,6 +81,9 @@ namespace UnitTests
             File.Delete(m_v2_test_file_name);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
@@ -79,20 +94,44 @@ namespace UnitTests
             File.Delete(m_v2_class_file_name);
         }
 
+        /// <summary>
+        /// Retains the fixture's v0 class file identifier.
+        /// </summary>
         private static hid_t m_v0_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 class file name path.
+        /// </summary>
         private static string m_v0_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file identifier.
+        /// </summary>
         private static hid_t m_v2_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file name path.
+        /// </summary>
         private static string m_v2_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file identifier.
+        /// </summary>
         private hid_t m_v0_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file name path.
+        /// </summary>
         private string m_v0_test_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file identifier.
+        /// </summary>
         private hid_t m_v2_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file name path.
+        /// </summary>
         private string m_v2_test_file_name;
     }
 }

@@ -19,8 +19,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_metadata_read_attempts</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_metadata_read_attemptsTestSWMR1()
         {
@@ -35,6 +41,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.close(fapl) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_metadata_read_attempts</c> operation in scenario SWMR2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_metadata_read_attemptsTestSWMR2()
         {

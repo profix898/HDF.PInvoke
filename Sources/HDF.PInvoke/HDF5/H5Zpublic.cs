@@ -26,6 +26,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5Z
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5Z()
         {
             H5.open();

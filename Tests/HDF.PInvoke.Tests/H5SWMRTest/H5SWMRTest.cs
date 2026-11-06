@@ -22,9 +22,15 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     [TestClass]
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
@@ -71,6 +77,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(dsp) >= 0);
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
@@ -85,6 +94,9 @@ namespace UnitTests
             Assert.IsTrue(m_v3_test_file_swmr >= 0);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
@@ -95,6 +107,9 @@ namespace UnitTests
             File.Delete(m_v3_test_file_name_swmr);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
@@ -106,26 +121,53 @@ namespace UnitTests
             File.Delete(m_v3_class_file_name);
         }
 
+        /// <summary>
+        /// Retains the fixture's v3 class file identifier.
+        /// </summary>
         private static hid_t m_v3_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v3 class file name path.
+        /// </summary>
         private static string m_v3_class_file_name;
 
+        /// <summary>
+        /// Retains the link-creation property list used for ASCII link names.
+        /// </summary>
         private static hid_t m_lcpl;
 
+        /// <summary>
+        /// Retains the link-creation property list configured for UTF-8 link names.
+        /// </summary>
         private static hid_t m_lcpl_utf8;
 
+        /// <summary>
+        /// Retains the fixture's v3 test file no swmr identifier.
+        /// </summary>
         private hid_t m_v3_test_file_no_swmr = -1;
 
+        /// <summary>
+        /// Retains the fixture's v3 test file name no swmr path.
+        /// </summary>
         private string m_v3_test_file_name_no_swmr;
 
+        /// <summary>
+        /// Retains the fixture's v3 test file swmr identifier.
+        /// </summary>
         private hid_t m_v3_test_file_swmr = -1;
 
+        /// <summary>
+        /// Retains the fixture's v3 test file name swmr path.
+        /// </summary>
         private string m_v3_test_file_name_swmr;
 
         // Two simple callbacks for H5Pset_append_flush and
         // H5Pset_object_flush_cb. We assume that a pointer to a counter in
         // unmanaged memory is passed as user data (op_data).
 
+        /// <summary>
+        /// Provides the append callback used by the SWMR property-list tests.
+        /// </summary>
         public herr_t append_func
             (
             hid_t dset_id,
@@ -138,6 +180,9 @@ namespace UnitTests
             return 0;
         }
 
+        /// <summary>
+        /// Provides the flush callback used by the SWMR property-list tests.
+        /// </summary>
         public herr_t flush_func
             (
             hid_t obj_id,

@@ -3,8 +3,14 @@ using System.IO;
 using System.Runtime.InteropServices;
 using HDF.PInvoke;
 
+/// <summary>
+/// Validates the packaged .NET Standard bindings on the .NET Framework runtime.
+/// </summary>
 internal static class Program
 {
+    /// <summary>
+    /// Runs the requested Framework loader scenario and returns a process success or failure code.
+    /// </summary>
     private static int Main(string[] args)
     {
         try
@@ -77,6 +83,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Rejects negative HDF5 status codes during package validation.
+    /// </summary>
     private static void Check(long status)
     {
         if (status < 0)
@@ -85,6 +94,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Writes and reads a compressed UTF-8 dataset through the packaged core and high-level libraries.
+    /// </summary>
     private static void RoundTrip()
     {
         string path = Path.Combine(Path.GetTempPath(), "legacy-hdf-" + Guid.NewGuid() + ".h5");

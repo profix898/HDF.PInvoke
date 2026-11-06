@@ -22,8 +22,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5L API.
+    /// </summary>
     public partial class H5LTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Lvisit</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5LvisitTest1()
         {
@@ -56,6 +62,9 @@ namespace UnitTests
             hnd.Free();
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Lvisit</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5LvisitTest2()
         {

@@ -22,9 +22,15 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     [TestClass]
     public partial class H5ATest
     {
+        /// <summary>
+        /// Creates the native resources shared by this test fixture.
+        /// </summary>
         [ClassInitialize()]
         public static void ClassInit(TestContext testContext)
         {
@@ -45,6 +51,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.set_char_encoding(m_acpl, H5T.cset_t.UTF8) >= 0);
         }
 
+        /// <summary>
+        /// Creates fresh native resources for the current test.
+        /// </summary>
         [TestInitialize()]
         public void Init()
         {
@@ -59,6 +68,9 @@ namespace UnitTests
             Assert.IsTrue(m_v2_test_file >= 0);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources created for the current test.
+        /// </summary>
         [TestCleanup()]
         public void Cleanup()
         {
@@ -69,6 +81,9 @@ namespace UnitTests
             File.Delete(m_v2_test_file_name);
         }
 
+        /// <summary>
+        /// Closes and removes the native resources shared by this test fixture.
+        /// </summary>
         [ClassCleanup()]
         public static void ClassCleanup()
         {
@@ -82,33 +97,72 @@ namespace UnitTests
             File.Delete(m_v2_class_file_name);
         }
 
+        /// <summary>
+        /// Provides multilingual strings that exercise UTF-8 encoding beyond ASCII.
+        /// </summary>
         private static string[] m_utf8strings = new string[] { "Ελληνικά", "日本語", "العربية", "экземпляр", "סקרן" };
 
+        /// <summary>
+        /// Retains the fixture's v0 class file identifier.
+        /// </summary>
         private static hid_t m_v0_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 class file name path.
+        /// </summary>
         private static string m_v0_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file identifier.
+        /// </summary>
         private static hid_t m_v2_class_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 class file name path.
+        /// </summary>
         private static string m_v2_class_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file identifier.
+        /// </summary>
         private hid_t m_v0_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v0 test file name path.
+        /// </summary>
         private string m_v0_test_file_name;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file identifier.
+        /// </summary>
         private hid_t m_v2_test_file = -1;
 
+        /// <summary>
+        /// Retains the fixture's v2 test file name path.
+        /// </summary>
         private string m_v2_test_file_name;
 
+        /// <summary>
+        /// Retains the null dataspace shared by the fixture.
+        /// </summary>
         private static hid_t m_space_null = -1;
 
+        /// <summary>
+        /// Retains the scalar dataspace shared by the fixture.
+        /// </summary>
         private static hid_t m_space_scalar = -1;
 
+        /// <summary>
+        /// Retains the attribute-creation property list shared by the fixture.
+        /// </summary>
         private static hid_t m_acpl = -1;
 
         // Callback for H5A.iterate and H5A.iterate_by_name
         // We expect an array list as op_data; add the attribute names to the
         // array list as we go
+        /// <summary>
+        /// Provides the dataset-iteration callback used to verify native callback dispatch.
+        /// </summary>
         public herr_t DelegateMethod
             (
             hid_t location_id,

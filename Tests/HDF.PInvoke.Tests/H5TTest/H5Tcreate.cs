@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5T API.
+    /// </summary>
     public partial class H5TTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Tcreate</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5TcreateTest1()
         {

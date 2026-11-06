@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     public partial class H5ATest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Aexists</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5AexistsTest1()
         {
@@ -38,6 +44,9 @@ namespace UnitTests
             Assert.IsTrue(H5A.close(att) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Aexists</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5AexistsTest2()
         {

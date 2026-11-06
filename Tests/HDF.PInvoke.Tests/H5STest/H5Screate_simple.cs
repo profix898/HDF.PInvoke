@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5S API.
+    /// </summary>
     public partial class H5STest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Screate_simple</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Screate_simpleTest1()
         {
@@ -32,6 +38,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Screate_simple</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Screate_simpleTest2()
         {
@@ -42,6 +51,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Screate_simple</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5Screate_simpleTest3()
         {
@@ -52,6 +64,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Screate_simple</c> operation in scenario 4.
+        /// </summary>
         [TestMethod]
         public void H5Screate_simpleTest4()
         {
@@ -63,6 +78,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(space) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Screate_simple</c> operation in scenario 5.
+        /// </summary>
         [TestMethod]
         public void H5Screate_simpleTest5()
         {

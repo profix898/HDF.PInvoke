@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5G API.
+    /// </summary>
     public partial class H5GTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Gget_info</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Gget_infoTest1()
         {
@@ -30,6 +36,9 @@ namespace UnitTests
             Assert.IsTrue(H5G.get_info(m_v2_test_file, ref info) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Gget_info</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Gget_infoTest2()
         {

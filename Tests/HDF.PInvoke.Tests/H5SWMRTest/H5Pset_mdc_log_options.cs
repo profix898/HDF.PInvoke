@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fset_mdc_log_options</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Fset_mdc_log_optionsTestSWMR1()
         {

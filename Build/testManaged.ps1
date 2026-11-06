@@ -4,7 +4,7 @@
 .SYNOPSIS
 Runs managed integration tests and isolated native-loader scenarios.
 .DESCRIPTION
-Requires staged native libraries and ABI results from build-native.ps1. Loader
+Requires staged native libraries and ABI results from buildNative.ps1. Loader
 scenarios use separate processes because native handles live for the process lifetime.
 .PARAMETER Rid
 Runtime identifier for the current process architecture; defaults to the host.
@@ -28,7 +28,7 @@ if (-not $Rid) { $Rid = "$os-$arch" }
 if ($Rid -ne "$os-$arch") { throw 'Managed integration tests must run on the target architecture.' }
 $native = Join-Path $PSScriptRoot "Native/runtimes/$Rid/native"
 $abi = Join-Path $PSScriptRoot "Native/interop/$Rid/abi-layout.txt"
-if (-not (Test-Path "$native/build-info.json") -or -not (Test-Path $abi)) { throw 'Run Build/build-native.ps1 first.' }
+if (-not (Test-Path "$native/build-info.json") -or -not (Test-Path $abi)) { throw 'Run Build/buildNative.ps1 first.' }
 if (-not $SkipBuild) {
     Run dotnet @('restore', "$root/HDF.PInvoke.slnx", '--locked-mode')
     Run dotnet @('build', "$root/HDF.PInvoke.slnx", '-c', 'Release', '--no-restore')

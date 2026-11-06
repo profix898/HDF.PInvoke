@@ -21,8 +21,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Odisable_mdc_flushes</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR1()
         {
@@ -33,6 +39,9 @@ namespace UnitTests
             Assert.IsTrue(H5G.close(grp) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Odisable_mdc_flushes</c> operation in scenario SWMR2.
+        /// </summary>
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR2()
         {
@@ -43,6 +52,9 @@ namespace UnitTests
             Assert.IsTrue(H5G.close(grp) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Odisable_mdc_flushes</c> operation in scenario SWMR3.
+        /// </summary>
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR3()
         {

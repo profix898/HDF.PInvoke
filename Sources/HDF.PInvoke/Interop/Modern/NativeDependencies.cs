@@ -21,14 +21,37 @@ namespace HDF.PInvoke
         /// The environment variable for an absolute directory containing private HDF5 native libraries.
         /// </summary>
         public const string NativePathEnvironmentVariable = "HDF5_NATIVE_PATH";
+
+        /// <summary>
+        /// Serializes configuration, library selection, and first-load initialization.
+        /// </summary>
         private static readonly object Sync = new object();
+
+        /// <summary>
+        /// Retains the validated core library handle for the lifetime of the binding.
+        /// </summary>
         private static IntPtr core;
+
+        /// <summary>
+        /// Retains the high-level library handle associated with the selected core library.
+        /// </summary>
         private static IntPtr highLevel;
+
+        /// <summary>
+        /// Stores the explicit directory selected before the first native load.
+        /// </summary>
         private static string configuredDirectory;
+
+        /// <summary>
+        /// Pins subsequent loads to the directory of the successfully loaded core library.
+        /// </summary>
         private static string loadedDirectory;
 
         // Registration must precede any P/Invoke, including types without a static constructor.
         // Do not load HDF5 here: callers can still configure a private native directory.
+        /// <summary>
+        /// Registers the assembly's native resolver before any managed API can invoke HDF5.
+        /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2255", Justification = "Register the native resolver before any public P/Invoke can execute.")]
         [ModuleInitializer]
         internal static void InitializeResolver() =>
@@ -96,6 +119,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Routes known HDF5 imports to retained handles and leaves unrelated imports to the runtime.
+        /// </summary>
         private static IntPtr Resolve(string name, Assembly assembly, DllImportSearchPath? searchPath) => name switch
         {
             Constants.DLLFileName or "hdf5.dll" => GetLibraryHandle(false),
@@ -103,6 +129,9 @@ namespace HDF.PInvoke
             _ => IntPtr.Zero
         };
 
+        /// <summary>
+        /// Loads HDF5 without initialization when necessary and requests suppression of its exit handler.
+        /// </summary>
         internal static int DisableAutomaticShutdown()
         {
             lock (Sync)
@@ -117,8 +146,14 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Gets the retained core or high-level handle, loading and validating it on first use.
+        /// </summary>
         internal static IntPtr GetLibraryHandle(bool high) => LoadLibraryHandle(high, false, out _);
 
+        /// <summary>
+        /// Selects and validates a coherent native library pair under the configuration lock.
+        /// </summary>
         private static IntPtr LoadLibraryHandle(bool high, bool disableAutomaticShutdown, out int shutdownStatus)
         {
             shutdownStatus = -1;
@@ -130,7 +165,7 @@ namespace HDF.PInvoke
                 if (core == IntPtr.Zero)
                 {
                     string directory = configuredDirectory ?? AppContext.GetData(NativePathSetting) as string ??
-                                                                Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
+                        Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
                     IntPtr candidate;
 
                     if (!string.IsNullOrEmpty(directory))
@@ -174,7 +209,7 @@ namespace HDF.PInvoke
                             catch (DllNotFoundException e)
                             {
                                 throw new DllNotFoundException($"Cannot load HDF5 for {rid}. Deploy the matching runtimes/{rid}/native assets, " +
-                                                                                                    $"or call NativeDependencies.Configure with their absolute directory. Probed: {string.Join(", ", ProbeDirectories(rid))}", e);
+                                    $"or call NativeDependencies.Configure with their absolute directory. Probed: {string.Join(", ", ProbeDirectories(rid))}", e);
                             }
                         }
                     }
@@ -185,7 +220,7 @@ namespace HDF.PInvoke
                         if (disableAutomaticShutdown)
                         {
                             shutdownStatus = Marshal.GetDelegateForFunctionPointer<DisableAtExit>(
-                                                                                                                    NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
+                                NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
                         }
 
                         ValidateVersion(candidate);
@@ -209,14 +244,17 @@ namespace HDF.PInvoke
                 if (highLevel == IntPtr.Zero)
                 {
                     highLevel = loadedDirectory != null ? LoadFromDirectory(loadedDirectory, true) :
-                                                                                    NativeLibrary.Load(Constants.HLDLLFileName, typeof(NativeDependencies).Assembly,
-                                                                                        DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory);
+                        NativeLibrary.Load(Constants.HLDLLFileName, typeof(NativeDependencies).Assembly,
+                            DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory);
                 }
 
                 return highLevel;
             }
         }
 
+        /// <summary>
+        /// Enumerates explicit and packaged native directories in deterministic precedence order.
+        /// </summary>
         private static IEnumerable<string> ProbeDirectories(string rid)
         {
             string assemblyDirectory = Path.GetDirectoryName(typeof(NativeDependencies).Assembly.Location);
@@ -239,6 +277,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Returns a typed delegate for an optional core export, or null if it is unavailable.
+        /// </summary>
         internal static T GetOptionalFunction<T>(string symbol) where T : Delegate
         {
             if (!NativeLibrary.TryGetExport(GetLibraryHandle(false), symbol, out IntPtr address))
@@ -249,12 +290,18 @@ namespace HDF.PInvoke
             return Marshal.GetDelegateForFunctionPointer<T>(address);
         }
 
+        /// <summary>
+        /// Selects the platform filename for the core or high-level native library.
+        /// </summary>
         private static string FileName(bool high)
         {
             string name = high ? "hdf5_hl" : "hdf5";
             return OperatingSystem.IsWindows() ? name + ".dll" : "lib" + name + (OperatingSystem.IsMacOS() ? ".dylib" : ".so");
         }
 
+        /// <summary>
+        /// Loads a nonempty native file and adds architecture and dependency context to loader errors.
+        /// </summary>
         private static IntPtr LoadFromDirectory(string directory, bool high)
         {
             string file = Path.Combine(directory, FileName(high));
@@ -274,12 +321,21 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Calls H5dont_atexit before any operation that initializes HDF5.
+        /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int DisableAtExit();
 
+        /// <summary>
+        /// Reads the version components exported by the selected core library.
+        /// </summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int GetVersion(out uint major, out uint minor, out uint release);
 
+        /// <summary>
+        /// Rejects native libraries outside the supported HDF5 2.2 ABI series.
+        /// </summary>
         private static void ValidateVersion(IntPtr handle)
         {
             var getVersion = Marshal.GetDelegateForFunctionPointer<GetVersion>(NativeLibrary.GetExport(handle, "H5get_libversion"));

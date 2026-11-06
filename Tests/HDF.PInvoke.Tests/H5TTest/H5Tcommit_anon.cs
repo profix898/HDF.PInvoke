@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5T API.
+    /// </summary>
     public partial class H5TTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Tcommit_anon</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Tcommit_anonTest1()
         {
@@ -33,6 +39,9 @@ namespace UnitTests
             Assert.IsTrue(H5T.close(dtype) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Tcommit_anon</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Tcommit_anonTest2()
         {
@@ -43,6 +52,9 @@ namespace UnitTests
                 H5T.commit_anon(m_v2_test_file, H5T.IEEE_F64BE) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Tcommit_anon</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5Tcommit_anonTest3()
         {

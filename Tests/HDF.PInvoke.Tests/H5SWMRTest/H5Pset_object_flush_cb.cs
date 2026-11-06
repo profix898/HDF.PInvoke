@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Pset_object_flush_cb</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Pset_object_flush_cbTestSWMR1()
         {
@@ -36,6 +42,9 @@ namespace UnitTests
             Assert.IsTrue(H5P.close(fapl) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Pset_object_flush_cb</c> operation in scenario SWMR2.
+        /// </summary>
         [TestMethod]
         public void H5Pset_object_flush_cbTestSWMR2()
         {

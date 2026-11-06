@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Checks that the high-level append callback receives the configured user-data pointer.
+        /// </summary>
         public herr_t DOappend_func
             (hid_t dataset_id, IntPtr cur_dims, IntPtr op_data)
         {
@@ -29,6 +35,9 @@ namespace UnitTests
             return 0;
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5DOappend</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5DOappendTestSWMR1()
         {
@@ -78,6 +87,9 @@ namespace UnitTests
             Assert.IsTrue(H5S.close(dsp) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5DOappend</c> operation in scenario SWMR2.
+        /// </summary>
         [TestMethod]
         public void H5DOappendTestSWMR2()
         {

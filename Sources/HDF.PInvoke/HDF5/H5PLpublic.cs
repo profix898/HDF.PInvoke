@@ -24,6 +24,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5PL
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5PL()
         {
             H5.open();
@@ -95,6 +98,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5PLget</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5PLget", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_utf8(uint32_t index,
             [Out] byte[] buffer, IntPtr size);

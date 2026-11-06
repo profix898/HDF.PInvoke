@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5R API.
+    /// </summary>
     public partial class H5RTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Rget_name</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Rget_nameTest1()
         {

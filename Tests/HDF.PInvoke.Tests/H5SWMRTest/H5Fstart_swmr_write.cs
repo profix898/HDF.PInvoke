@@ -19,14 +19,23 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fstart_swmr_write</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Fstart_swmr_writeTestSWMR1()
         {
             Assert.IsFalse(H5F.start_swmr_write(m_v3_test_file_swmr) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fstart_swmr_write</c> operation in scenario SWMR2.
+        /// </summary>
         [TestMethod]
         public void H5Fstart_swmr_writeTestSWMR2()
         {

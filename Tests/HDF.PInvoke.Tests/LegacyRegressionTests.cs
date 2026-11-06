@@ -8,9 +8,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for Legacy Regression.
+    /// </summary>
     [TestClass]
     public class LegacyRegressionTests
     {
+        /// <summary>
+        /// Verifies binding Backend Matches The Selected Target.
+        /// </summary>
         [TestMethod]
         public void BindingBackendMatchesTheSelectedTarget()
         {
@@ -35,8 +41,11 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies uTF8 Link Class Can Be Registered Replaced And Removed.
+        /// </summary>
         [TestMethod]
-        public void Utf8LinkClassCanBeRegisteredReplacedAndRemoved()
+        public void UTF8LinkClassCanBeRegisteredReplacedAndRemoved()
         {
             var info = new H5L.class_t
             {
@@ -62,6 +71,9 @@ namespace UnitTests
             Assert.AreEqual(0, H5L.is_registered(info.id));
         }
 
+        /// <summary>
+        /// Verifies metadata Cache Fields Survive Native Round Trip.
+        /// </summary>
         [TestMethod]
         public void MetadataCacheFieldsSurviveNativeRoundTrip()
         {
@@ -91,6 +103,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies object Info File Number Is Stable Across Calls.
+        /// </summary>
         [TestMethod]
         public void ObjectInfoFileNumberIsStableAcrossCalls()
         {
@@ -115,8 +130,11 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies repeated UTF8 Error Callbacks Preserve Native Strings.
+        /// </summary>
         [TestMethod]
-        public void RepeatedUtf8ErrorCallbacksPreserveNativeStrings()
+        public void RepeatedUTF8ErrorCallbacksPreserveNativeStrings()
         {
             const string message = "Fehler – 数据 – δοκιμή";
             Assert.IsTrue(H5E.clear(H5E.DEFAULT) >= 0);

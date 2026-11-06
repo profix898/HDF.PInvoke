@@ -17,8 +17,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5I API.
+    /// </summary>
     public partial class H5ITest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Iis_valid</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Iis_validTest1()
         {
@@ -35,6 +41,9 @@ namespace UnitTests
             Assert.IsTrue(H5I.is_valid(gid) == 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Iis_valid</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Iis_validTest2()
         {

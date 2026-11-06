@@ -13,7 +13,7 @@ param(
     [string[]]$RequiredRids = @('win-x64', 'win-arm64', 'linux-x64', 'linux-arm64', 'linux-musl-x64', 'linux-musl-arm64', 'osx-arm64')
 )
 $ErrorActionPreference = 'Stop'
-& "$PSScriptRoot/validate-package.ps1" -Package $Package -RequiredRids $RequiredRids
+& "$PSScriptRoot/validatePack.ps1" -Package $Package -RequiredRids $RequiredRids
 $work = Join-Path ([IO.Path]::GetTempPath()) "hdf-package-tests-$([Guid]::NewGuid().ToString('N'))"
 $null = New-Item -ItemType Directory $work
 try {
@@ -65,7 +65,7 @@ try {
         }
         finally { $zip.Dispose() }
         $rejected = $false
-        try { & "$PSScriptRoot/validate-package.ps1" -Package $copy -RequiredRids $RequiredRids } catch { $rejected = $true }
+        try { & "$PSScriptRoot/validatePack.ps1" -Package $copy -RequiredRids $RequiredRids } catch { $rejected = $true }
         if (-not $rejected) { throw "Validator accepted $case" }
         Write-Host "PASS: rejected $case"
     }

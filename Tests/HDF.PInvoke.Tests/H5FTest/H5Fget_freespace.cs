@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_freespace</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_freespaceTest1()
         {
@@ -25,6 +31,9 @@ namespace UnitTests
             Assert.IsTrue(H5F.get_freespace(m_v2_class_file) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_freespace</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_freespaceTest2()
         {

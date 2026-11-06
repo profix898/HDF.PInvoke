@@ -26,6 +26,7 @@ try
     string[]? symbols = args.Length == 3 ? args[2].Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : null;
     int count = 0;
 
+    // Stable traversal also makes generated delegate numbering reproducible across build hosts.
     foreach (string path in Directory.GetFiles(sourceDirectory, "*.cs", SearchOption.AllDirectories).Order(StringComparer.Ordinal))
     {
         string output = Path.Combine(outputDirectory, Path.GetRelativePath(sourceDirectory, path));

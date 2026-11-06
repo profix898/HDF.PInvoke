@@ -28,6 +28,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed partial class H5T
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5T()
         {
             H5.open();
@@ -919,6 +922,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Tenum_nameof</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Tenum_nameof", CallingConvention = CallingConvention.Cdecl)]
         private static extern herr_t enum_nameof_utf8(hid_t dtype_id, IntPtr value, [Out] byte[] buffer, size_t size);
 

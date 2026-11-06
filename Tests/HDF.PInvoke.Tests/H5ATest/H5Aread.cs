@@ -19,8 +19,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     public partial class H5ATest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Aread</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5AreadTest1()
         {
@@ -47,6 +53,9 @@ namespace UnitTests
             Marshal.FreeHGlobal(buf);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Aread</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5AreadTest2()
         {

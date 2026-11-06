@@ -9,6 +9,9 @@ namespace HDF.PInvoke
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct CULong
     {
+        /// <summary>
+        /// Stores the native unsigned value, including padding that is masked when read on Windows.
+        /// </summary>
         private readonly ulong value;
 
         /// <summary>

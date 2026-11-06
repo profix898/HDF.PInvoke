@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Alpine build and package checks; shares pinned CMake inputs with desktop builds.
-# Usage: Build/alpine.sh [build|consumer]; JOBS controls native parallelism (default 4).
+# Usage: Build/Alpine/alpine.sh [build|consumer]; JOBS controls native parallelism (default 4).
 set -euo pipefail
-root=$(cd "$(dirname "$0")/.." && pwd)
+root=$(cd "$(dirname "$0")/../.." && pwd)
 cd "$root"
 case "$(uname -m)" in x86_64) arch=x64 ;; aarch64) arch=arm64 ;; *)
     echo 'Unsupported architecture' >&2

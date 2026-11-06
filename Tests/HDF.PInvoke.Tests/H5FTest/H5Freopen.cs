@@ -17,8 +17,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Freopen</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5FreopenTest1()
         {
@@ -32,6 +38,9 @@ namespace UnitTests
             Assert.IsTrue(H5F.close(file1) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Freopen</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5FreopenTest2()
         {

@@ -32,6 +32,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5F
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5F()
         {
             H5.open();
@@ -944,6 +947,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Fget_name</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_name_utf8(hid_t obj_id, [Out] byte[] buffer, size_t size);
 
@@ -1013,6 +1019,9 @@ namespace HDF.PInvoke
             return GetPageBufferingStats(file_id, accesses, hits, misses, evictions, bypasses);
         }
 
+        /// <summary>
+        /// Rejects page-counter arrays that cannot hold both metadata and raw-data statistics.
+        /// </summary>
         private static void ValidatePageCounters(uint[] counters, string name)
         {
             if (counters == null)
@@ -1026,6 +1035,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Fget_page_buffering_stats</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_page_buffering_stats",
             CallingConvention = CallingConvention.Cdecl)]
         private static extern herr_t GetPageBufferingStats(hid_t file_id,

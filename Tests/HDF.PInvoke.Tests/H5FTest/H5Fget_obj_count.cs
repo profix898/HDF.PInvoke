@@ -18,8 +18,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5F API.
+    /// </summary>
     public partial class H5FTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Fget_obj_count</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Fget_obj_countTest1()
         {
@@ -87,6 +93,9 @@ namespace UnitTests
                 H5F.OBJ_LOCAL).ToInt32() < 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Fget_obj_count</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Fget_obj_countTest2()
         {

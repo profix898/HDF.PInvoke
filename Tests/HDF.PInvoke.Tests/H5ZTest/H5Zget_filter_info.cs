@@ -16,8 +16,14 @@ using herr_t = System.Int32;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5Z API.
+    /// </summary>
     public partial class H5ZTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Zget_filter_info</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Zget_filter_infoTest1()
         {

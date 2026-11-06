@@ -9,6 +9,9 @@ namespace HDF.PInvoke
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct CLong
     {
+        /// <summary>
+        /// Stores the signed value; Windows structure bridges narrow it to the native 32-bit C long representation.
+        /// </summary>
         private readonly long value;
 
         /// <summary>

@@ -20,8 +20,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5P API.
+    /// </summary>
     public partial class H5PTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Pget_mdc_image_config</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Pget_mdc_image_configTest1()
         {

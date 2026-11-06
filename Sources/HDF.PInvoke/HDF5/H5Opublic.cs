@@ -32,6 +32,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5O
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5O()
         {
             H5.open();
@@ -602,6 +605,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Oget_comment</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_comment", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_comment_utf8(hid_t obj_id, [Out] byte[] buffer, size_t size);
 
@@ -635,6 +641,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Oget_comment_by_name</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_comment_by_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_comment_by_name_utf8(hid_t loc_id, byte[] name, [Out] byte[] buffer, size_t size,
             hid_t lapl_id);
@@ -670,6 +679,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Oget_comment_by_name</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_comment_by_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_comment_by_name_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, [Out] byte[] buffer, size_t size,
             hid_t lapl_id);

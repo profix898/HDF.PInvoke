@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     public partial class H5ATest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Adelete_by_idx</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Adelete_by_idxTest1()
         {
@@ -62,6 +68,9 @@ namespace UnitTests
                 H5.iter_order_t.NATIVE, 0) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Adelete_by_idx</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Adelete_by_idxTest2()
         {

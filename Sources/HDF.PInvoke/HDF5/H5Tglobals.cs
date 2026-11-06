@@ -28,7 +28,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed partial class H5T
     {
-
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_IEEE_F32BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_IEEE_F32BE_g = H5DLLImporter.Instance.GetHid("H5T_IEEE_F32BE_g");
 
         /// <summary>
@@ -42,6 +44,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_IEEE_F32LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_IEEE_F32LE_g = H5DLLImporter.Instance.GetHid("H5T_IEEE_F32LE_g");
 
         /// <summary>
@@ -55,6 +60,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_IEEE_F64BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_IEEE_F64BE_g = H5DLLImporter.Instance.GetHid("H5T_IEEE_F64BE_g");
 
         /// <summary>
@@ -68,6 +76,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_IEEE_F64LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_IEEE_F64LE_g = H5DLLImporter.Instance.GetHid("H5T_IEEE_F64LE_g");
 
         /// <summary>
@@ -81,6 +92,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I8BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I8BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I8BE_g");
 
         /// <summary>
@@ -94,6 +108,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I8LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I8LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I8LE_g");
 
         /// <summary>
@@ -107,6 +124,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I16BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I16BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I16BE_g");
 
         /// <summary>
@@ -120,6 +140,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I16LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I16LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I16LE_g");
 
         /// <summary>
@@ -133,6 +156,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I32BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I32BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I32BE_g");
 
         /// <summary>
@@ -146,6 +172,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I32LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I32LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I32LE_g");
 
         /// <summary>
@@ -159,6 +188,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I64BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I64BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I64BE_g");
 
         /// <summary>
@@ -172,6 +204,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_I64LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_I64LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_I64LE_g");
 
         /// <summary>
@@ -185,6 +220,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U8BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U8BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U8BE_g");
 
         /// <summary>
@@ -198,6 +236,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U8LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U8LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U8LE_g");
 
         /// <summary>
@@ -211,6 +252,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U16BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U16BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U16BE_g");
 
         /// <summary>
@@ -224,6 +268,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U16LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U16LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U16LE_g");
 
         /// <summary>
@@ -237,6 +284,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U32BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U32BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U32BE_g");
 
         /// <summary>
@@ -250,6 +300,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U32LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U32LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U32LE_g");
 
         /// <summary>
@@ -263,6 +316,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U64BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U64BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U64BE_g");
 
         /// <summary>
@@ -276,6 +332,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_U64LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_U64LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_U64LE_g");
 
         /// <summary>
@@ -289,6 +348,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B8BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B8BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B8BE_g");
 
         /// <summary>
@@ -302,6 +364,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B8LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B8LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B8LE_g");
 
         /// <summary>
@@ -315,6 +380,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B16BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B16BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B16BE_g");
 
         /// <summary>
@@ -328,6 +396,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B16LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B16LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B16LE_g");
 
         /// <summary>
@@ -341,6 +412,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B32BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B32BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B32BE_g");
 
         /// <summary>
@@ -354,6 +428,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B32LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B32LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B32LE_g");
 
         /// <summary>
@@ -367,6 +444,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B64BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B64BE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B64BE_g");
 
         /// <summary>
@@ -380,6 +460,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_B64LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_B64LE_g = H5DLLImporter.Instance.GetHid("H5T_STD_B64LE_g");
 
         /// <summary>
@@ -393,6 +476,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_REF_OBJ_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_REF_OBJ_g = H5DLLImporter.Instance.GetHid("H5T_STD_REF_OBJ_g");
 
         /// <summary>
@@ -406,6 +492,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_STD_REF_DSETREG_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_STD_REF_DSETREG_g = H5DLLImporter.Instance.GetHid("H5T_STD_REF_DSETREG_g");
 
         /// <summary>
@@ -419,6 +508,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_UNIX_D32BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_UNIX_D32BE_g = H5DLLImporter.Instance.GetHid("H5T_UNIX_D32BE_g");
 
         /// <summary>
@@ -432,6 +524,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_UNIX_D32LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_UNIX_D32LE_g = H5DLLImporter.Instance.GetHid("H5T_UNIX_D32LE_g");
 
         /// <summary>
@@ -445,6 +540,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_UNIX_D64BE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_UNIX_D64BE_g = H5DLLImporter.Instance.GetHid("H5T_UNIX_D64BE_g");
 
         /// <summary>
@@ -458,6 +556,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_UNIX_D64LE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_UNIX_D64LE_g = H5DLLImporter.Instance.GetHid("H5T_UNIX_D64LE_g");
 
         /// <summary>
@@ -471,6 +572,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_C_S1_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_C_S1_g = H5DLLImporter.Instance.GetHid("H5T_C_S1_g");
 
         /// <summary>
@@ -484,6 +588,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_FORTRAN_S1_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_FORTRAN_S1_g = H5DLLImporter.Instance.GetHid("H5T_FORTRAN_S1_g");
 
         /// <summary>
@@ -497,6 +604,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_VAX_F32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_VAX_F32_g = H5DLLImporter.Instance.GetHid("H5T_VAX_F32_g");
 
         /// <summary>
@@ -510,6 +620,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_VAX_F64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_VAX_F64_g = H5DLLImporter.Instance.GetHid("H5T_VAX_F64_g");
 
         /// <summary>
@@ -523,6 +636,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_SCHAR_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_SCHAR_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_SCHAR_g");
 
         /// <summary>
@@ -536,6 +652,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UCHAR_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UCHAR_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UCHAR_g");
 
         /// <summary>
@@ -549,6 +668,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_SHORT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_SHORT_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_SHORT_g");
 
         /// <summary>
@@ -562,6 +684,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_USHORT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_USHORT_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_USHORT_g");
 
         /// <summary>
@@ -575,6 +700,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_g");
 
         /// <summary>
@@ -588,6 +716,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_g");
 
         /// <summary>
@@ -601,6 +732,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_LONG_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_LONG_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_LONG_g");
 
         /// <summary>
@@ -614,6 +748,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_ULONG_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_ULONG_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_ULONG_g");
 
         /// <summary>
@@ -627,6 +764,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_LLONG_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_LLONG_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_LLONG_g");
 
         /// <summary>
@@ -640,6 +780,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_ULLONG_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_ULLONG_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_ULLONG_g");
 
         /// <summary>
@@ -653,6 +796,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_FLOAT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_FLOAT_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_FLOAT_g");
 
         /// <summary>
@@ -666,6 +812,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_DOUBLE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_DOUBLE_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_DOUBLE_g");
 
         /// <summary>
@@ -679,6 +828,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_LDOUBLE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_LDOUBLE_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_LDOUBLE_g");
 
         /// <summary>
@@ -692,6 +844,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_B8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_B8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_B8_g");
 
         /// <summary>
@@ -705,6 +860,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_B16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_B16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_B16_g");
 
         /// <summary>
@@ -718,6 +876,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_B32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_B32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_B32_g");
 
         /// <summary>
@@ -731,6 +892,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_B64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_B64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_B64_g");
 
         /// <summary>
@@ -744,6 +908,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_OPAQUE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_OPAQUE_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_OPAQUE_g");
 
         /// <summary>
@@ -757,6 +924,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_HADDR_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_HADDR_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_HADDR_g");
 
         /// <summary>
@@ -770,6 +940,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_HSIZE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_HSIZE_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_HSIZE_g");
 
         /// <summary>
@@ -783,6 +956,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_HSSIZE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_HSSIZE_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_HSSIZE_g");
 
         /// <summary>
@@ -796,6 +972,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_HERR_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_HERR_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_HERR_g");
 
         /// <summary>
@@ -809,6 +988,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_HBOOL_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_HBOOL_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_HBOOL_g");
 
         /// <summary>
@@ -822,6 +1004,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT8_g");
 
         /// <summary>
@@ -835,6 +1020,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT8_g");
 
         /// <summary>
@@ -848,6 +1036,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_LEAST8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_LEAST8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_LEAST8_g");
 
         /// <summary>
@@ -861,6 +1052,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_LEAST8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_LEAST8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_LEAST8_g");
 
         /// <summary>
@@ -874,6 +1068,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_FAST8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_FAST8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_FAST8_g");
 
         /// <summary>
@@ -887,6 +1084,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_FAST8_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_FAST8_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_FAST8_g");
 
         /// <summary>
@@ -900,6 +1100,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT16_g");
 
         /// <summary>
@@ -913,6 +1116,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT16_g");
 
         /// <summary>
@@ -926,6 +1132,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_LEAST16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_LEAST16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_LEAST16_g");
 
         /// <summary>
@@ -939,6 +1148,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_LEAST16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_LEAST16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_LEAST16_g");
 
         /// <summary>
@@ -952,6 +1164,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_FAST16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_FAST16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_FAST16_g");
 
         /// <summary>
@@ -965,6 +1180,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_FAST16_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_FAST16_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_FAST16_g");
 
         /// <summary>
@@ -978,6 +1196,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT32_g");
 
         /// <summary>
@@ -991,6 +1212,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT32_g");
 
         /// <summary>
@@ -1004,6 +1228,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_LEAST32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_LEAST32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_LEAST32_g");
 
         /// <summary>
@@ -1017,6 +1244,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_LEAST32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_LEAST32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_LEAST32_g");
 
         /// <summary>
@@ -1030,6 +1260,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_FAST32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_FAST32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_FAST32_g");
 
         /// <summary>
@@ -1043,6 +1276,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_FAST32_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_FAST32_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_FAST32_g");
 
         /// <summary>
@@ -1056,6 +1292,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT64_g");
 
         /// <summary>
@@ -1069,6 +1308,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT64_g");
 
         /// <summary>
@@ -1082,6 +1324,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_LEAST64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_LEAST64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_LEAST64_g");
 
         /// <summary>
@@ -1095,6 +1340,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_LEAST64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_LEAST64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_LEAST64_g");
 
         /// <summary>
@@ -1108,6 +1356,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_INT_FAST64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_INT_FAST64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_INT_FAST64_g");
 
         /// <summary>
@@ -1121,6 +1372,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5T_NATIVE_UINT_FAST64_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5T_NATIVE_UINT_FAST64_g = H5DLLImporter.Instance.GetHid("H5T_NATIVE_UINT_FAST64_g");
 
         /// <summary>

@@ -22,8 +22,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5VDS API.
+    /// </summary>
     public partial class H5VDSTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Pget_virtual_dsetname</c> operation in scenario VDS1.
+        /// </summary>
         [TestMethod]
         public void H5Pget_virtual_dsetnameTestVDS1()
         {

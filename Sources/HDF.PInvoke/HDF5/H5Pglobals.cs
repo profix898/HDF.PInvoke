@@ -28,7 +28,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed partial class H5P
     {
-
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_ROOT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_ROOT_g = H5DLLImporter.Instance.GetHid("H5P_CLS_ROOT_ID_g");
 
         /// <summary>
@@ -42,6 +44,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_OBJECT_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_OBJECT_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_OBJECT_CREATE_ID_g");
 
         /// <summary>
@@ -55,6 +60,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_FILE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_FILE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_FILE_CREATE_ID_g");
 
         /// <summary>
@@ -68,6 +76,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_FILE_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_FILE_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_CLS_FILE_ACCESS_ID_g");
 
         /// <summary>
@@ -81,6 +92,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_DATASET_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_DATASET_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_DATASET_CREATE_ID_g");
 
         /// <summary>
@@ -94,6 +108,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_DATASET_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_DATASET_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_CLS_DATASET_ACCESS_ID_g");
 
         /// <summary>
@@ -107,6 +124,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_DATASET_XFER_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_DATASET_XFER_g = H5DLLImporter.Instance.GetHid("H5P_CLS_DATASET_XFER_ID_g");
 
         /// <summary>
@@ -120,6 +140,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_FILE_MOUNT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_FILE_MOUNT_g = H5DLLImporter.Instance.GetHid("H5P_CLS_FILE_MOUNT_ID_g");
 
         /// <summary>
@@ -133,6 +156,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_GROUP_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_GROUP_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_GROUP_CREATE_ID_g");
 
         /// <summary>
@@ -146,6 +172,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_GROUP_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_GROUP_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_CLS_GROUP_ACCESS_ID_g");
 
         /// <summary>
@@ -159,6 +188,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_DATATYPE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_DATATYPE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_DATATYPE_CREATE_ID_g");
 
         /// <summary>
@@ -172,6 +204,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_DATATYPE_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_DATATYPE_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_CLS_DATATYPE_ACCESS_ID_g");
 
         /// <summary>
@@ -185,6 +220,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_STRING_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_STRING_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_STRING_CREATE_ID_g");
 
         /// <summary>
@@ -198,6 +236,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_ATTRIBUTE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_ATTRIBUTE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_ATTRIBUTE_CREATE_ID_g");
 
         /// <summary>
@@ -211,6 +252,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_OBJECT_COPY_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_OBJECT_COPY_g = H5DLLImporter.Instance.GetHid("H5P_CLS_OBJECT_COPY_ID_g");
 
         /// <summary>
@@ -224,6 +268,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_LINK_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_LINK_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_CLS_LINK_CREATE_ID_g");
 
         /// <summary>
@@ -237,6 +284,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_CLS_LINK_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_CLS_LINK_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_CLS_LINK_ACCESS_ID_g");
 
         /// <summary>
@@ -250,6 +300,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_FILE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_FILE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_FILE_CREATE_ID_g");
 
         /// <summary>
@@ -263,6 +316,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_FILE_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_FILE_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_LST_FILE_ACCESS_ID_g");
 
         /// <summary>
@@ -276,6 +332,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_DATASET_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_DATASET_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_DATASET_CREATE_ID_g");
 
         /// <summary>
@@ -289,6 +348,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_DATASET_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_DATASET_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_LST_DATASET_ACCESS_ID_g");
 
         /// <summary>
@@ -302,6 +364,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_DATASET_XFER_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_DATASET_XFER_g = H5DLLImporter.Instance.GetHid("H5P_LST_DATASET_XFER_ID_g");
 
         /// <summary>
@@ -315,6 +380,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_FILE_MOUNT_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_FILE_MOUNT_g = H5DLLImporter.Instance.GetHid("H5P_LST_FILE_MOUNT_ID_g");
 
         /// <summary>
@@ -328,6 +396,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_GROUP_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_GROUP_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_GROUP_CREATE_ID_g");
 
         /// <summary>
@@ -341,6 +412,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_GROUP_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_GROUP_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_LST_GROUP_ACCESS_ID_g");
 
         /// <summary>
@@ -354,6 +428,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_DATATYPE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_DATATYPE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_DATATYPE_CREATE_ID_g");
 
         /// <summary>
@@ -367,6 +444,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_DATATYPE_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_DATATYPE_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_LST_DATATYPE_ACCESS_ID_g");
 
         /// <summary>
@@ -380,6 +460,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_ATTRIBUTE_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_ATTRIBUTE_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_ATTRIBUTE_CREATE_ID_g");
 
         /// <summary>
@@ -393,6 +476,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_OBJECT_COPY_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_OBJECT_COPY_g = H5DLLImporter.Instance.GetHid("H5P_LST_OBJECT_COPY_ID_g");
 
         /// <summary>
@@ -406,6 +492,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_LINK_CREATE_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_LINK_CREATE_g = H5DLLImporter.Instance.GetHid("H5P_LST_LINK_CREATE_ID_g");
 
         /// <summary>
@@ -419,6 +508,9 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>
+        /// Caches the exported native identifier <c>H5P_LST_LINK_ACCESS_g</c> from the selected HDF5 library.
+        /// </summary>
         static readonly hid_t H5P_LST_LINK_ACCESS_g = H5DLLImporter.Instance.GetHid("H5P_LST_LINK_ACCESS_ID_g");
 
         /// <summary>

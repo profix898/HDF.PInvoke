@@ -44,12 +44,12 @@ jobs:
           if ($IsWindows) { $arguments.Generator = 'Visual Studio 18 2026' }
           # MSVC 14.51 crashes on HDF5 ARM64: https://github.com/actions/runner-images/issues/15052
           if ($arguments.Rid -eq 'win-arm64') { $arguments.Toolset = 'v143,version=14.44' }
-          ./Build/build-native.ps1 @arguments
+          ./Build/buildNative.ps1 @arguments
       - name: Verify managed bindings and loader scenarios
         shell: pwsh
         run: |
-          ./Build/test-managed.ps1 -Rid ${{ matrix.rid }}
-          ./Build/test-legacy.ps1 -Rid ${{ matrix.rid }}
+          ./Build/testManaged.ps1 -Rid ${{ matrix.rid }}
+          ./Build/testLegacy.ps1 -Rid ${{ matrix.rid }}
       - uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.rid }}
@@ -84,7 +84,7 @@ jobs:
           submodules: recursive
           persist-credentials: false
       - name: Build Alpine toolchain image
-        run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
+        run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine/Alpine.Dockerfile -t hdf-pinvoke-alpine Build/Alpine
       - name: Build and test native and managed libraries on musl
         run: docker run --rm --user "$(id -u):$(id -g)" -e CI=true -v "$PWD:/src" hdf-pinvoke-alpine build
       - uses: actions/upload-artifact@v7
@@ -138,8 +138,8 @@ jobs:
         run: |
           ./Build/pack.ps1
           $package = (Get-ChildItem Build/Artifacts/packages/*.nupkg).FullName
-          ./Build/test-package-validation.ps1 -Package $package
-          ./Build/test-pack-selection.ps1
+          ./Build/testPackValidation.ps1 -Package $package
+          ./Build/testPackSelection.ps1
       - uses: actions/upload-artifact@v7
         with:
           name: nuget-packages-candidate
@@ -174,10 +174,10 @@ jobs:
       - name: Restore, publish and load a clean package consumer
         shell: pwsh
         run: |
-          ./Build/test-package.ps1 -Rid ${{ matrix.rid }} -Framework net8.0
-          ./Build/test-package.ps1 -Rid ${{ matrix.rid }} -Framework net10.0
-          ./Build/test-package.ps1 -Rid ${{ matrix.rid }} -Framework net10.0 -Legacy
-          if ('${{ matrix.rid }}' -eq 'win-x64') { ./Build/test-package.ps1 -Rid win-x64 -Framework net472 }
+          ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net8.0
+          ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net10.0
+          ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net10.0 -Legacy
+          if ('${{ matrix.rid }}' -eq 'win-x64') { ./Build/testPack.ps1 -Rid win-x64 -Framework net472 }
   package-consumer-musl:
     needs: collect-native
     name: Package consumer ${{ matrix.rid }}
@@ -197,7 +197,7 @@ jobs:
         with:
           name: nuget-packages-candidate
           path: Build/Artifacts/packages
-      - run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine.Dockerfile -t hdf-pinvoke-alpine Build
+      - run: docker build --build-arg BUILD_UID="$(id -u)" --build-arg BUILD_GID="$(id -g)" -f Build/Alpine/Alpine.Dockerfile -t hdf-pinvoke-alpine Build/Alpine
       - name: Verify clean musl package consumer
         run: docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/src" hdf-pinvoke-alpine consumer
   # Only promote an archive after every platform has consumed that exact candidate.
@@ -217,7 +217,7 @@ jobs:
         shell: pwsh
         run: |
           $package = (Get-ChildItem Build/Artifacts/packages/*.nupkg).FullName
-          ./Build/validate-package.ps1 -Package $package
+          ./Build/validatePack.ps1 -Package $package
       - uses: actions/upload-artifact@v7
         with:
           name: nuget-packages

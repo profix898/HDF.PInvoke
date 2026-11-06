@@ -6,9 +6,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for Binding Regression.
+    /// </summary>
     [TestClass]
     public class BindingRegressionTests
     {
+        /// <summary>
+        /// Verifies loader Rejects Null And Blank Configuration Consistently.
+        /// </summary>
         [TestMethod]
         public void LoaderRejectsNullAndBlankConfigurationConsistently()
         {
@@ -16,6 +22,9 @@ namespace UnitTests
             Assert.ThrowsExactly<ArgumentException>(() => NativeDependencies.Configure(" "));
         }
 
+        /// <summary>
+        /// Verifies metadata Cache Getter Ignores Unused Input Fields.
+        /// </summary>
         [TestMethod]
         public void MetadataCacheGetterIgnoresUnusedInputFields()
         {
@@ -44,6 +53,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies registered Link Callback Survives Garbage Collection.
+        /// </summary>
         [TestMethod]
         public void RegisteredLinkCallbackSurvivesGarbageCollection()
         {
@@ -84,6 +96,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Registers a callback with captured state so garbage-collection tests can observe its lifetime.
+        /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static WeakReference RegisterTemporaryCallback(H5L.type_t id)
         {

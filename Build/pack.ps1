@@ -39,4 +39,4 @@ if ($LASTEXITCODE -ne 0) { throw 'NuGet packing failed' }
 
 [xml]$project = Get-Content "$root/Sources/HDF.PInvoke/HDF.PInvoke.csproj"
 $package = "$PSScriptRoot/Artifacts/packages/HDF.PInvoke.$($project.Project.PropertyGroup.Version).nupkg"
-& "$PSScriptRoot/validate-package.ps1" -Package $package -RequiredRids $RequiredRids
+& "$PSScriptRoot/validatePack.ps1" -Package $package -RequiredRids $RequiredRids

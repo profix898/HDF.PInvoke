@@ -7,9 +7,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for Cross Platform.
+    /// </summary>
     [TestClass]
     public class CrossPlatformTests
     {
+        /// <summary>
+        /// Verifies utf8 File And Dataset Round Trip.
+        /// </summary>
         [TestMethod]
         public void Utf8FileAndDatasetRoundTrip()
         {
@@ -64,6 +70,9 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Verifies native Version And Boolean Width.
+        /// </summary>
         [TestMethod]
         public void NativeVersionAndBooleanWidth()
         {
@@ -76,6 +85,9 @@ namespace UnitTests
             Assert.AreEqual((byte)0, threadSafe);
         }
 
+        /// <summary>
+        /// Verifies error Messages Are Literal Utf8.
+        /// </summary>
         [TestMethod]
         public void ErrorMessagesAreLiteralUtf8()
         {

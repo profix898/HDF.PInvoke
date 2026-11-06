@@ -16,8 +16,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     public partial class H5ATest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Acreate</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5AcreateTest1()
         {
@@ -42,6 +48,9 @@ namespace UnitTests
             Assert.IsTrue(H5A.close(att) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Acreate</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5AcreateTest2()
         {
@@ -56,6 +65,9 @@ namespace UnitTests
                 H5T.IEEE_F32BE, Utilities.RandomInvalidHandle()) >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Acreate</c> operation in scenario 3.
+        /// </summary>
         [TestMethod]
         public void H5AcreateTest3()
         {

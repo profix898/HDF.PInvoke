@@ -19,8 +19,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5A API.
+    /// </summary>
     public partial class H5ATest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Arename_by_name</c> operation in scenario 1.
+        /// </summary>
         [TestMethod]
         public void H5Arename_by_nameTest1()
         {
@@ -41,6 +47,9 @@ namespace UnitTests
                 H5A.rename_by_name(m_v0_test_file, ".", "A", "new A") >= 0);
         }
 
+        /// <summary>
+        /// Exercises the native <c>H5Arename_by_name</c> operation in scenario 2.
+        /// </summary>
         [TestMethod]
         public void H5Arename_by_nameTest2()
         {

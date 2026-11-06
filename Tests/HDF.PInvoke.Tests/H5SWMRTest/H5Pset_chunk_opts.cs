@@ -21,8 +21,14 @@ using hid_t = System.Int64;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// Groups regression checks for the H5SWMR API.
+    /// </summary>
     public partial class H5SWMRTest
     {
+        /// <summary>
+        /// Exercises the native <c>H5Pset_chunk_opts</c> operation in scenario SWMR1.
+        /// </summary>
         [TestMethod]
         public void H5Pset_chunk_optsTestSWMR1()
         {

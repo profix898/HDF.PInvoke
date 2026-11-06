@@ -1,15 +1,21 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+/// <summary>
+/// Checks representative syntax, ABI, and ownership transformations without loading HDF5.
+/// </summary>
 internal static class GeneratorTests
 {
+    /// <summary>
+    /// Runs the generator regression cases used before each legacy binding generation.
+    /// </summary>
     internal static void Run()
     {
         string declaration = "[DllImport(Constants.DLLFileName, EntryPoint = \"example\", CallingConvention = CallingConvention.Cdecl)] public static extern int Call([MarshalAs(UnmanagedType.LPUTF8Str)] string text, ref int value);";
         string output = BindingSource.Generate("class H5 { " + declaration + " }", out int count);
         Require(count == 1 && !output.Contains("DllImport("), "Replace imports exactly once");
         Require(output.Contains("static __Legacy0Cache()") && output.Contains("ref value"), "Preserve lazy initialization and ref parameters");
-        Require(output.Contains("typeof(Utf8Marshaler)") && !output.Contains("MarshalCookie"), "Own forward-call string allocations");
+        Require(output.Contains("typeof(UTF8Marshaler)") && !output.Contains("MarshalCookie"), "Own forward-call string allocations");
 
         Require(output.Contains("LazyInitializer.EnsureInitialized"), "Keep failed lookups retryable");
 
@@ -46,9 +52,23 @@ internal static class GeneratorTests
         var method = CSharpSyntaxTree.ParseText(BindingSource.Generate("class H5 { " + declaration + " }", out _)).GetRoot()
             .DescendantNodes().OfType<DelegateDeclarationSyntax>().Single();
         Require(method.ParameterList.Parameters[1].Modifiers.ToString() == "ref", "Preserve delegate parameter modifiers");
-        Console.WriteLine("PASS: 16 binding-generator regression checks");
+        Require(method.GetLeadingTrivia().ToFullString().Contains("<summary>"), "Document generated native delegates");
+
+        string layout = "class H5AC { public struct cache_config_t {\n/// <summary>A CLong value.</summary>\npublic CLong epoch_length; } }";
+        var generatedLayout = CSharpSyntaxTree.ParseText(BindingSource.Generate(layout, out _)).GetRoot()
+            .DescendantNodes().OfType<StructDeclarationSyntax>().Single(s => s.Identifier.ValueText == "WindowsCacheConfig");
+        var field = generatedLayout.Members.OfType<FieldDeclarationSyntax>().Single();
+        Require(field.Declaration.Type.ToString() == "int" && field.GetLeadingTrivia().ToFullString().Contains("A CLong value."),
+            "Change Windows field storage without rewriting documentation");
+        Require(generatedLayout.GetLeadingTrivia().ToFullString().Contains("<summary>") &&
+            generatedLayout.Members.OfType<MethodDeclarationSyntax>().All(m => m.GetLeadingTrivia().ToFullString().Contains("<summary>")),
+            "Document generated Windows layout conversions");
+        Console.WriteLine("PASS: 19 binding-generator regression checks");
     }
 
+    /// <summary>
+    /// Requires unsupported source declarations to fail generation with an explicit diagnostic.
+    /// </summary>
     private static void ExpectFailure(string source, string description)
     {
         try
@@ -63,6 +83,9 @@ internal static class GeneratorTests
         throw new InvalidOperationException(description);
     }
 
+    /// <summary>
+    /// Stops the self-test when a required generated-code invariant is not satisfied.
+    /// </summary>
     private static void Require(bool condition, string description)
     {
         if (!condition)

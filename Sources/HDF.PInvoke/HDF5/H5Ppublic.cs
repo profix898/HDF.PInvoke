@@ -38,6 +38,9 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed partial class H5P
     {
+        /// <summary>
+        /// Initializes HDF5 before this API is first used.
+        /// </summary>
         static H5P()
         {
             H5.open();
@@ -686,6 +689,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Pget_data_transform</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_data_transform", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_data_transform_utf8(hid_t plist_id, [Out] byte[] buffer, size_t size);
 
@@ -1394,6 +1400,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Pget_mdc_log_options</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_mdc_log_options", CallingConvention = CallingConvention.Cdecl)]
         private static extern herr_t get_mdc_log_options_utf8(hid_t fapl_id, ref hbool_t is_enabled, [Out] byte[] buffer,
             ref size_t location_size, ref hbool_t start_on_access);
@@ -1773,6 +1782,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Pget_virtual_dsetname</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_virtual_dsetname", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_virtual_dsetname_utf8(hid_t dcpl_id, size_t index, [Out] byte[] buffer, size_t size);
 
@@ -1802,6 +1814,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Pget_virtual_filename</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_virtual_filename", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_virtual_filename_utf8(hid_t dcpl_id, size_t index, [Out] byte[] buffer, size_t size);
 
@@ -1829,6 +1844,9 @@ namespace HDF.PInvoke
             return result;
         }
 
+        /// <summary>
+        /// Invokes the native <c>H5Pget_virtual_prefix</c> entry point using its explicit ABI declaration.
+        /// </summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_virtual_prefix", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_virtual_prefix_utf8(hid_t dapl, [Out] byte[] buffer, size_t size);
 
