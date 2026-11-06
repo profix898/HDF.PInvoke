@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -56,40 +51,46 @@ namespace HDF.PInvoke
             /// Unknown order [value = -1].
             /// </summary>
             UNKNOWN = -1,
+
             /// <summary>
             /// Increasing order [value = 0].
             /// </summary>
             INC,
+
             /// <summary>
             /// Decreasing order [value = 1].
             /// </summary>
             DEC,
+
             /// <summary>
             /// No particular order, whatever is fastest [value = 2].
             /// </summary>
             NATIVE,
+
             /// <summary>
             /// Number of iteration orders [value = 3].
             /// </summary>
             N
         }
 
-        ///<summary>
+        /// <summary>
         /// Iteration callback values
         /// (Actually, any postive value will cause the iterator to stop and
         /// pass back that positive value to the function that called the
         /// iterator)
-        ///</summary>
+        /// </summary>
         public enum H5IterationResult : int
         {
             /// <summary>
             /// Failure [value = -1].
             /// </summary>
             FAILURE = -1,
+
             /// <summary>
             /// Success and continue [value = 0].
             /// </summary>
             CONT = 0,
+
             /// <summary>
             /// Success and stop [value = 1].
             /// </summary>
@@ -107,14 +108,17 @@ namespace HDF.PInvoke
             /// Unknown index type [value = -1].
             /// </summary>
             UNKNOWN = -1,
+
             /// <summary>
             /// Index on names [value = 0].
             /// </summary>
             NAME,
+
             /// <summary>
             /// Index on creation order [value = 1].
             /// </summary>
             CRT_ORDER,
+
             /// <summary>
             /// Number of indices defined [value = 2].
             /// </summary>
@@ -130,6 +134,7 @@ namespace HDF.PInvoke
             /// btree and/or list
             /// </summary>
             public hsize_t index_size;
+
             /// <summary>
             /// The number of bytes occupied by the associated heap.
             /// </summary>
@@ -166,10 +171,21 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5close",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close();
+        /// <remarks>Also releases managed roots for user-defined link registrations after native shutdown succeeds. Coordinate shutdown with every user of HDF5 in the process.</remarks>
+        public static herr_t close()
+        {
+            int status = CloseNative();
+
+            if (status >= 0)
+            {
+                LinkClassRegistry.Clear();
+            }
+
+            return status;
+        }
+
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5close", CallingConvention = CallingConvention.Cdecl)]
+        private static extern herr_t CloseNative();
 
         /// <summary>
         /// Instructs library not to install atexit cleanup routine.
@@ -283,7 +299,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern IntPtr resize_memory(IntPtr mem, IntPtr size);
-
 
         /// <summary>
         /// Sets free-list size limits.

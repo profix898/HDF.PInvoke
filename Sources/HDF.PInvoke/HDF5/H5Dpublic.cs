@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -44,10 +39,12 @@ namespace HDF.PInvoke
         /// Requests the default number of slots in the raw-data chunk cache.
         /// </summary>
         public readonly size_t CACHE_NSLOTS_DEFAULT = new IntPtr(-1);
+
         /// <summary>
         /// Requests the default raw-data chunk-cache capacity in bytes.
         /// </summary>
         public readonly size_t CACHE_NBYTES_DEFAULT = new IntPtr(-1);
+
         /// <summary>
         /// Requests the default raw-data chunk-cache preemption policy.
         /// </summary>
@@ -63,16 +60,19 @@ namespace HDF.PInvoke
         /// </summary>
         public const string XFER_DIRECT_CHUNK_WRITE_FLAG_NAME =
             "direct_chunk_flag";
+
         /// <summary>
         /// The native property name holding the direct-write filter mask.
         /// </summary>
         public const string XFER_DIRECT_CHUNK_WRITE_FILTERS_NAME =
             "direct_chunk_filters";
+
         /// <summary>
         /// The native property name holding direct-write chunk coordinates.
         /// </summary>
         public const string XFER_DIRECT_CHUNK_WRITE_OFFSET_NAME =
             "direct_chunk_offset";
+
         /// <summary>
         /// The native property name holding the size of direct-write chunk data.
         /// </summary>
@@ -88,22 +88,27 @@ namespace HDF.PInvoke
             /// error.
             /// </summary>
             LAYOUT_ERROR = -1,
+
             /// <summary>
             /// raw data is small (&lt; 64KB).
             /// </summary>
             COMPACT = 0,
+
             /// <summary>
             /// contiguous layout.
             /// </summary>
             CONTIGUOUS = 1,
+
             /// <summary>
             /// chunked or tiled layout.
             /// </summary>
             CHUNKED = 2,
+
             /// <summary>
             /// actual data is stored in other datasets.
             /// </summary>
             VIRTUAL = 3,
+
             /// <summary>
             /// this one must be last!.
             /// </summary>
@@ -119,28 +124,34 @@ namespace HDF.PInvoke
             /// v1 B-tree index [value = 0]
             /// </summary>
             BTREE = 0,
+
             /// <summary>
             /// Single Chunk index (cur dims[]=max dims[]=chunk dims[];
             /// filtered &amp; non-filtered)
             /// </summary>
             SINGLE = 1,
+
             /// <summary>
             /// Implicit: No Index (H5D_ALLOC_TIME_EARLY, non-filtered,
             /// fixed dims)
             /// </summary>
             NONE = 2,
+
             /// <summary>
             /// Fixed array (for 0 unlimited dims)
             /// </summary>
             FARRAY = 3,
+
             /// <summary>
             /// Extensible array (for 1 unlimited dim)
             /// </summary>
             EARRAY = 4,
+
             /// <summary>
             /// v2 B-tree index (for >1 unlimited dims)
             /// </summary>
             BT2 = 5,
+
             /// <summary>
             /// The number of chunk-index types; this sentinel is not a usable index type.
             /// </summary>
@@ -156,18 +167,22 @@ namespace HDF.PInvoke
             /// Error.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Default (layout dependent).
             /// </summary>
             DEFAULT = 0,
+
             /// <summary>
             /// Allocate on creation.
             /// </summary>
             EARLY = 1,
+
             /// <summary>
             /// Allocate on first write.
             /// </summary>
             LATE = 2,
+
             /// <summary>
             /// Allocate incrementally (by chunk).
             /// </summary>
@@ -183,14 +198,17 @@ namespace HDF.PInvoke
             /// Error.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Space has not been allocated for this dataset.
             /// </summary>
             NOT_ALLOCATED = 0,
+
             /// <summary>
             /// Space has been partially allocated for this dataset. (Used only for datasets with chunked storage.).
             /// </summary>
             PART_ALLOCATED = 1,
+
             /// <summary>
             /// Space has been allocated for this dataset.
             /// </summary>
@@ -206,14 +224,17 @@ namespace HDF.PInvoke
             /// Error.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Fill on allocation.
             /// </summary>
             ALLOC = 0,
+
             /// <summary>
             /// Never write fill values.
             /// </summary>
             NEVER = 1,
+
             /// <summary>
             /// Fill if fill-value was set.
             /// </summary>
@@ -229,14 +250,17 @@ namespace HDF.PInvoke
             /// Error.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// No fill value defined.
             /// </summary>
             UNDEFINED = 0,
+
             /// <summary>
             /// Default fill-value.
             /// </summary>
             DEFAULT = 1,
+
             /// <summary>
             /// User-defined fill-value.
             /// </summary>
@@ -252,10 +276,12 @@ namespace HDF.PInvoke
             /// Indicates an invalid virtual-dataset view.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Ends the virtual extent at the first missing source mapping.
             /// </summary>
             FIRST_MISSING = 0,
+
             /// <summary>
             /// Includes mappings through the last available source, using fill values for missing sources.
             /// </summary>
@@ -443,7 +469,6 @@ namespace HDF.PInvoke
             (IntPtr fill, hid_t fill_type, IntPtr buf, hid_t buf_type,
             hid_t space);
 
-
         /// <summary>
         /// Flushes all buffers associated with a dataset to disk.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Dflush.htm
@@ -465,7 +490,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t format_convert(hid_t dset_id);
-
 
         /// <summary>
         /// Gathers data from a selection within a memory buffer.
@@ -799,7 +823,6 @@ namespace HDF.PInvoke
             (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id,
             hid_t file_space_id, hid_t plist_id, IntPtr buf);
 
-
         /// <summary>
         /// Reads a raw data chunk directly from a dataset in a file into a buffer.
         /// See https://support.hdfgroup.org/HDF5/doc/HL/RM_HDF5Optimized.html#H5DOread_chunk
@@ -832,7 +855,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t refresh(hid_t dset_id);
-
 
         /// <summary>
         /// Scatters data into a selection within a memory buffer.
@@ -941,7 +963,6 @@ namespace HDF.PInvoke
         public static extern herr_t write
             (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id,
             hid_t file_space_id, hid_t plist_id, IntPtr buf);
-
 
         /// <summary>
         /// Writes a raw data chunk from a buffer directly to a dataset.

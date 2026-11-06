@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -47,50 +42,62 @@ namespace HDF.PInvoke
             /// error.
             /// </summary>
             NO_CLASS = -1,
+
             /// <summary>
             /// integer types.
             /// </summary>
             INTEGER = 0,
+
             /// <summary>
             /// floating-point types.
             /// </summary>
             FLOAT = 1,
+
             /// <summary>
             /// date and time types.
             /// </summary>
             TIME = 2,
+
             /// <summary>
             /// character string types.
             /// </summary>
             STRING = 3,
+
             /// <summary>
             /// bit field types.
             /// </summary>
             BITFIELD = 4,
+
             /// <summary>
             /// opaque types.
             /// </summary>
             OPAQUE = 5,
+
             /// <summary>
             /// compound types.
             /// </summary>
             COMPOUND = 6,
+
             /// <summary>
             /// reference types.
             /// </summary>
             REFERENCE = 7,
+
             /// <summary>
             /// enumeration types.
             /// </summary>
             ENUM = 8,
+
             /// <summary>
             /// variable-Length types.
             /// </summary>
             VLEN = 9,
+
             /// <summary>
             /// array types.
             /// </summary>
             ARRAY = 10,
+
             /// <summary>
             /// sentinel: this must be last.
             /// </summary>
@@ -106,22 +113,27 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// little endian
             /// </summary>
             LE = 0,
+
             /// <summary>
             /// big endian
             /// </summary>
             BE = 1,
+
             /// <summary>
             /// VAX mixed endian
             /// </summary>
             VAX = 2,
+
             /// <summary>
             /// Compound type with mixed member orders
             /// </summary>
             MIXED = 3,
+
             /// <summary>
             /// no particular order (strings, bits,..)
             /// </summary>
@@ -137,20 +149,22 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// unsigned
             /// </summary>
             NONE = 0,
+
             /// <summary>
             /// two's complement
             /// </summary>
             SGN_2 = 1,
+
             /// <summary>
             /// sentinel: this must be last!.
             /// </summary>
             NSGN = 2
         }
-
 
         /// <summary>
         /// Floating-point normalization schemes
@@ -161,20 +175,22 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// msb of mantissa isn't stored, always 1
             /// </summary>
             IMPLIED = 0,
+
             /// <summary>
             /// msb of mantissa is always 1
             /// </summary>
             MSBSET = 1,
+
             /// <summary>
             /// not normalized
             /// </summary>
             NONE = 2
         }
-
 
         /// <summary>
         /// Character set to use for text strings.
@@ -185,14 +201,17 @@ namespace HDF.PInvoke
             /// error [value = -1].
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// US ASCII [value = 0].
             /// </summary>
             ASCII = 0,
+
             /// <summary>
             /// UTF-8 Unicode encoding [value = 1].
             /// </summary>
             UTF8 = 1,
+
             // reserved for later use [values = 2-15]
             /// <summary>
             /// reserved for later use.
@@ -201,50 +220,62 @@ namespace HDF.PInvoke
             [System.ComponentModel.EditorBrowsable(
                 System.ComponentModel.EditorBrowsableState.Never)]
             RESERVED_2 = 2,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_3 = 3,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_4 = 4,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_5 = 5,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_6 = 6,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_7 = 7,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_8 = 8,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_9 = 9,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_10 = 10,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_11 = 11,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_12 = 12,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
             RESERVED_13 = 13,
+
             /// <summary>
             /// reserved for later use.
             /// </summary>
@@ -265,66 +296,82 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// null terminate like in C
             /// </summary>
             NULLTERM = 0,
+
             /// <summary>
             /// pad with nulls
             /// </summary>
             NULLPAD = 1,
+
             /// <summary>
             /// pad with spaces like in Fortran
             /// </summary>
             SPACEPAD = 2,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_3 = 3,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_4 = 4,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_5 = 5,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_6 = 6,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_7 = 7,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_8 = 8,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_9 = 9,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_10 = 10,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_11 = 11,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_12 = 12,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_13 = 13,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
             RESERVED_14 = 14,
+
             /// <summary>
             /// reserved for later use
             /// </summary>
@@ -345,18 +392,22 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// always set to zero
             /// </summary>
             ZERO = 0,
+
             /// <summary>
             /// always set to one
             /// </summary>
             ONE = 1,
+
             /// <summary>
             /// set to background value
             /// </summary>
             BACKGROUND = 2,
+
             /// <summary>
             /// sentinel: THIS MUST BE LAST.
             /// </summary>
@@ -372,26 +423,32 @@ namespace HDF.PInvoke
             /// source value is greater than destination's range
             /// </summary>
             RANGE_HI = 0,
+
             /// <summary>
             /// source value is less than destination's range
             /// </summary>
             RANGE_LOW = 1,
+
             /// <summary>
             /// source value loses precision in destination
             /// </summary>
             PRECISION = 2,
+
             /// <summary>
             /// source value is truncated in destination
             /// </summary>
             TRUNCATE = 3,
+
             /// <summary>
             /// source value is positive infinity(floating number)
             /// </summary>
             PINF = 4,
+
             /// <summary>
             /// source value is negative infinity(floating number)
             /// </summary>
             NINF = 5,
+
             /// <summary>
             /// source value is NaN(floating number)
             /// </summary>
@@ -407,10 +464,12 @@ namespace HDF.PInvoke
             /// query and/or initialize private data
             /// </summary>
             INIT = 0,
+
             /// <summary>
             /// convert data from source to dest datatype
             /// </summary>
             CONV = 1,
+
             /// <summary>
             /// function is being removed from path
             /// </summary>
@@ -426,10 +485,12 @@ namespace HDF.PInvoke
             /// background buffer is not needed, send NULL
             /// </summary>
             NO = 0,
+
             /// <summary>
             /// bkg buffer used as temp storage only
             /// </summary>
             TEMP = 1,
+
             /// <summary>
             /// init bkg buf with data before conversion
             /// </summary>
@@ -445,14 +506,17 @@ namespace HDF.PInvoke
             /// what should the conversion function do?
             /// </summary>
             public cmd_t command;
+
             /// <summary>
             /// is the background buffer needed?
             /// </summary>
             public bkg_t need_bkg;
+
             /// <summary>
             /// recalculate private data
             /// </summary>
             public hbool_t recalc;
+
             /// <summary>
             /// private data
             /// </summary>
@@ -468,10 +532,12 @@ namespace HDF.PInvoke
             /// wild card
             /// </summary>
             DONTCARE = -1,
+
             /// <summary>
             /// hard conversion function
             /// </summary>
             HARD = 0,
+
             /// <summary>
             /// soft conversion function
             /// </summary>
@@ -487,16 +553,17 @@ namespace HDF.PInvoke
             /// default direction is ascending
             /// </summary>
             DEFAULT = 0,
+
             /// <summary>
             /// in ascending order
             /// </summary>
             ASCEND = 1,
+
             /// <summary>
             /// in descending order
             /// </summary>
             DESCEND = 2
         }
-
 
         /// <summary>
         /// The return value from conversion callback function
@@ -508,10 +575,12 @@ namespace HDF.PInvoke
             /// abort conversion [value = -1]
             /// </summary>
             ABORT = -1,
+
             /// <summary>
             /// callback function failed to handle the exception [value = 0]
             /// </summary>
             UNHANDLED = 0,
+
             /// <summary>
             /// callback function handled the exception successfully [value = 1]
             /// </summary>
@@ -529,6 +598,7 @@ namespace HDF.PInvoke
             /// Length of VL data (in base type units)
             /// </summary>
             public size_t len;
+
             /// <summary>
             /// Pointer to VL data
             /// </summary>
@@ -840,8 +910,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = enum_nameof_utf8(dtype_id, value, buffer, size);
+
             if (result >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -898,7 +972,6 @@ namespace HDF.PInvoke
         public static extern conv_t find
             (hid_t src_id, hid_t dst_id, out IntPtr pcdata);
 
-
         /// <summary>
         /// Flushes all buffers associated with a committed datatype to disk.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Tflush.htm
@@ -911,7 +984,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t flush(hid_t type_id);
-
 
         /// <summary>
         /// Retrieves sizes of array dimensions.
@@ -1363,7 +1435,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t pack(hid_t dtype_id);
 
-
         /// <summary>
         /// Refreshes all buffers associated with a committed datatype.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Trefresh.htm
@@ -1376,7 +1447,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t H5Trefresh(hid_t type_id);
-
 
         /// <summary>
         /// Registers a conversion function.

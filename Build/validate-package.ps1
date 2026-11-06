@@ -1,4 +1,4 @@
-#requires -Version 7.0
+#requires -Version 7.4
 
 <#
 .SYNOPSIS
@@ -34,9 +34,27 @@ try {
         $reader = [IO.StreamReader]::new((RequireEntry $Name).Open())
         try { return $reader.ReadToEnd() } finally { $reader.Dispose() }
     }
-    foreach ($name in @('lib/net10.0/HDF.PInvoke.dll', 'lib/net10.0/HDF.PInvoke.xml', 'LICENSE.txt', 'README.md', 'HDF.PInvoke.nuspec')) {
+    foreach ($name in @('lib/net8.0/HDF.PInvoke.dll', 'lib/net8.0/HDF.PInvoke.xml', 'lib/netstandard2.0/HDF.PInvoke.dll', 'lib/netstandard2.0/HDF.PInvoke.xml', 'LICENSE.txt', 'README.md', 'HDF.PInvoke.nuspec')) {
         $null = RequireEntry $name
     }
+    # Validate NuGet selection metadata as well as the presence of both managed assemblies.
+    [xml]$project = Get-Content "$PSScriptRoot/../Sources/HDF.PInvoke/HDF.PInvoke.csproj"
+    [xml]$specification = ReadEntry 'HDF.PInvoke.nuspec'
+    $metadata = $specification.package.metadata
+    if ($metadata.id -cne 'HDF.PInvoke' -or $metadata.version -cne $project.Project.PropertyGroup.Version) { throw 'Wrong package identity or version.' }
+    if ($metadata.license.type -cne 'file' -or $metadata.license.InnerText -cne 'LICENSE.txt' -or $metadata.readme -cne 'README.md') { throw 'Wrong package license/readme metadata.' }
+    $frameworks = @($metadata.dependencies.group | ForEach-Object { $_.targetFramework })
+    if ($frameworks.Count -ne 2 -or @(Compare-Object @('net8.0', '.NETStandard2.0') $frameworks -CaseSensitive).Count -ne 0) { throw 'Wrong managed framework groups.' }
+    $managed = @('lib/net8.0/HDF.PInvoke.dll', 'lib/net8.0/HDF.PInvoke.xml', 'lib/netstandard2.0/HDF.PInvoke.dll', 'lib/netstandard2.0/HDF.PInvoke.xml')
+    foreach ($name in $entries.Keys | Where-Object { $_.StartsWith('lib/') }) {
+        if ($name -notin $managed) { throw "Unexpected managed asset: $name" }
+    }
+    foreach ($name in $managed | Where-Object { $_.EndsWith('.xml') }) {
+        [xml]$documentation = ReadEntry $name
+        if ($documentation.doc.assembly.name -cne 'HDF.PInvoke' -or @($documentation.doc.members.member).Count -eq 0) { throw "Invalid API documentation: $name" }
+    }
+    $expectedReadme = (Get-Content "$PSScriptRoot/../README.md" -Raw).Replace("`r", '').TrimEnd()
+    if ((ReadEntry 'README.md').Replace("`r", '').TrimEnd() -cne $expectedReadme) { throw 'Package README differs from the repository guide.' }
     $expectedLicense = (Get-Content "$PSScriptRoot/../LICENSE.txt" -Raw).Replace("`r", '').TrimEnd()
     if ((ReadEntry 'LICENSE.txt').Replace("`r", '').TrimEnd() -cne $expectedLicense) { throw 'Package license differs from the complete repository license.' }
     foreach ($name in $entries.Keys | Where-Object { $_ -match '^[^/]+\.md$' -and $_ -ne 'README.md' }) { throw "Unexpected package documentation: $name" }

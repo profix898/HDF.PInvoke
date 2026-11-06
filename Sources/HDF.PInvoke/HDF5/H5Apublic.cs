@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -52,14 +47,17 @@ namespace HDF.PInvoke
             /// Indicate if creation order is valid
             /// </summary>
             public hbool_t corder_valid;
+
             /// <summary>
             /// Creation order
             /// </summary>
             public H5O_msg_crt_idx_t corder;
+
             /// <summary>
             /// Character set of attribute name
             /// </summary>
             public H5T.cset_t cset;
+
             /// <summary>
             /// Size of raw data
             /// </summary>
@@ -528,8 +526,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_name_utf8(attr_id, size, buffer);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -584,8 +586,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_name_by_idx_utf8(loc_id, obj_name, idx_type, order, n, buffer, size, lapl_id);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -593,7 +599,6 @@ namespace HDF.PInvoke
         private static extern ssize_t get_name_by_idx_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name,
             H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
             [Out] byte[] buffer, size_t size, hid_t lapl_id);
-
 
         /// <summary>
         /// Gets an attribute name, by attribute index position.

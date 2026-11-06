@@ -1,4 +1,4 @@
-#requires -Version 7.0
+#requires -Version 7.4
 
 <#
 .SYNOPSIS
@@ -44,6 +44,8 @@ $filename = if ($IsWindows) { 'hdf5.dll' } elseif ($IsMacOS) { 'libhdf5.dylib' }
 [IO.File]::WriteAllText((Join-Path $invalid $filename), 'not a native library')
 [IO.File]::WriteAllBytes((Join-Path $empty $filename), [byte[]]::new(0))
 $savedOverride = $env:HDF5_NATIVE_PATH
+$savedBinding = $env:HDF5_EXPECTED_BINDING
+$env:HDF5_EXPECTED_BINDING = 'modern'
 try {
     $env:HDF5_NATIVE_PATH = $native
     Run dotnet @('test', "$root/Tests/HDF.PInvoke.Tests", '-c', 'Release', '--no-build', '--no-restore',
@@ -54,6 +56,8 @@ try {
         Run dotnet @($smoke, '--auto', $abi)
         Run dotnet @($smoke, '--globals-first', $abi)
         Run dotnet @($smoke, $native, $abi)
+        Run dotnet @($smoke, '--recover-loader')
+        Run dotnet @($smoke, '--registered-close')
         Run dotnet @($smoke, '--context')
         Run dotnet @($smoke, '--dont-atexit')
         Run dotnet @($smoke, '--late-dont-atexit')
@@ -62,7 +66,10 @@ try {
         Run dotnet @($smoke, '--invalid', $empty)
         Run dotnet @($smoke, '--incompatible', "$PSScriptRoot/Native/interop/$Rid/incompatible/Release")
         Run dotnet @($smoke, '--relative')
+        Run dotnet @($smoke, '--configure-first')
+        Run dotnet @($smoke, '--concurrent-first')
+        Run dotnet @($smoke, '--missing-direct', $missing)
     }
     finally { Pop-Location }
 }
-finally { $env:HDF5_NATIVE_PATH = $savedOverride }
+finally { $env:HDF5_NATIVE_PATH = $savedOverride; $env:HDF5_EXPECTED_BINDING = $savedBinding }

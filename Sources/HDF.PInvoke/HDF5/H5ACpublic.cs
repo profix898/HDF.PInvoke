@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -50,12 +45,12 @@ namespace HDF.PInvoke
             /// Only rank zero writes dirty metadata to the file.
             /// </summary>
             PROCESS_0_ONLY = 0,
+
             /// <summary>
             /// Dirty metadata writes are distributed among participating ranks.
             /// </summary>
             DISTRIBUTED = 1
         }
-
 
         /// <summary>
         /// Cache configuration struct used by H5F.[get,set]_mdc_config()
@@ -77,10 +72,12 @@ namespace HDF.PInvoke
             /// Whether applying the configuration opens the specified cache trace file.
             /// </summary>
             public hbool_t open_trace_file;
+
             /// <summary>
             /// Whether applying the configuration closes the current cache trace file.
             /// </summary>
             public hbool_t close_trace_file;
+
             /// <summary>
             /// The NUL-terminated native byte buffer containing the cache trace filename.
             /// </summary>
@@ -95,6 +92,7 @@ namespace HDF.PInvoke
             /// Whether initial_size replaces the cache size when this configuration is applied.
             /// </summary>
             public hbool_t set_initial_size;
+
             /// <summary>
             /// The requested initial cache size in bytes.
             /// </summary>
@@ -109,6 +107,7 @@ namespace HDF.PInvoke
             /// The maximum allowed cache size in bytes.
             /// </summary>
             public size_t max_size;
+
             /// <summary>
             /// The minimum allowed cache size in bytes.
             /// </summary>
@@ -139,6 +138,7 @@ namespace HDF.PInvoke
             /// Whether max_increment limits each cache-size increase.
             /// </summary>
             public hbool_t apply_max_increment;
+
             /// <summary>
             /// The maximum permitted size increase in bytes per resize operation.
             /// </summary>
@@ -148,10 +148,12 @@ namespace HDF.PInvoke
             /// The policy for increasing cache size in response to a large entry.
             /// </summary>
             public H5C.cache_flash_incr_mode flash_incr_mode;
+
             /// <summary>
             /// The multiplier used to calculate a flash cache-size increase.
             /// </summary>
             public double flash_multiple;
+
             /// <summary>
             /// The fraction of the current cache size above which an entry may trigger flash growth.
             /// </summary>
@@ -177,6 +179,7 @@ namespace HDF.PInvoke
             /// Whether max_decrement limits each cache-size decrease.
             /// </summary>
             public hbool_t apply_max_decrement;
+
             /// <summary>
             /// The maximum permitted size decrease in bytes per resize operation.
             /// </summary>
@@ -191,17 +194,18 @@ namespace HDF.PInvoke
             /// Whether age-based shrinking retains the empty_reserve fraction of free cache space.
             /// </summary>
             public hbool_t apply_empty_reserve;
+
             /// <summary>
             /// The fraction of cache space retained as an empty reserve during age-based shrinking.
             /// </summary>
             public double empty_reserve;
-
 
             /* parallel configuration fields: */
             /// <summary>
             /// The number of dirty metadata bytes that triggers synchronization in parallel builds.
             /// </summary>
             public size_t dirty_bytes_threshold;
+
             /// <summary>
             /// The native metadata_write_strategy_t value selecting the parallel metadata-write policy.
             /// </summary>

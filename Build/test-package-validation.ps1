@@ -1,4 +1,4 @@
-#requires -Version 7.0
+#requires -Version 7.4
 
 <#
 .SYNOPSIS
@@ -18,7 +18,7 @@ $work = Join-Path ([IO.Path]::GetTempPath()) "hdf-package-tests-$([Guid]::NewGui
 $null = New-Item -ItemType Directory $work
 try {
     $prefix = "runtimes/$($RequiredRids[0])/native/"
-    $cases = @('missing-managed', 'missing-library', 'missing-license', 'corrupt-license', 'duplicate-runtime-license', 'extra-documentation', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'wrong-pin', 'unverified-suite')
+    $cases = @('missing-managed', 'missing-legacy', 'missing-library', 'missing-license', 'corrupt-license', 'duplicate-runtime-license', 'extra-documentation', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'wrong-pin', 'unverified-suite', 'extra-managed', 'corrupt-api-docs', 'corrupt-readme', 'wrong-frameworks', 'wrong-license-metadata')
     foreach ($case in $cases) {
         $copy = Join-Path $work "$case.nupkg"
         Copy-Item $Package $copy
@@ -29,23 +29,36 @@ try {
             try { $manifest = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
             $library = $prefix + $manifest.files[0].name
             $target = switch ($case) {
-                'missing-managed' { 'lib/net10.0/HDF.PInvoke.dll' }
+                'extra-managed' { 'lib/net10.0/HDF.PInvoke.dll' }
+                'corrupt-api-docs' { 'lib/netstandard2.0/HDF.PInvoke.xml' }
+                'corrupt-readme' { 'README.md' }
+                'wrong-frameworks' { 'HDF.PInvoke.nuspec' }
+                'wrong-license-metadata' { 'HDF.PInvoke.nuspec' }
+                'missing-managed' { 'lib/net8.0/HDF.PInvoke.dll' }
+                'missing-legacy' { 'lib/netstandard2.0/HDF.PInvoke.dll' }
                 'missing-library' { $library }
                 'missing-license' { 'LICENSE.txt' }
                 'corrupt-license' { 'LICENSE.txt' }
                 'duplicate-runtime-license' { "${prefix}Licenses/zlib.txt" }
-                'extra-documentation' { 'README_ADVANCED.md' }
+                'extra-documentation' { 'ADVANCED.md' }
                 'corrupt-library' { $library }
                 'extra-rid' { 'runtimes/unexpected/native/fake.so' }
                 'extra-runtime-file' { "${prefix}unverified.so" }
                 default { "${prefix}build-info.json" }
             }
             $entry = $zip.GetEntry($target)
+            $original = ''
+            if ($target -eq 'HDF.PInvoke.nuspec') {
+                $reader = [IO.StreamReader]::new($entry.Open())
+                try { $original = $reader.ReadToEnd() } finally { $reader.Dispose() }
+            }
             if ($entry) { $entry.Delete() }
             if (-not $case.StartsWith('missing-')) {
                 $content = 'damaged'
+                if ($case -eq 'wrong-frameworks') { $content = $original.Replace('targetFramework="net8.0"', 'targetFramework="net10.0"') }
+                if ($case -eq 'wrong-license-metadata') { $content = $original.Replace('>LICENSE.txt<', '>other.txt<') }
                 if ($case -eq 'wrong-pin') { $manifest.hdf5Revision = 'wrong'; $content = $manifest | ConvertTo-Json -Depth 10 }
-                if ($case -eq 'unverified-suite') { $manifest.upstreamTests.passed = $false; $content = $manifest | ConvertTo-Json -Depth 10 }
+                if ($case -eq 'unverified-suite', 'extra-managed', 'corrupt-api-docs', 'corrupt-readme', 'wrong-frameworks', 'wrong-license-metadata') { $manifest.upstreamTests.passed = $false; $content = $manifest | ConvertTo-Json -Depth 10 }
                 $writer = [IO.StreamWriter]::new($zip.CreateEntry($target).Open())
                 try { $writer.Write($content) } finally { $writer.Dispose() }
             }

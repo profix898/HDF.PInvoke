@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <HdfLegacy Condition="'$(HdfLegacy)' == ''">false</HdfLegacy>
     <OutputType>Exe</OutputType>
+    <NuGetLockFilePath>packages.$(TargetFramework).$(HdfLegacy).lock.json</NuGetLockFilePath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Sources/HDF.PInvoke/HDF.PInvoke.csproj" />
+    <ProjectReference Include="../../Sources/HDF.PInvoke/HDF.PInvoke.csproj">
+      <SetTargetFramework Condition="'$(HdfLegacy)' == 'true'">TargetFramework=netstandard2.0</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 </Project>

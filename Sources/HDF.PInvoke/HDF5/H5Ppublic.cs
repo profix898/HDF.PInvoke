@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -54,6 +49,7 @@ namespace HDF.PInvoke
         /// Enables tracking of object creation order.
         /// </summary>
         public const uint CRT_ORDER_TRACKED = 0x0001;
+
         /// <summary>
         /// Enables indexing of tracked object creation order.
         /// </summary>
@@ -401,7 +397,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_alloc_time
             (hid_t plist_id, ref H5D.alloc_time_t alloc_time);
 
-
         /// <summary>
         /// Retrieves the values of the append property that is set up in the
         /// dataset access property list.
@@ -423,7 +418,6 @@ namespace HDF.PInvoke
             (hid_t dapl_id, uint ndims,
             [In][Out] hsize_t[] boundary,
             ref H5D.append_cb_t func, ref IntPtr udata);
-
 
         /// <summary>
         /// Retrieves tracking and indexing settings for attribute creation order.
@@ -567,7 +561,6 @@ namespace HDF.PInvoke
             (hid_t dapl_id, ref size_t rdcc_nslots, ref size_t rdcc_nbytes,
             ref double rdcc_w0);
 
-
         /// <summary>
         /// Retrieves the edge chunk option setting from a dataset creation
         /// property list.
@@ -582,7 +575,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t get_chunk_opts
             (hid_t dcpl_id, ref uint opts);
-
 
         /// <summary>
         /// Returns the property list class identifier for a property list.
@@ -685,8 +677,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(expression, size);
             var result = get_data_transform_utf8(plist_id, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, expression);
+            }
+
             return result;
         }
 
@@ -941,6 +937,7 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t get_fapl_direct_delegate(hid_t fapl_id, ref size_t alignment, ref size_t block_size, ref size_t cbuf_size);
+
         /// <summary>
         /// Gets the direct-I/O alignment settings from a file-access property list.
         /// </summary>
@@ -1023,7 +1020,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_file_image_callbacks
             (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr);
 
-
         /// <summary>
         /// Retrieves the file space management strategy and/or free-space
         /// section threshold for an HDF5 file.
@@ -1079,7 +1075,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_file_space_strategy(hid_t fcpl,
             ref H5F.fspace_strategy_t strategy, ref hbool_t persist,
             ref hsize_t threshold);
-
 
         /// <summary>
         /// Retrieves the time when fill value are written to a dataset.
@@ -1140,7 +1135,6 @@ namespace HDF.PInvoke
             uint[] cd_values, size_t namelen, [In][Out] byte[] name,
             ref uint filter_config);
 
-
         /// <summary>
         /// Returns information about a filter in a pipeline.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetFilter2
@@ -1164,7 +1158,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern H5Z.filter_t get_filter2(hid_t plist_id, uint filter, ref uint flags, ref hsize_t cd_nelmts, uint* cd_values, size_t namelen, [Out] byte[] name, ref uint filter_config);
-
 
         /// <summary>
         /// Returns information about the specified filter.
@@ -1350,12 +1343,12 @@ namespace HDF.PInvoke
         /// cache configuration is to be reported.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
+        /// <remarks>The pointer must use the native platform layout. On legacy Windows, the public cache_config_t contains a wider CLong representation and cannot be marshalled directly to this pointer.</remarks>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_mdc_config",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t get_mdc_config
             (hid_t plist_id, IntPtr config_ptr);
-
 
         /// <summary>
         /// Retrieves the metadata cache image configuration values for a file
@@ -1392,15 +1385,18 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(location, location_size);
             var result = get_mdc_log_options_utf8(fapl_id, ref is_enabled, buffer, ref location_size, ref start_on_access);
+
             if (result >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, location);
+            }
+
             return result;
         }
 
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_mdc_log_options", CallingConvention = CallingConvention.Cdecl)]
         private static extern herr_t get_mdc_log_options_utf8(hid_t fapl_id, ref hbool_t is_enabled, [Out] byte[] buffer,
             ref size_t location_size, ref hbool_t start_on_access);
-
 
         /// <summary>
         /// Returns the current metadata block size setting.
@@ -1417,7 +1413,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_meta_block_size
             (hid_t fapl_id, ref hsize_t size);
 
-
         /// <summary>
         /// Retrieves the number of read attempts from a file access property
         /// list.
@@ -1433,7 +1428,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t get_metadata_read_attempts
             (hid_t fapl, ref uint attempts);
-
 
         /// <summary>
         /// Returns the number of filters in the pipeline.
@@ -1490,7 +1484,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_obj_track_times
             (hid_t ocpl_id, ref hbool_t track_times);
 
-
         /// <summary>
         /// Retrieves the object flush property values from the file access
         /// property list.
@@ -1529,7 +1522,6 @@ namespace HDF.PInvoke
         public static extern herr_t get_page_buffer_size
             (hid_t fapl_id, ref IntPtr buf_size, ref uint min_meta_perc,
             ref uint min_raw_perc);
-
 
         /// <summary>
         /// Retrieves the configuration settings for a shared message index.
@@ -1719,7 +1711,6 @@ namespace HDF.PInvoke
             (hid_t plist, ref uint super, ref uint freelist, ref uint stab,
             ref uint shhdr);
 
-
         /// <summary>
         /// Gets the number of mappings for the virtual dataset.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/VDS/H5Pget_virtual_count.htm
@@ -1773,8 +1764,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_virtual_dsetname_utf8(dcpl_id, index, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -1798,8 +1793,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_virtual_filename_utf8(dcpl_id, index, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -1821,8 +1820,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(prefix, size);
             var result = get_virtual_prefix_utf8(dapl, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, prefix);
+            }
+
             return result;
         }
 
@@ -1898,7 +1901,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern hid_t get_virtual_vspace
             (hid_t dcpl_id, size_t index);
-
 
         /// <summary>
         /// Gets the memory manager for variable-length datatype allocation in
@@ -2122,7 +2124,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_alloc_time
             (hid_t plist_id, H5D.alloc_time_t alloc_time);
 
-
         /// <summary>
         /// Sets two actions to perform when the size of a dataset’s dimension
         /// being appended reaches a specified boundary.
@@ -2143,7 +2144,6 @@ namespace HDF.PInvoke
             (hid_t dapl_id, uint ndims,
             [MarshalAs(UnmanagedType.LPArray)] hsize_t[] boundary,
             H5D.append_cb_t func, IntPtr udata);
-
 
         /// <summary>
         /// Sets tracking and indexing of attribute creation order.
@@ -2283,7 +2283,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_chunk(hid_t plist_id, int ndims, hsize_t* dims);
 
-
         /// <summary>
         /// Sets the edge chunk option in a dataset creation property list.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/PartialEdgeChunks/H5Pset_chunk_opts.htm
@@ -2297,7 +2296,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_chunk_opts
             (hid_t dcpl_id, uint opts);
-
 
         /// <summary>
         /// Sets the raw data chunk cache parameters.
@@ -2649,6 +2647,7 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t set_fapl_direct_delegate(hid_t fapl_id, size_t alignment, size_t block_size, size_t cbuf_size);
+
         /// <summary>
         /// Configures a file-access property list to use the optional direct-I/O driver.
         /// </summary>
@@ -2736,6 +2735,7 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t set_fapl_windows_delegate(hid_t fapl_id);
+
         /// <summary>
         /// Configures a file-access property list to use the optional Windows file driver.
         /// </summary>
@@ -2792,7 +2792,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_file_image_callbacks
             (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr);
 
-
         /// <summary>
         /// Sets the file space management strategy and/or free-space section
         /// threshold for an HDF5 file.
@@ -2846,7 +2845,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_file_space_strategy(hid_t fcpl,
             H5F.fspace_strategy_t strategy, hbool_t persist,
             hsize_t threshold);
-
 
         /// <summary>
         /// Sets the time when fill values are written to a dataset.
@@ -3088,12 +3086,12 @@ namespace HDF.PInvoke
         /// configuration.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
+        /// <remarks>The pointer must use the native platform layout. On legacy Windows, the public cache_config_t contains a wider CLong representation and cannot be marshalled directly to this pointer.</remarks>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pset_mdc_config",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_mdc_config
             (hid_t plist_id, IntPtr config_ptr);
-
 
         /// <summary>
         /// Sets the metadata cache image option for a file access property list.
@@ -3131,7 +3129,6 @@ namespace HDF.PInvoke
             (hid_t fapl_id, hbool_t is_enabled, [MarshalAs(UnmanagedType.LPUTF8Str)] string location,
             hbool_t start_on_access);
 
-
         /// <summary>
         /// Sets the minimum metadata block size.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetMetaBlockSize
@@ -3148,7 +3145,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_meta_block_size
             (hid_t fapl_id, hsize_t size);
 
-
         /// <summary>
         /// Retrieves the number of read attempts from a file access property
         /// list.
@@ -3164,7 +3160,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_metadata_read_attempts
             (hid_t fapl, uint attempts);
-
 
         /// <summary>
         /// Sets up the use of the N-Bit filter.
@@ -3207,7 +3202,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_obj_track_times
             (hid_t ocpl_id, hbool_t track_times);
 
-
         /// <summary>
         /// Sets a callback function to invoke when an object flush occurs in
         /// the file.
@@ -3246,7 +3240,6 @@ namespace HDF.PInvoke
         public static extern herr_t set_page_buffer_size
             (hid_t fapl_id, IntPtr buf_size, uint min_meta_perc,
             uint min_raw_perc);
-
 
         /// <summary>
         /// Sets up the use of the scale-offset filter.
@@ -3436,7 +3429,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_userblock(hid_t plist, hsize_t size);
 
-
         /// <summary>
         /// Sets the mapping between virtual and source datasets.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/VDS/H5Pset_virtual.htm
@@ -3515,7 +3507,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_virtual_view
             (hid_t plist_id, H5D.vds_view_t view);
-
 
         /// <summary>
         /// Sets the memory manager for variable-length datatype allocation in

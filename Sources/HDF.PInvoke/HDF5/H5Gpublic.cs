@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -44,15 +39,18 @@ namespace HDF.PInvoke
             /// Unknown link storage type [value = -1].
             /// </summary>
             UNKNOWN = -1,
+
             /// <summary>
             /// Links in group are stored with a "symbol table"
             /// (this is sometimes called "old-style" groups) [value = 0].
             /// </summary>
             SYMBOL_TABLE,
+
             /// <summary>
             /// Links are stored in object header [value = 1].
             /// </summary>
             COMPACT,
+
             /// <summary>
             /// Links are stored in fractal heap and indexed with v2 B-tree
             /// [value = 2].
@@ -70,14 +68,17 @@ namespace HDF.PInvoke
             /// Type of storage for links in group
             /// </summary>
             public storage_type_t storage_type;
+
             /// <summary>
             /// Number of links in group
             /// </summary>
             public hsize_t nlinks;
+
             /// <summary>
             /// Current max. creation order value for group
             /// </summary>
             public long max_corder;
+
             /// <summary>
             /// Whether group has a file mounted on it
             /// </summary>
@@ -165,7 +166,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static hid_t get_create_plist(hid_t group_id);
 
-
         /// <summary>
         /// Flushes all buffers associated with a group to disk.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Gflush.htm
@@ -177,7 +177,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t flush(hid_t group_id);
-
 
         /// <summary>
         /// Retrieves information about a group.
@@ -316,7 +315,6 @@ namespace HDF.PInvoke
         public extern static hid_t open
             (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t gapl_id = H5P.DEFAULT);
 
-
         /// <summary>
         /// Refreshes all buffers associated with a group.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Grefresh.htm
@@ -329,7 +327,6 @@ namespace HDF.PInvoke
             CharSet = CharSet.Ansi),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t refresh(hid_t group_id);
-
 
     }
 }

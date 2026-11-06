@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -45,38 +40,47 @@ namespace HDF.PInvoke
             /// no filter [value = -1]
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// reserved indefinitely [value = 0]
             /// </summary>
             NONE = 0,
+
             /// <summary>
             /// deflation like gzip ]value = 1]
             /// </summary>
             DEFLATE = 1,
+
             /// <summary>
             /// shuffle the data [value = 2]
             /// </summary>
             SHUFFLE = 2,
+
             /// <summary>
             /// fletcher32 checksum of EDC [value = 3]
             /// </summary>
             FLETCHER32 = 3,
+
             /// <summary>
             /// szip compression [value = 4]
             /// </summary>
             SZIP = 4,
+
             /// <summary>
             /// nbit compression [value = 5]
             /// </summary>
             NBIT = 5,
+
             /// <summary>
             /// scale+offset compression [value = 6]
             /// </summary>
             SCALEOFFSET = 6,
+
             /// <summary>
             /// filter ids below this value are reserved for library use [value = 256]
             /// </summary>
             RESERVED = 256,
+
             /// <summary>
             /// maximum filter id [value = 65535]
             /// </summary>
@@ -92,10 +96,12 @@ namespace HDF.PInvoke
             /// Uses decimal scaling for floating-point scale-offset compression.
             /// </summary>
             FLOAT_DSCALE = 0,
+
             /// <summary>
             /// Selects floating-point exponent scaling; support depends on the native scale-offset filter.
             /// </summary>
             FLOAT_ESCALE = 1,
+
             /// <summary>
             /// Uses integer scale-offset compression.
             /// </summary>
@@ -111,14 +117,17 @@ namespace HDF.PInvoke
             /// error value
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Disables error-detection checks during dataset reads.
             /// </summary>
             DISABLE = 0,
+
             /// <summary>
             /// Enables error-detection checks during dataset reads.
             /// </summary>
             ENABLE = 1,
+
             /// <summary>
             /// Indicates that no error-detection policy is specified.
             /// </summary>
@@ -144,14 +153,17 @@ namespace HDF.PInvoke
             /// Reports an error from the filter-failure callback.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// I/O should fail if filter fails.
             /// </summary>
             FAIL = 0,
+
             /// <summary>
             /// I/O continues if filter fails.
             /// </summary>
             CONT = 1,
+
             /// <summary>
             /// The callback-result sentinel; it is not a usable callback result.
             /// </summary>
@@ -217,30 +229,37 @@ namespace HDF.PInvoke
             /// Version number of the <code>class_t</code> struct
             /// </summary>
             public int version;
+
             /// <summary>
             /// Filter ID number
             /// </summary>
             public filter_t id;
+
             /// <summary>
             /// Does this filter have an encoder?
             /// </summary>
             public uint encoder_present;
+
             /// <summary>
             /// Does this filter have a decoder?
             /// </summary>
             public uint decoder_present;
+
             /// <summary>
             /// Comment for debugging
             /// </summary>
             public byte* name;
+
             /// <summary>
             /// The "can apply" callback for a filter
             /// </summary>
             public can_apply_func_t can_apply;
+
             /// <summary>
             /// The "set local" callback for a filter
             /// </summary>
             public set_local_func_t set_local;
+
             /// <summary>
             /// The actual filter function
             /// </summary>

@@ -17,6 +17,7 @@ namespace UnitTests
             long file = -1, space = -1, dataset = -1;
             var data = new[] { 10, 20, 30 };
             GCHandle pinned = GCHandle.Alloc(data, GCHandleType.Pinned);
+
             try
             {
                 file = H5F.create(path, H5F.ACC_TRUNC);
@@ -37,18 +38,27 @@ namespace UnitTests
                 var name = new StringBuilder(128);
                 Assert.IsTrue(H5I.get_name(dataset, name, new IntPtr(128)).ToInt64() >= 0);
                 Assert.AreEqual("/δεδομένα-日本語", name.ToString());
-                Array.Clear(data);
+                Array.Clear(data, 0, data.Length);
                 Assert.IsTrue(H5D.read(dataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, pinned.AddrOfPinnedObject()) >= 0);
                 CollectionAssert.AreEqual(new[] { 10, 20, 30 }, data);
             }
             finally
             {
                 if (dataset >= 0)
+                {
                     H5D.close(dataset);
+                }
+
                 if (space >= 0)
+                {
                     H5S.close(space);
+                }
+
                 if (file >= 0)
+                {
                     H5F.close(file);
+                }
+
                 pinned.Free();
                 File.Delete(path);
             }
@@ -71,6 +81,7 @@ namespace UnitTests
         {
             long stack = H5E.create_stack();
             Assert.IsTrue(stack >= 0);
+
             try
             {
                 const string message = "100% ready: %s 日本語";
@@ -83,7 +94,10 @@ namespace UnitTests
                 Assert.IsTrue(H5E.walk(stack, H5E.direction_t.H5E_WALK_DOWNWARD, callback, IntPtr.Zero) >= 0);
                 GC.KeepAlive(callback);
             }
-            finally { H5E.close_stack(stack); }
+            finally
+            {
+                H5E.close_stack(stack);
+            }
         }
     }
 }

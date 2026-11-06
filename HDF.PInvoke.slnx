@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Documentation/">
+    <File Path="README.md" />
+    <File Path="ADVANCED.md" />
+    <File Path="LEGACY.md" />
+    <File Path="RELEASE_NOTES.md" />
+  </Folder>
   <Folder Name="/Sources/">
     <Project Path="Sources/HDF.PInvoke/HDF.PInvoke.csproj" />
   </Folder>
@@ -10,6 +16,12 @@
     <File Path="Build/HDF5.props" />
     <File Path="Build/build-native.ps1" />
     <File Path="Build/test-managed.ps1" />
+    <File Path="Build/test-legacy.ps1" />
+    <File Path="Build/validate-package.ps1" />
+    <File Path="Build/test-package-validation.ps1" />
+    <File Path="Build/test-pack-selection.ps1" />
+    <File Path="Build/alpine.sh" />
+    <File Path=".github/workflows/build.yml" />
     <File Path="Build/pack.ps1" />
     <File Path="Build/test-package.ps1" />
     <File Path="Native/HDF5Options.cmake" />

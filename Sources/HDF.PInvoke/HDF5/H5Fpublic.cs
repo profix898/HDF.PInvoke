@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -48,23 +43,26 @@ namespace HDF.PInvoke
         /// absence of rdwr => rd-only
         /// </summary>
         public const uint ACC_RDONLY = 0x0000u;
+
         /// <summary>
         /// open for read and write
         /// </summary>
         public const uint ACC_RDWR = 0x0001u;
+
         /// <summary>
         /// overwrite existing files
         /// </summary>
         public const uint ACC_TRUNC = 0x0002u;
+
         /// <summary>
         /// fail if file already exists
         /// </summary>
         public const uint ACC_EXCL = 0x0004u;
+
         /// <summary>
         /// create non-existing files
         /// </summary>
         public const uint ACC_CREAT = 0x0010u;
-
 
         /// <summary>
         /// indicate that this file is open for writing in a
@@ -74,6 +72,7 @@ namespace HDF.PInvoke
         /// <code>SWMR_READ</code> access flag.
         /// </summary>
         public const uint ACC_SWMR_WRITE = 0x0020u;
+
         /// <summary>
         /// indicate that this file is open for reading in a
         /// single-writer/multi-reader (SWMR) scenario. Note that the
@@ -82,13 +81,11 @@ namespace HDF.PInvoke
         /// </summary>
         public const uint ACC_SWMR_READ = 0x0040u;
 
-
         /// <summary>
         /// Value passed to H5P.set_elink_acc_flags to cause flags to be taken
         /// from the parent file.
         /// </summary>
         public const uint ACC_DEFAULT = 0xffffu;
-
 
         // Flags for H5F.get_obj_count() & H5F.get_obj_ids() calls
 
@@ -96,27 +93,33 @@ namespace HDF.PInvoke
         /// File objects
         /// </summary>
         public const uint OBJ_FILE = 0x0001u;
+
         /// <summary>
         /// Dataset objects
         /// </summary>
         public const uint OBJ_DATASET = 0x0002u;
+
         /// <summary>
         /// Group objects
         /// </summary>
         public const uint OBJ_GROUP = 0x0004u;
+
         /// <summary>
         /// Named datatype objects
         /// </summary>
         public const uint OBJ_DATATYPE = 0x0008u;
+
         /// <summary>
         /// Attribute objects
         /// </summary>
         public const uint OBJ_ATTR = 0x0010u;
+
         /// <summary>
         /// All objects:
         /// H5F_OBJ_FILE|H5F_OBJ_DATASET|H5F_OBJ_GROUP|H5F_OBJ_DATATYPE|H5F_OBJ_ATTR)
         /// </summary>
         public const uint OBJ_ALL = 0x001Fu;
+
         /// <summary>
         /// All local objects:
         /// Restrict search to objects opened through current file ID
@@ -124,7 +127,6 @@ namespace HDF.PInvoke
         /// file)
         /// </summary>
         public const uint OBJ_LOCAL = 0x0020u;
-
 
         /// <summary>
         /// Requests the family driver&apos;s default member-file size.
@@ -140,12 +142,12 @@ namespace HDF.PInvoke
             /// specified file handle only [value = 0].
             /// </summary>
             LOCAL = 0,
+
             /// <summary>
             /// entire virtual file [value = 1].
             /// </summary>
             GLOBAL = 1
         }
-
 
         /// <summary>
         /// Unlimited file size for H5P.set_external()
@@ -161,15 +163,18 @@ namespace HDF.PInvoke
             /// Use the degree pre-defined by underlining VFL [value = 0].
             /// </summary>
             DEFAULT = 0,
+
             /// <summary>
             /// file closes only after all opened objects are closed [value = 1].
             /// </summary>
             WEAK = 1,
+
             /// <summary>
             /// if no opened objects, file is close; otherwise, file close
             /// fails [value = 2].
             /// </summary>
             SEMI = 2,
+
             /// <summary>
             /// if there are opened objects, close them first, then close file
             /// [value = 3].
@@ -188,14 +193,17 @@ namespace HDF.PInvoke
             /// Version and size information for the file superblock.
             /// </summary>
             public super_t super;
+
             /// <summary>
             /// Version and size information for the file&apos;s free-space manager.
             /// </summary>
             public free_t free;
+
             /// <summary>
             /// Version and storage information for shared object-header messages.
             /// </summary>
             public sohm_t sohm;
+
             /// <summary>
             /// Describes the file superblock and its extension storage.
             /// </summary>
@@ -205,15 +213,18 @@ namespace HDF.PInvoke
                 /// Superblock version #
                 /// </summary>
                 public uint version;
+
                 /// <summary>
                 /// Superblock size
                 /// </summary>
                 public hsize_t super_size;
+
                 /// <summary>
                 /// Superblock extension size
                 /// </summary>
                 public hsize_t super_ext_size;
             }
+
             /// <summary>
             /// Describes the file&apos;s free-space manager and tracked free space.
             /// </summary>
@@ -223,15 +234,18 @@ namespace HDF.PInvoke
                 /// Version # of file free space management
                 /// </summary>
                 public uint version;
+
                 /// <summary>
                 /// Free space manager metadata size
                 /// </summary>
                 public hsize_t meta_size;
+
                 /// <summary>
                 /// Amount of free space in the file
                 /// </summary>
                 public hsize_t tot_space;
             }
+
             /// <summary>
             /// Describes storage used by shared object-header messages.
             /// </summary>
@@ -241,17 +255,18 @@ namespace HDF.PInvoke
                 /// Version # of shared object header info
                 /// </summary>
                 public uint version;
+
                 /// <summary>
                 /// Shared object header message header size
                 /// </summary>
                 public hsize_t hdr_size;
+
                 /// <summary>
                 /// Shared object header message index &amp; heap size
                 /// </summary>
                 public H5.ih_info_t msgs_info;
             }
         }
-
 
         /// <summary>
         ///  Types of allocation requests
@@ -262,42 +277,49 @@ namespace HDF.PInvoke
             /// Data should not appear in the free list. [value = -1].
             /// </summary>
             NOLIST = -1,
+
             /// <summary>
             /// Value not yet set.  Can also be the datatype set in a larger
             /// allocation that will be suballocated by the library.
             /// Must be zero. [value = 0].
             /// </summary>
             DEFAULT = 0,
+
             /// <summary>
             /// Superblock data [value = 1].
             /// </summary>
             SUPER = 1,
+
             /// <summary>
             /// B-tree data [value = 2].
             /// </summary>
             BTREE = 2,
+
             /// <summary>
             /// Raw data (content of datasets, etc.) [value = 3].
             /// </summary>
             DRAW = 3,
+
             /// <summary>
             /// Global heap data [value = 4].
             /// </summary>
             GHEAP = 4,
+
             /// <summary>
             /// Local heap data [value = 5].
             /// </summary>
             LHEAP = 5,
+
             /// <summary>
             /// Object header data [value = 6].
             /// </summary>
             OHDR = 6,
+
             /// <summary>
             /// Sentinel value [value = 7].
             /// </summary>
             NTYPES
         }
-
 
         /// <summary>
         /// Free space section information
@@ -308,6 +330,7 @@ namespace HDF.PInvoke
             /// Address of free space section
             /// </summary>
             public haddr_t addr;
+
             /// <summary>
             /// Size of free space section
             /// </summary>
@@ -323,41 +346,47 @@ namespace HDF.PInvoke
             /// Indicates an invalid file-format version bound.
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Use the earliest possible format for storing objects
             /// </summary>
             EARLIEST = 0,
+
             /// <summary>
             /// Use the latest v18 format for storing objects
             /// </summary>
             V18 = 1,
+
             /// <summary>
             /// Use the latest v110 format for storing objects
             /// </summary>
             V110 = 2,
+
             /// <summary>
             /// Use the latest possible format for storing objects
             /// </summary>
             V112 = 3,
+
             /// <summary>
             /// Use the 1.14 file format for storing objects.
             /// </summary>
             V114 = 4,
+
             /// <summary>
             /// Use the 2.0 file format for storing objects.
             /// </summary>
             V200 = 5,
+
             /// <summary>
             /// Use the latest file format for storing objects.
             /// </summary>
             LATEST = V200,
+
             /// <summary>
             /// Sentinel.
             /// </summary>
             NBOUNDS
         }
-
-
 
         /// <summary>
         /// File space handling strategy
@@ -369,19 +398,23 @@ namespace HDF.PInvoke
             /// file drivers. This is the library default when not set.
             /// </summary>
             FSM_AGGR = 0,
+
             /// <summary>
             /// Mechanisms: free-space managers with embedded paged
             /// aggregation and virtual file drivers
             /// </summary>
             PAGE = 1,
+
             /// <summary>
             /// Mechanisms: aggregators and virtual file drivers
             /// </summary>
             AGGR = 2,
+
             /// <summary>
             /// Mechanisms: virtual file drivers
             /// </summary>
             AGGR_NONE = 3,
+
             /// <summary>
             /// Sentinel.
             /// </summary>
@@ -399,24 +432,29 @@ namespace HDF.PInvoke
             /// Default (or current) free space strategy setting
             /// </summary>
             DEFAULT = 0,
+
             /// <summary>
             /// Persistent free space managers, aggregators, virtual file
             /// driver
             /// </summary>
             ALL_PERSIST = 1,
+
             /// <summary>
             /// Non-persistent free space managers, aggregators, virtual file
             /// driver. This is the library default
             /// </summary>
             ALL = 2,
+
             /// <summary>
             /// Aggregators, Virtual file driver
             /// </summary>
             AGGR_VFD = 3,
+
             /// <summary>
             /// Virtual file driver
             /// </summary>
             VFD = 4,
+
             /// <summary>
             /// The number of legacy file-space strategies; this sentinel is not a usable strategy.
             /// </summary>
@@ -427,6 +465,7 @@ namespace HDF.PInvoke
         /// The number of metadata read categories represented by retry_info_t.
         /// </summary>
         public const int NUM_METADATA_READ_RETRY_TYPES = 21;
+
         /// <summary>
         /// Data structure to report the collection of read retries for
         /// metadata items with checksum. Used by public routine
@@ -446,86 +485,107 @@ namespace HDF.PInvoke
             /// The number of bins in each allocated metadata-read retry histogram.
             /// </summary>
             public uint nbins;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 0; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries0;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 1; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries1;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 2; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries2;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 3; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries3;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 4; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries4;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 5; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries5;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 6; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries6;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 7; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries7;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 8; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries8;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 9; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries9;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 10; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries10;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 11; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries11;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 12; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries12;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 13; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries13;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 14; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries14;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 15; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries15;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 16; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries16;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 17; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries17;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 18; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries18;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 19; zero indicates that no histogram is allocated.
             /// </summary>
             public IntPtr retries19;
+
             /// <summary>
             /// Pointer to the native retry-count histogram for metadata-read category 20; zero indicates that no histogram is allocated.
             /// </summary>
@@ -541,7 +601,6 @@ namespace HDF.PInvoke
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t flush_cb_t(hid_t object_id, IntPtr udata);
-
 
         /// <summary>
         /// Clears the external link open file cache.
@@ -605,7 +664,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t flush(hid_t object_id, scope_t scope);
 
-
         /// <summary>
         /// Converts a file&apos;s superblock and related structures to the format supported by H5Fformat_convert.
         /// </summary>
@@ -616,7 +674,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t format_convert_super(hid_t fid);
-
 
         /// <summary>
         /// Returns a file access property list identifier.
@@ -691,7 +748,6 @@ namespace HDF.PInvoke
         public extern static herr_t get_filesize
             (hid_t file_id, ref hsize_t size);
 
-
         /// <summary>
         /// Retrieves free-space section information for a file.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FileSpace/H5Fget_free_sections.htm
@@ -710,7 +766,6 @@ namespace HDF.PInvoke
         public extern static ssize_t get_free_sections
             (hid_t file_id, mem_t type, size_t nsects,
             sect_info_t[] sect_info);
-
 
         /// <summary>
         /// Returns the amount of free space in a file.
@@ -787,7 +842,6 @@ namespace HDF.PInvoke
         public extern static herr_t get_mdc_hit_rate
             (hid_t file_id, ref double hit_rate_ptr);
 
-
         /// <summary>
         /// Obtain information about a cache image if it exists.
         /// See https://support.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-GetMdcImageInfo
@@ -823,7 +877,6 @@ namespace HDF.PInvoke
             (hid_t file_id, ref hbool_t is_enabled,
             ref hbool_t is_currently_logging);
 
-
         /// <summary>
         /// Obtain current metadata cache size data for specified file.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-GetMdcSize
@@ -851,7 +904,6 @@ namespace HDF.PInvoke
             ref size_t min_clean_size_ptr, ref size_t cur_size_ptr,
             ref int cur_num_entries_ptr);
 
-
         /// <summary>
         /// Retrieves the collection of read retries for metadata entries with
         /// checksum.
@@ -869,7 +921,6 @@ namespace HDF.PInvoke
         public extern static herr_t get_metadata_read_retry_info
             (hid_t file_id, ref retry_info_t info);
 
-
         /// <summary>
         /// Retrieves name of file to which object belongs.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-GetName
@@ -884,8 +935,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_name_utf8(obj_id, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -927,7 +982,6 @@ namespace HDF.PInvoke
         public extern static ssize_t get_obj_ids
             (hid_t file_id, uint types, size_t max_objs, IntPtr obj_id_list);
 
-
         /// <summary>
         /// Retrieves statistics about page access when it is enabled.
         /// See https://support.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-GetPBStats
@@ -961,9 +1015,15 @@ namespace HDF.PInvoke
 
         private static void ValidatePageCounters(uint[] counters, string name)
         {
-            ArgumentNullException.ThrowIfNull(counters, name);
+            if (counters == null)
+            {
+                throw new ArgumentNullException(name);
+            }
+
             if (counters.Length < 2)
+            {
                 throw new ArgumentException("Two counters are required (metadata and raw data).", name);
+            }
         }
 
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_page_buffering_stats",
@@ -971,7 +1031,6 @@ namespace HDF.PInvoke
         private static extern herr_t GetPageBufferingStats(hid_t file_id,
             [Out] uint[] accesses, [Out] uint[] hits, [Out] uint[] misses,
             [Out] uint[] evictions, [Out] uint[] bypasses);
-
 
         /// <summary>
         /// Returns pointer to the file handle from the virtual file driver.
@@ -1087,7 +1146,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t reset_mdc_hit_rate_stats(hid_t file_id);
 
-
         /// <summary>
         /// Resets the page buffer statistics.
         /// See https://support.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-ResetPBStats
@@ -1116,7 +1174,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_dset_no_attrs_hint(hid_t file_id, hbool_t minimize);
 
-
         /// <summary>
         /// Attempt to configure metadata cache of target file.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5F.html#File-SetMdcConfig
@@ -1132,7 +1189,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t set_mdc_config
             (hid_t file_id, ref H5AC.cache_config_t config_ptr);
-
 
         /// <summary>
         /// Starts logging metadata cache events if logging was previously
@@ -1171,7 +1227,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t stop_mdc_logging(hid_t file_id);
-
 
         /// <summary>
         /// Unmounts a file.

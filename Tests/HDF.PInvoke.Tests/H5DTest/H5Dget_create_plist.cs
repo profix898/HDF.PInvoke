@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -34,7 +29,7 @@ namespace UnitTests
         public void H5Dget_create_plistTest1()
         {
             hid_t dset = H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
-                m_space_null);
+                                        m_space_null);
             Assert.IsTrue(dset >= 0);
 
             hid_t dapl = H5D.get_create_plist(dset);
@@ -58,7 +53,7 @@ namespace UnitTests
         public void H5Dget_create_plistTest2()
         {
             Assert.IsFalse(
-                H5D.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
+                                        H5D.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

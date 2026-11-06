@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -74,6 +69,7 @@ namespace UnitTests
             for (int i = 0; i < 3; ++i)
             {
                 writer.Write(Encoding.ASCII.GetBytes(keys[i]));
+
                 if (IntPtr.Size == 8)
                 {
                     writer.Write(values[i].ToInt64());
@@ -112,6 +108,7 @@ namespace UnitTests
                 string k = Encoding.ASCII.GetString(reader.ReadBytes(16));
                 Assert.IsTrue(k == keys[i]);
                 IntPtr ptr = IntPtr.Zero;
+
                 if (IntPtr.Size == 8)
                 {
                     ptr = new IntPtr(reader.ReadInt64());
@@ -120,6 +117,7 @@ namespace UnitTests
                 {
                     ptr = new IntPtr(reader.ReadInt32());
                 }
+
                 string v = Marshal.PtrToStringAnsi(ptr);
                 Assert.IsTrue(v == Marshal.PtrToStringAnsi(values[i]));
                 Marshal.FreeHGlobal(ptr);

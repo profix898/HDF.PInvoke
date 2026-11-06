@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -48,30 +43,37 @@ namespace HDF.PInvoke
         /// Copy only immediate members
         /// </summary>
         public const uint COPY_SHALLOW_HIERARCHY_FLAG = 0x0001u;
+
         /// <summary>
         /// Expand soft links into new objects
         /// </summary>
         public const uint COPY_EXPAND_SOFT_LINK_FLAG = 0x0002u;
+
         /// <summary>
         /// Expand external links into new objects
         /// </summary>
         public const uint COPY_EXPAND_EXT_LINK_FLAG = 0x0004u;
+
         /// <summary>
         /// Copy objects that are pointed by references
         /// </summary>
         public const uint COPY_EXPAND_REFERENCE_FLAG = 0x0008u;
+
         /// <summary>
         /// Copy object without copying attributes
         /// </summary>
         public const uint COPY_WITHOUT_ATTR_FLAG = 0x0010u;
+
         /// <summary>
         /// Copy <code>NULL</code> messages (empty space)
         /// </summary>
         public const uint COPY_PRESERVE_NULL_FLAG = 0x0020u;
+
         /// <summary>
         /// Merge committed datatypes in dest file
         /// </summary>
         public const uint COPY_MERGE_COMMITTED_DTYPE_FLAG = 0x0040u;
+
         /// <summary>
         /// All object copying flags (for internal checking
         /// </summary>
@@ -90,22 +92,27 @@ namespace HDF.PInvoke
         /// No shared messages
         /// </summary>
         public const uint SHMESG_NONE_FLAG = 0x0000;
+
         /// <summary>
         /// Simple Dataspace Message.
         /// </summary>
         public const uint SHMESG_SDSPACE_FLAG = ((uint)1 << 0x0001);
+
         /// <summary>
         /// Datatype Message.
         /// </summary>
         public const uint SHMESG_DTYPE_FLAG = ((uint)1 << 0x0003);
+
         /// <summary>
         /// Fill Value Message.
         /// </summary>
         public const uint SHMESG_FILL_FLAG = ((uint)1 << 0x0005);
+
         /// <summary>
         /// Filter pipeline message.
         /// </summary>
         public const uint SHMESG_PLINE_FLAG = ((uint)1 << 0x000b);
+
         /// <summary>
         /// Attribute Message.
         /// </summary>
@@ -127,18 +134,22 @@ namespace HDF.PInvoke
         /// data
         /// </summary>
         public const uint HDR_CHUNK0_SIZE = 0x03;
+
         /// <summary>
         /// Attribute creation order is tracked
         /// </summary>
         public const uint HDR_ATTR_CRT_ORDER_TRACKED = 0x04;
+
         /// <summary>
         /// Attribute creation order has index
         /// </summary>
         public const uint HDR_ATTR_CRT_ORDER_INDEXED = 0x08;
+
         /// <summary>
         /// Non-default attribute storage phase change values stored
         /// </summary>
         public const uint HDR_ATTR_STORE_PHASE_CHANGE = 0x10;
+
         /// <summary>
         /// Store access, modification, change and birth times for object
         /// </summary>
@@ -160,6 +171,7 @@ namespace HDF.PInvoke
         /// The maximum number of shared-message indexes in a file.
         /// </summary>
         public const uint SHMESG_MAX_NINDEXES = 8;
+
         /// <summary>
         /// The maximum number of shared messages stored in a list-based index.
         /// </summary>
@@ -176,18 +188,22 @@ namespace HDF.PInvoke
             /// Unknown object type [value = -1]
             /// </summary>
             UNKNOWN = -1,
+
             /// <summary>
             /// Object is a group [value = 0]
             /// </summary>
             GROUP,
+
             /// <summary>
             /// Object is a dataset [value = 1]
             /// </summary>
             DATASET,
+
             /// <summary>
             /// Object is a named data type [value = 2]
             /// </summary>
             NAMED_DATATYPE,
+
             /// <summary>
             /// Number of different object types (must be last!) [value = 3]
             /// </summary>
@@ -204,22 +220,27 @@ namespace HDF.PInvoke
             /// Version number of header format in file
             /// </summary>
             public uint version;
+
             /// <summary>
             /// Number of object header messages
             /// </summary>
             public uint nmesgs;
+
             /// <summary>
             /// Number of object header chunks
             /// </summary>
             public uint nchunks;
+
             /// <summary>
             /// Object header status flags
             /// </summary>
             public uint flags;
+
             /// <summary>
             /// Byte counts for allocated, used, and free object-header space.
             /// </summary>
             public space_t space;
+
             /// <summary>
             /// Bit masks describing present and shared object-header message types.
             /// </summary>
@@ -234,14 +255,17 @@ namespace HDF.PInvoke
                 /// Total space for storing object header in file
                 /// </summary>
                 public hsize_t total;
+
                 /// <summary>
                 /// Space within header for object header metadata information
                 /// </summary>
                 public hsize_t meta;
+
                 /// <summary>
                 /// Space within header for actual message information
                 /// </summary>
                 public hsize_t mesg;
+
                 /// <summary>
                 /// Free space within object header
                 /// </summary>
@@ -257,6 +281,7 @@ namespace HDF.PInvoke
                 /// Flags to indicate presence of message type in header
                 /// </summary>
                 public uint64_t present;
+
                 /// <summary>
                 /// Flags to indicate message type is shared in header
                 /// </summary>
@@ -274,6 +299,7 @@ namespace HDF.PInvoke
             /// chunked datasets
             /// </summary>
             public H5.ih_info_t obj;
+
             /// <summary>
             /// v2 B-tree and heap for attributes
             /// </summary>
@@ -290,42 +316,52 @@ namespace HDF.PInvoke
             /// File number that object is located in
             /// </summary>
             public CULong fileno;
+
             /// <summary>
             /// Object address in file
             /// </summary>
             public haddr_t addr;
+
             /// <summary>
             /// Basic object type (group, dataset, etc.)
             /// </summary>
             public type_t type;
+
             /// <summary>
             /// Reference count of object
             /// </summary>
             public uint rc;
+
             /// <summary>
             /// Access time
             /// </summary>
             public time_t atime;
+
             /// <summary>
             /// Modification time
             /// </summary>
             public time_t mtime;
+
             /// <summary>
             /// Change time
             /// </summary>
             public time_t ctime;
+
             /// <summary>
             /// Birth time
             /// </summary>
             public time_t btime;
+
             /// <summary>
             /// # of attributes attached to object
             /// </summary>
             public hsize_t num_attrs;
+
             /// <summary>
             /// Object header information
             /// </summary>
             public hdr_info_t hdr;
+
             /// <summary>
             /// Extra metadata storage for object and attributes
             /// </summary>
@@ -353,11 +389,13 @@ namespace HDF.PInvoke
             /// Abort H5Ocopy [value = -1]
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Continue the global search of all committed datatypes in the
             /// destination file [value = 0]
             /// </summary>
             CONT,
+
             /// <summary>
             /// Stop the search, but continue copying. The committed datatype
             /// will be copied but not merged. [value = 1]
@@ -374,7 +412,6 @@ namespace HDF.PInvoke
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate mcdt_search_ret_t mcdt_search_cb_t(IntPtr op_data);
 
-
         /// <summary>
         /// Determines if an HDF5 object (dataset, group, committed datatype)
         /// has had flushes of metadata entries disabled.
@@ -390,7 +427,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t are_mdc_flushes_disabled
             (hid_t object_id, ref hbool_t are_disabled);
-
 
         /// <summary>
         /// Closes an object in an HDF5 file.
@@ -470,7 +506,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t decr_refcount(hid_t object_id);
 
-
         /// <summary>
         /// Prevents metadata entries for an HDF5 object from being flushed
         /// from the metadata cache to storage.
@@ -499,7 +534,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t enable_mdc_flushes(hid_t object_id);
 
-
         /// <summary>
         /// Determines whether a link resolves to an actual object.
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5O.html#Object-ExistsByName
@@ -515,7 +549,6 @@ namespace HDF.PInvoke
         public extern static htri_t exists_by_name
             (hid_t loc_id, byte[] name, hid_t lapl_id = H5P.DEFAULT);
 
-
         /// <summary>
         /// Flushes all buffers associated with an HDF5 object to disk.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Oflush.htm
@@ -527,7 +560,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t flush(hid_t obj_id);
-
 
         /// <summary>
         /// Determines whether a link resolves to an actual object.
@@ -561,8 +593,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(comment, size);
             var result = get_comment_utf8(obj_id, buffer, size);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, comment);
+            }
+
             return result;
         }
 
@@ -590,8 +626,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(comment, size);
             var result = get_comment_by_name_utf8(loc_id, name, buffer, size, lapl_id);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, comment);
+            }
+
             return result;
         }
 
@@ -621,15 +661,18 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(comment, size);
             var result = get_comment_by_name_utf8(loc_id, name, buffer, size, lapl_id);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, comment);
+            }
+
             return result;
         }
 
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_comment_by_name", CallingConvention = CallingConvention.Cdecl)]
         private static extern ssize_t get_comment_by_name_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, [Out] byte[] buffer, size_t size,
             hid_t lapl_id);
-
 
         /// <summary>
         /// Retrieves the metadata for an object specified by an identifier.
@@ -734,7 +777,6 @@ namespace HDF.PInvoke
         public extern static herr_t get_info_by_name
             (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, ref info_t oinfo,
             hid_t lapl_id = H5P.DEFAULT);
-
 
         /// <summary>
         /// Increments an object's reference count.
@@ -865,7 +907,6 @@ namespace HDF.PInvoke
             (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
             H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
 
-
         /// <summary>
         /// Refreshes all buffers associated with an HDF5 object.
         /// See https://www.hdfgroup.org/HDF5/docNewFeatures/FineTuneMDC/H5Orefresh.htm
@@ -877,7 +918,6 @@ namespace HDF.PInvoke
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public extern static herr_t refresh(hid_t oid);
-
 
         /// <summary>
         /// Open the n-th object in a group.
@@ -900,7 +940,6 @@ namespace HDF.PInvoke
         public extern static hid_t open_by_idx
             (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
             H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
-
 
         /// <summary>
         /// Recursively visits all objects accessible from a specified object.
@@ -980,7 +1019,6 @@ namespace HDF.PInvoke
             (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, H5.index_t idx_type,
             H5.iter_order_t order, iterate_t op, IntPtr op_data,
             hid_t lapl_id = H5P.DEFAULT);
-
 
     }
 }

@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -27,7 +22,6 @@ using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
 
 using hid_t = System.Int64;
-
 
 namespace HDF.PInvoke
 {
@@ -72,18 +66,22 @@ namespace HDF.PInvoke
             /// Invalid link type id [value = -1]
             /// </summary>
             ERROR = (-1),
+
             /// <summary>
             /// Hard link id [value = 0]
             /// </summary>
             HARD = 0,
+
             /// <summary>
             /// Soft link id [value = 1]
             /// </summary>
             SOFT = 1,
+
             /// <summary>
             /// External link id [value = 64]
             /// </summary>
             EXTERNAL = 64,
+
             /// <summary>
             /// Maximum link type id [value = 255]
             /// </summary>
@@ -94,6 +92,7 @@ namespace HDF.PInvoke
         /// Maximum value link value for "built-in" link types
         /// </summary>
         public const type_t TYPE_BUILTIN_MAX = type_t.SOFT;
+
         /// <summary>
         /// Link ids at or above this value are "user-defined" link types.
         /// </summary>
@@ -109,18 +108,22 @@ namespace HDF.PInvoke
             /// Type of link
             /// </summary>
             public type_t type;
+
             /// <summary>
             /// Indicate if creation order is valid
             /// </summary>
             public hbool_t corder_valid;
+
             /// <summary>
             /// Creation order
             /// </summary>
             public Int64 corder;
+
             /// <summary>
             /// Character set of link name
             /// </summary>
             public H5T.cset_t cset;
+
             /// <summary>
             /// Address to which hard link points or
             /// size of a soft link or UD link value
@@ -139,6 +142,7 @@ namespace HDF.PInvoke
                 /// </summary>
                 [FieldOffset(0)]
                 public haddr_t address;
+
                 /// <summary>
                 /// The link-value size in bytes for a soft or user-defined link.
                 /// </summary>
@@ -326,35 +330,43 @@ namespace HDF.PInvoke
             /// Version number of this struct
             /// </summary>
             public int version;
+
             /// <summary>
             /// Link type ID
             /// </summary>
             public type_t id;
+
             /// <summary>
             /// Comment for debugging
             /// </summary>
             [MarshalAs(UnmanagedType.LPUTF8Str)]
             public string comment;
+
             /// <summary>
             /// Callback during link creation
             /// </summary>
             public create_func_t create_func;
+
             /// <summary>
             /// Callback after moving link
             /// </summary>
             public move_func_t move_func;
+
             /// <summary>
             /// Callback after copying link
             /// </summary>
             public copy_func_t copy_func;
+
             /// <summary>
             /// Callback during link traversal
             /// </summary>
             public traverse_func_t trav_func;
+
             /// <summary>
             /// Callback for link deletion
             /// </summary>
             public delete_func_t del_func;
+
             /// <summary>
             /// Callback for queries
             /// </summary>
@@ -882,8 +894,12 @@ namespace HDF.PInvoke
         {
             byte[] buffer = Utf8Buffer.Create(name, size);
             var result = get_name_by_idx_utf8(loc_id, group_name, idx_type, order, n, buffer, size, lapl_id);
+
             if (result.ToInt64() >= 0)
+            {
                 Utf8Buffer.CopyTo(buffer, name);
+            }
+
             return result;
         }
 
@@ -1151,10 +1167,8 @@ namespace HDF.PInvoke
         /// describing the user-defined link class</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lregister",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t register(ref class_t cls);
+        /// <remarks>The binding retains registered comments and callbacks until replacement, successful unregistration or successful H5.close(). Serialize all HDF5 calls.</remarks>
+        public static herr_t register(ref class_t cls) => LinkClassRegistry.Register(ref cls);
 
         /// <summary>
         /// Decodes external link information.
@@ -1184,10 +1198,8 @@ namespace HDF.PInvoke
         /// <param name="id">User-defined link class identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lunregister",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t unregister(type_t id);
+        /// <remarks>The binding retains registered comments and callbacks until replacement, successful unregistration or successful H5.close(). Serialize all HDF5 calls.</remarks>
+        public static herr_t unregister(type_t id) => LinkClassRegistry.Unregister(id);
 
         /// <summary>
         /// Recursively visits all links starting from a specified group.

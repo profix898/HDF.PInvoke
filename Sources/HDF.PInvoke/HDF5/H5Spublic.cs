@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -42,6 +37,7 @@ namespace HDF.PInvoke
         /// Uses the complete file dataspace or its corresponding memory selection, as defined by the calling I/O operation.
         /// </summary>
         public const int ALL = 0;
+
         /// <summary>
         /// The maximum-dimension sentinel allowing a dataspace dimension to grow without a fixed bound.
         /// </summary>
@@ -61,14 +57,17 @@ namespace HDF.PInvoke
             /// error [value = -1].
             /// </summary>
             NO_CLASS = -1,
+
             /// <summary>
             /// scalar variable [value = 0].
             /// </summary>
             SCALAR = 0,
+
             /// <summary>
             /// simple data space [value = 1].
             /// </summary>
             SIMPLE = 1,
+
             /// <summary>
             /// null data space [value = 2].
             /// </summary>
@@ -84,10 +83,12 @@ namespace HDF.PInvoke
             /// error
             /// </summary>
             NOOP = -1,
+
             /// <summary>
             /// Select "set" operation
             /// </summary>
             SET = 0,
+
             /// <summary>
             /// Binary "or" operation for hyperslabs
             /// (add new selection to existing selection)
@@ -96,6 +97,7 @@ namespace HDF.PInvoke
             /// A or B:           CCCCCCCCCCCCCCCC
             /// </summary>
             OR,
+
             /// <summary>
             /// Binary "and" operation for hyperslabs
             /// (only leave overlapped regions in selection)
@@ -104,6 +106,7 @@ namespace HDF.PInvoke
             /// A and B:                CCCC
             /// </summary>
             AND,
+
             /// <summary>
             /// Binary "xor" operation for hyperslabs
             /// (only leave non-overlapped regions in selection)
@@ -112,6 +115,7 @@ namespace HDF.PInvoke
             /// A xor B:          CCCCCC    CCCCCC
             /// </summary>
             XOR,
+
             /// <summary>
             /// Binary "not" operation for hyperslabs
             /// (only leave non-overlapped regions in original selection)
@@ -120,6 +124,7 @@ namespace HDF.PInvoke
             /// A not B:          CCCCCC
             /// </summary>
             NOTB,
+
             /// <summary>
             /// Binary "not" operation for hyperslabs
             /// (only leave non-overlapped regions in new selection)
@@ -128,14 +133,17 @@ namespace HDF.PInvoke
             /// B not A:                    CCCCCC
             /// </summary>
             NOTA,
+
             /// <summary>
             /// Append elements to end of point selection
             /// </summary>
             APPEND,
+
             /// <summary>
             /// Prepend elements to beginning of point selection
             /// </summary>
             PREPEND,
+
             /// <summary>
             /// Invalid upper bound on selection operations
             /// </summary>
@@ -151,22 +159,27 @@ namespace HDF.PInvoke
             /// Error
             /// </summary>
             ERROR = -1,
+
             /// <summary>
             /// Nothing selected
             /// </summary>
             NONE = 0,
+
             /// <summary>
             /// Sequence of points selected
             /// </summary>
             POINTS = 1,
+
             /// <summary>
             /// "New-style" hyperslab selection defined
             /// </summary>
             HYPERSLABS = 2,
+
             /// <summary>
             /// Entire extent selected
             /// </summary>
             ALL = 3,
+
             /// <summary>
             /// The number of selection types; this sentinel is not a usable selection.
             /// </summary>
@@ -452,7 +465,6 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern int get_simple_extent_dims
             (hid_t space_id, [In][Out] hsize_t[] dims, [In][Out] hsize_t[] maxdims);
-
 
         /// <summary>
         /// Retrieves dataspace dimension size and maximum size.

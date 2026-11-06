@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>HDF.PInvoke</RootNamespace>
     <AssemblyName>HDF.PInvoke</AssemblyName>
     <SignAssembly>true</SignAssembly>
@@ -8,11 +9,11 @@
     <Version>2.2.0</Version>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
     <FileVersion>2.2.0.0</FileVersion>
-    <Description>.NET 10 bindings for HDF5 2.2, with native libraries for Windows and Linux x64/ARM64 and macOS ARM64.</Description>
+    <Description>.NET 8 and .NET Standard 2.0 bindings for HDF5 2.2, with native libraries for Windows and Linux x64/ARM64 and macOS ARM64.</Description>
     <Authors>The HDF Group;HDF.PInvoke contributors</Authors>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <WarningsAsErrors>$(WarningsAsErrors);CS1570;CS1572;CS1573;CS1591</WarningsAsErrors>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1570;CS1572;CS1573;CS1574;CS1591</WarningsAsErrors>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RequiredNativeRids Condition="'$(RequiredNativeRids)' == ''">win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64</RequiredNativeRids>
@@ -35,6 +36,22 @@
     <WriteLinesToFile File="$(IntermediateOutputPath)native-pack-inputs.txt" Lines="$([MSBuild]::Unescape('$(RequiredNativeRids)'));@(NativeRuntime)" Overwrite="true" WriteOnlyWhenDifferent="true" />
     <ItemGroup>
       <NuGetPackInput Include="$(IntermediateOutputPath)native-pack-inputs.txt" />
+    </ItemGroup>
+  </Target>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <Compile Remove="Interop/Legacy/**/*.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Compile Remove="Interop/Modern/**/*.cs" />
+  </ItemGroup>
+  <!-- Legacy calls are generated from the same signatures, never maintained separately. -->
+  <Target Name="GenerateLegacyBindings" BeforeTargets="CoreCompile" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <Exec Command="dotnet build &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/BindingGenerator.csproj&quot; -c $(Configuration) --nologo -p:RestoreLockedMode=true" />
+    <Exec Command="dotnet &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/bin/$(Configuration)/net10.0/BindingGenerator.dll&quot; --self-test" />
+    <Exec Command="dotnet &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/bin/$(Configuration)/net10.0/BindingGenerator.dll&quot; &quot;$(MSBuildProjectDirectory)/HDF5&quot; &quot;$(MSBuildProjectDirectory)/$(IntermediateOutputPath)LegacyBindings&quot; &quot;$(DefineConstants)&quot;" />
+    <ItemGroup>
+      <Compile Remove="HDF5/**/*.cs" />
+      <Compile Include="$(IntermediateOutputPath)LegacyBindings/**/*.cs" />
     </ItemGroup>
   </Target>
 </Project>

@@ -29,7 +29,7 @@ set(BUILD_TESTING ON CACHE BOOL "Run upstream tests before staging native librar
 set(HDF5_TEST_SERIAL ON CACHE BOOL "" FORCE)
 set(HDF5_TEST_API ON CACHE BOOL "" FORCE)
 set(HDF5_TEST_SWMR ON CACHE BOOL "" FORCE)
-set(HDF_TEST_EXPRESS "1" CACHE STRING "Full upstream test iterations; use 0 for exhaustive stress" FORCE)
+set(HDF_TEST_EXPRESS "1" CACHE STRING "Full suite with reduced stress repetition; use 0 for exhaustive stress" FORCE)
 set(HDF5_BUILD_HL_LIB ON CACHE BOOL "" FORCE)
 set(HDF5_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

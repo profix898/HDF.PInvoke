@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -40,14 +35,13 @@ namespace UnitTests
                 H5S.get_simple_extent_type(space) == H5S.class_t.NULL);
 
             Assert.IsTrue(H5S.close(space) >= 0);
-
         }
 
         [TestMethod]
         public void H5Sset_extent_noneTest2()
         {
             Assert.IsFalse(
-                H5S.set_extent_none(Utilities.RandomInvalidHandle()) >= 0);
+                                        H5S.set_extent_none(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

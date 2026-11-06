@@ -3,14 +3,9 @@
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
  *                                                                           *
- * This file is part of HDF5.  The full HDF5 copyright notice, including     *
- * terms governing use, modification, and redistribution, is contained in    *
- * the files COPYING and Copyright.html.  COPYING can be found at the root   *
- * of the source code distribution tree; Copyright.html can be found at the  *
- * root level of an installed copy of the electronic HDF5 document set and   *
- * is linked from the top-level documents page.  It can also be found at     *
- * http://hdfgroup.org/HDF5/doc/Copyright.html.  If you do not have          *
- * access to either file, you may request a copy from help@hdfgroup.org.     *
+ * This file is part of HDF.PInvoke. Copyright notices and redistribution
+ * terms for the wrapper and its native dependencies are in LICENSE.txt
+ * at the repository and package root.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
@@ -32,9 +27,8 @@ namespace UnitTests
         [TestMethod]
         public void H5DwriteTest1()
         {
-
             string utf8string
-                = "Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο";
+                                        = "Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο";
             byte[] wdata = Encoding.UTF8.GetBytes(utf8string);
 
             hid_t dtype = H5T.create(H5T.class_t.STRING,
@@ -84,8 +78,8 @@ namespace UnitTests
             for (int i = 0; i < utf8strings.Count; ++i)
             {
                 hnds[i] = GCHandle.Alloc(
-                    Encoding.UTF8.GetBytes((string)utf8strings[i]),
-                    GCHandleType.Pinned);
+                                                    Encoding.UTF8.GetBytes((string)utf8strings[i]),
+                                                    GCHandleType.Pinned);
                 wdata[i] = hnds[i].AddrOfPinnedObject();
             }
 

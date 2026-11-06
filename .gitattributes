@@ -7,7 +7,8 @@ CMakeLists.txt text eol=lf
 *.json text eol=lf
 *.slnx text eol=lf
 *.snk binary
-*.xlsx binary
+*.png binary
+*.h5 binary
 
 *.sh text eol=lf
 *.yaml text eol=lf
@@ -16,3 +17,6 @@ CMakeLists.txt text eol=lf
 *.md text eol=lf
 *.MD text eol=lf
 *.Dockerfile text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf

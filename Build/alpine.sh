@@ -40,25 +40,43 @@ trap cleanup EXIT
 prop() { sed -n "s:.*<$1>\(.*\)</$1>.*:\1:p" "$2" | tr -d '\r'; }
 if [[ "$phase" == consumer ]]; then
     version=$(prop Version Sources/HDF.PInvoke/HDF.PInvoke.csproj)
-    cat >"$work/Consumer.csproj" <<EOF
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup>
-<TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType><UseAppHost>false</UseAppHost>
-</PropertyGroup><ItemGroup><PackageReference Include="HDF.PInvoke" Version="$version" /></ItemGroup></Project>
+    for variant in net8.0 net10.0 legacy; do
+        framework=$variant
+        reference="<PackageReference Include=\"HDF.PInvoke\" Version=\"$version\" />"
+        export HDF5_EXPECTED_BINDING=modern
+        self_contained=false
+        if [[ "$variant" == net8.0 ]]; then self_contained=true; fi
+        if [[ "$variant" == legacy ]]; then
+            framework=net10.0
+            export HDF5_EXPECTED_BINDING=legacy
+            reference="<PackageReference Include=\"HDF.PInvoke\" Version=\"$version\" GeneratePathProperty=\"true\" ExcludeAssets=\"compile;runtime\" /><Reference Include=\"HDF.PInvoke\"><HintPath>\$(PkgHDF_PInvoke)/lib/netstandard2.0/HDF.PInvoke.dll</HintPath></Reference>"
+        fi
+        cat >"$work/Consumer.csproj" <<EOF
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblySearchPaths>{HintPathFromItem};{RawFileName}</AssemblySearchPaths>
+    <TargetFramework>$framework</TargetFramework>
+    <SelfContained>$self_contained</SelfContained>
+    <OutputType>Exe</OutputType>
+    <UseAppHost>$self_contained</UseAppHost>
+  </PropertyGroup>
+  <ItemGroup>$reference</ItemGroup>
+</Project>
 EOF
-    cp Tests/HDF.PInvoke.Smoke/{Program.cs,LoaderScenarios.cs} "$work/"
-    # Container mount is fixed at /src, so no arbitrary XML path interpolation.
-    cat >"$work/NuGet.Config" <<'EOF'
-<configuration><packageSources><clear /><add key="local" value="/src/Build/Artifacts/packages" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources></configuration>
+        cp "$root"/Tests/HDF.PInvoke.Smoke/{Program.cs,LoaderScenarios.cs} "$work/"
+        # Container mount is fixed at /src, so no arbitrary XML path interpolation.
+        cat >"$work/NuGet.Config" <<'EOF'
+<configuration><packageSources><clear /><add key="local" value="/src/Build/Artifacts/packages" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources><packageSourceMapping><packageSource key="local"><package pattern="HDF.PInvoke" /></packageSource><packageSource key="nuget"><package pattern="*" /></packageSource></packageSourceMapping></configuration>
 EOF
-    cd "$work"
-    dotnet restore Consumer.csproj -r "$rid" --packages "$work/packages"
-    dotnet publish Consumer.csproj -c Release -r "$rid" --self-contained false --no-restore -o publish
-    chmod -R a-w publish
-    cd /tmp
-    dotnet "$work/publish/Consumer.dll" --auto
-    dotnet "$work/publish/Consumer.dll" --context
-    dotnet "$work/publish/Consumer.dll" --dont-atexit
-    dotnet "$work/publish/Consumer.dll" --late-dont-atexit
+        cd "$work"
+        dotnet restore Consumer.csproj -r "$rid" --packages "$work/packages"
+        dotnet publish Consumer.csproj -c Release -r "$rid" --self-contained "$self_contained" --no-restore -o "$work/$variant"
+        chmod -R a-w "$work/$variant"
+        cd /tmp
+        for mode in --auto --recover-loader --registered-close --context --dont-atexit --late-dont-atexit --configure-first --concurrent-first; do
+            dotnet "$work/$variant/Consumer.dll" "$mode"
+        done
+    done
     exit 0
 fi
 [[ "$phase" == build ]] || {
@@ -111,21 +129,27 @@ jq -n --arg rid "$rid" --arg version "$(prop Hdf5Version Build/HDF5.props)" \
     '{rid:$rid,hdf5Version:$version,hdf5Revision:$revision,zlibRevision:$zlib,configuration:"Release",
       upstreamTests:{passed:true,expressLevel:1},
       features:{highLevel:true,deflate:true,szip:false,threadSafe:false,mpi:false},files:$files}' >"$stage/build-info.json"
-dotnet restore HDF.PInvoke.slnx --locked-mode
-dotnet build HDF.PInvoke.slnx -c Release --no-restore -p:RequiredNativeRids="$rid"
-HDF5_NATIVE_PATH="$stage" dotnet test Tests/HDF.PInvoke.Tests -c Release --no-build --no-restore \
-    --logger 'trx;LogFileName=managed.trx' --results-directory "$results"
-publish="$root/Build/Artifacts/loader/$rid"
-dotnet publish Tests/HDF.PInvoke.Smoke -c Release --no-restore -p:UseAppHost=false -p:RequiredNativeRids="$rid" -o "$publish"
-smoke="$publish/HDF.PInvoke.Smoke.dll"
-abi="$interop/abi-layout.txt"
-cd "$work"
-for mode in --auto --globals-first "$stage"; do dotnet "$smoke" "$mode" "$abi"; done
-for mode in --context --relative --dont-atexit --late-dont-atexit; do dotnet "$smoke" "$mode"; done
-mkdir missing invalid empty
-printf 'invalid ELF' >invalid/libhdf5.so
-: >empty/libhdf5.so
-dotnet "$smoke" --missing "$work/missing"
-dotnet "$smoke" --invalid "$work/invalid"
-dotnet "$smoke" --invalid "$work/empty"
-dotnet "$smoke" --incompatible "$interop/incompatible/Release"
+for legacy in false true; do
+    # Assert that each test process uses the intended managed asset.
+    if [[ "$legacy" == true ]]; then export HDF5_EXPECTED_BINDING=legacy; else export HDF5_EXPECTED_BINDING=modern; fi
+    cd "$root"
+    dotnet restore HDF.PInvoke.slnx --locked-mode -p:HdfLegacy="$legacy"
+    dotnet build HDF.PInvoke.slnx -c Release --no-restore -p:HdfLegacy="$legacy" -p:RequiredNativeRids="$rid"
+    HDF5_NATIVE_PATH="$stage" dotnet test Tests/HDF.PInvoke.Tests -c Release --no-build --no-restore -p:HdfLegacy="$legacy" \
+        --logger "trx;LogFileName=managed-legacy-$legacy.trx" --results-directory "$results"
+    publish="$root/Build/Artifacts/loader/$rid/$legacy"
+    dotnet publish Tests/HDF.PInvoke.Smoke -c Release --no-restore -p:HdfLegacy="$legacy" -p:UseAppHost=false -p:RequiredNativeRids="$rid" -o "$publish"
+    smoke="$publish/HDF.PInvoke.Smoke.dll"
+    abi="$interop/abi-layout.txt"
+    cd "$work"
+    for mode in --auto --globals-first "$stage"; do dotnet "$smoke" "$mode" "$abi"; done
+    for mode in --recover-loader --registered-close --context --relative --dont-atexit --late-dont-atexit --configure-first --concurrent-first; do dotnet "$smoke" "$mode"; done
+    mkdir -p missing invalid empty
+    printf 'invalid ELF' >invalid/libhdf5.so
+    : >empty/libhdf5.so
+    dotnet "$smoke" --missing "$work/missing"
+    dotnet "$smoke" --missing-direct "$work/missing"
+    dotnet "$smoke" --invalid "$work/invalid"
+    dotnet "$smoke" --invalid "$work/empty"
+    dotnet "$smoke" --incompatible "$interop/incompatible/Release"
+done
