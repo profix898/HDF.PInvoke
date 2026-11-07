@@ -7,6 +7,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 /// </summary>
 sealed class LegacyBindings : CSharpSyntaxRewriter
 {
+    /// <summary>Propagates compiler cancellation through declaration traversal.</summary>
+    private readonly CancellationToken cancellationToken;
+
+    /// <summary>Creates a binding rewriter for the current compiler operation.</summary>
+    internal LegacyBindings(CancellationToken cancellationToken = default)
+    {
+        this.cancellationToken = cancellationToken;
+    }
+
+    /// <summary>Checks cancellation before traversing each declaration node.</summary>
+    public override SyntaxNode? Visit(SyntaxNode? node)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return base.Visit(node);
+    }
+
     /// <summary>
     /// Gets the number of imports rewritten in the current source file.
     /// </summary>
@@ -61,6 +77,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
 
         foreach (var member in node.Members)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (member is not MethodDeclarationSyntax method)
             {
                 members.Add((MemberDeclarationSyntax)Visit(member)!);
@@ -106,8 +123,15 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 continue;
             }
 
-            var import = method.AttributeLists.SelectMany(a => a.Attributes)
-                .SingleOrDefault(a => a.Name.ToString() == "DllImport");
+            var imports = method.AttributeLists.SelectMany(a => a.Attributes)
+                .Where(a => a.Name.ToString() == "DllImport").ToArray();
+
+            if (imports.Length > 1)
+            {
+                throw new BindingGenerationException("Expected one DllImport attribute per declaration.", method.GetLocation());
+            }
+
+            var import = imports.SingleOrDefault();
 
             if (import == null)
             {
@@ -115,32 +139,59 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 continue;
             }
 
-            var arguments = import.ArgumentList!.Arguments;
+            // Only native declarations may lose their extern modifier and acquire a generated body.
+            if (!method.Modifiers.Any(SyntaxKind.StaticKeyword) || !method.Modifiers.Any(SyntaxKind.ExternKeyword) ||
+                method.TypeParameterList != null || method.Body != null || method.ExpressionBody != null)
+            {
+                throw new BindingGenerationException("Expected a static, non-generic extern import without a method body.", method.GetLocation());
+            }
+            if (import.ArgumentList == null || import.ArgumentList.Arguments.Count == 0)
+            {
+                throw new BindingGenerationException("Missing import library.", method.GetLocation());
+            }
+
+            var arguments = import.ArgumentList.Arguments;
             string library = arguments[0].Expression.ToString();
 
             if (library is not ("Constants.DLLFileName" or "Constants.HLDLLFileName"))
             {
-                throw new InvalidOperationException($"Unexpected import library: {library}");
+                throw new BindingGenerationException($"Unexpected import library: {library}", method.GetLocation());
             }
 
-            var named = arguments.Skip(1).ToDictionary(a => a.NameEquals!.Name.Identifier.ValueText, a => a.Expression.ToString());
+            var named = new Dictionary<string, string>();
 
-            if (!named.Remove("EntryPoint", out string? entryPoint))
+            foreach (var argument in arguments.Skip(1))
             {
-                throw new InvalidOperationException("Missing explicit entry point.");
+                string? name = argument.NameEquals?.Name.Identifier.ValueText;
+
+                if (name == null || named.ContainsKey(name))
+                {
+                    throw new BindingGenerationException("Expected unique named DllImport options after the library argument.", argument.GetLocation());
+                }
+
+                named.Add(name, argument.Expression.ToString());
             }
 
-            if (!named.Remove("CallingConvention", out string? convention))
+            if (!named.TryGetValue("EntryPoint", out string? entryPoint))
             {
-                throw new InvalidOperationException("Missing calling convention.");
+                throw new BindingGenerationException("Missing explicit entry point.", method.GetLocation());
             }
+
+            named.Remove("EntryPoint");
+
+            if (!named.TryGetValue("CallingConvention", out string? convention))
+            {
+                throw new BindingGenerationException("Missing calling convention.", method.GetLocation());
+            }
+
+            named.Remove("CallingConvention");
 
             // Reject new import options until their delegate-marshalling equivalents are understood.
             var supported = new[] { "CharSet", "SetLastError", "BestFitMapping", "ThrowOnUnmappableChar" };
 
             if (named.Keys.Any(k => !supported.Contains(k)))
             {
-                throw new InvalidOperationException("Unsupported DllImport option.");
+                throw new BindingGenerationException("Unsupported DllImport option.", method.GetLocation());
             }
 
             string pointerOptions = string.Join("", named.Select(p => $", {p.Key} = {p.Value}"));

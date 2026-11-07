@@ -22,6 +22,9 @@ $native = Join-Path $PSScriptRoot "Native/runtimes/$Rid/native"
 $publish = Join-Path $PSScriptRoot "Artifacts/legacy-loader/$Rid"
 $abi = Join-Path $PSScriptRoot "Native/interop/$Rid/abi-layout.txt"
 if (-not $SkipAbi -and -not (Test-Path $abi)) { throw 'Build the ABI probe first, or explicitly use -SkipAbi for local checks.' }
+# Test the compiler integration independently of the native runtime and wrapper tests.
+Run dotnet @('test', "$root/Tests/BindingGenerator.Tests", '-c', 'Release', '-p:RestoreLockedMode=true',
+    '--logger', 'trx;LogFileName=generator.trx', '--results-directory', "$PSScriptRoot/Artifacts/tests/$Rid")
 $saved = $env:HDF5_NATIVE_PATH
 $savedBinding = $env:HDF5_EXPECTED_BINDING
 $env:HDF5_EXPECTED_BINDING = 'legacy'

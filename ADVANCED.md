@@ -12,7 +12,8 @@ This guide covers the modern `net8.0` implementation, native builds and package 
 | `Native/hdf5` | Unmodified official source submodule |
 | `Native/HDF5Options.cmake` | Native configuration and source-pin verification |
 | `Native/Tests` | Header-derived ABI probe and incompatible-version fixture |
-| `Tools/BindingGenerator` | Build-time legacy source generation and regression checks |
+| `Tools/BindingGenerator` | Compiler-hosted incremental generation of legacy bindings |
+| `Tests/BindingGenerator.Tests` | Source transformations, diagnostics and incremental-generation regressions |
 | `Build/HDF5.props` | Pinned HDF5 and zlib versions/revisions |
 | `Build/Native` | Ignored native build, install and runtime outputs |
 | `Build/Artifacts` | Ignored test results, packages and consumer deployments |

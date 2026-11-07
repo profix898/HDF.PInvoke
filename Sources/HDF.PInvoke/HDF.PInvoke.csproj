@@ -41,17 +41,11 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <Compile Remove="Interop/Legacy/**/*.cs" />
   </ItemGroup>
+  <!-- The modern target compiles the declarations directly; only legacy treats them as generator inputs. -->
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <Compile Remove="Interop/Modern/**/*.cs" />
+    <Compile Remove="Interop/Modern/**/*.cs;HDF5/**/*.cs" />
+    <AdditionalFiles Include="HDF5/**/*.cs" HdfBindingPath="HDF5/%(RecursiveDir)%(Filename)%(Extension)" />
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="HdfBindingPath" />
+    <ProjectReference Include="../../Tools/BindingGenerator/BindingGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
   </ItemGroup>
-  <!-- Legacy calls are generated from the same signatures, never maintained separately. -->
-  <Target Name="GenerateLegacyBindings" BeforeTargets="CoreCompile" Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <Exec Command="dotnet build &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/BindingGenerator.csproj&quot; -c $(Configuration) --nologo -p:RestoreLockedMode=true" />
-    <Exec Command="dotnet &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/bin/$(Configuration)/net10.0/BindingGenerator.dll&quot; --self-test" />
-    <Exec Command="dotnet &quot;$(MSBuildProjectDirectory)/../../Tools/BindingGenerator/bin/$(Configuration)/net10.0/BindingGenerator.dll&quot; &quot;$(MSBuildProjectDirectory)/HDF5&quot; &quot;$(MSBuildProjectDirectory)/$(IntermediateOutputPath)LegacyBindings&quot; &quot;$(DefineConstants)&quot;" />
-    <ItemGroup>
-      <Compile Remove="HDF5/**/*.cs" />
-      <Compile Include="$(IntermediateOutputPath)LegacyBindings/**/*.cs" />
-    </ItemGroup>
-  </Target>
 </Project>

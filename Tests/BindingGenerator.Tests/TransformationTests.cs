@@ -1,15 +1,18 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 /// <summary>
 /// Checks representative syntax, ABI, and ownership transformations without loading HDF5.
 /// </summary>
-internal static class GeneratorTests
+[TestClass]
+public sealed class TransformationTests
 {
     /// <summary>
-    /// Runs the generator regression cases used before each legacy binding generation.
+    /// Preserves the established signature, ownership, metadata, and ABI conversion contracts.
     /// </summary>
-    internal static void Run()
+    [TestMethod]
+    public void PreservesSharedBindingContracts()
     {
         string declaration = "[DllImport(Constants.DLLFileName, EntryPoint = \"example\", CallingConvention = CallingConvention.Cdecl)] public static extern int Call([MarshalAs(UnmanagedType.LPUTF8Str)] string text, ref int value);";
         string output = BindingSource.Generate("class H5 { " + declaration + " }", out int count);

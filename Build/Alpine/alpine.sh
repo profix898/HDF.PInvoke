@@ -129,6 +129,9 @@ jq -n --arg rid "$rid" --arg version "$(prop Hdf5Version Build/HDF5.props)" \
     '{rid:$rid,hdf5Version:$version,hdf5Revision:$revision,zlibRevision:$zlib,configuration:"Release",
       upstreamTests:{passed:true,expressLevel:1},
       features:{highLevel:true,deflate:true,szip:false,threadSafe:false,mpi:false},files:$files}' >"$stage/build-info.json"
+# Compiler-hosted generation has its own tests and needs no native HDF5 initialization.
+dotnet test Tests/BindingGenerator.Tests -c Release -p:RestoreLockedMode=true \
+    --logger 'trx;LogFileName=generator.trx' --results-directory "$results"
 for legacy in false true; do
     # Assert that each test process uses the intended managed asset.
     if [[ "$legacy" == true ]]; then export HDF5_EXPECTED_BINDING=legacy; else export HDF5_EXPECTED_BINDING=modern; fi

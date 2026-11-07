@@ -64,27 +64,43 @@ The [library project](Sources/HDF.PInvoke/HDF.PInvoke.csproj) includes `Interop/
 
 The modern assembly keeps its direct HDF5 P/Invoke declarations and native import resolver. The legacy assembly contains generated methods with the same public signatures instead. Small conditional aliases are used where shared helpers need target-specific types: for example, `H5DLLImporter` aliases `NativeLibrary` to `LegacyNativeLibrary` under `NETSTANDARD2_0`. This avoids introducing an abstraction into every native call.
 
-The repository builds with the SDK pinned in `global.json`. The generator itself targets .NET 10 and uses Roslyn assemblies shipped with that SDK. This is a contributor/build requirement: consumers receive compiled assemblies and do not need the generator, Roslyn or the repository's SDK to run the legacy assembly.
+The repository builds with the SDK pinned in `global.json`. The compiler-hosted generator targets .NET Standard 2.0 and references a pinned Roslyn package compatible with that SDK. The generator is a private build dependency: consumers receive compiled wrapper assemblies and do not need the generator or Roslyn at runtime.
 
-### How the source transformation works
+### How source generation works
 
-[Tools/BindingGenerator](Tools/BindingGenerator) is a standalone console tool invoked by an MSBuild target before `CoreCompile`. It uses Roslyn syntax trees, but is not a compiler-hosted `ISourceGenerator` or `IIncrementalGenerator`. It does not parse HDF5 C headers or invent signatures; the declarations in `Sources/HDF.PInvoke/HDF5` remain authoritative.
+[Tools/BindingGenerator](Tools/BindingGenerator) implements Roslyn's `IIncrementalGenerator`. It does not parse HDF5 C headers or invent signatures; the declarations in `Sources/HDF.PInvoke/HDF5` remain authoritative. The modern target compiles those files directly. For the legacy target, the project selects them as `AdditionalFiles` during project evaluation and references the generator as an analyzer. The legacy loader and compatibility helpers remain ordinary compilation inputs.
 
 The legacy compilation follows these steps:
 
-1. Build the generator and execute its regression checks.
-2. Parse the shared C# files using the legacy compilation's actual `DefineConstants`.
-3. Replace each supported HDF5 `DllImport` method with a managed forwarder, a typed unmanaged delegate and a lazy delegate cache, or select an explicit bridge for a special signature.
-4. Transform UTF-8 marshalling attributes according to whether the call owns or borrows its string buffers.
-5. Write generated C# files below `obj/<configuration>/netstandard2.0/LegacyBindings` and compile these in place of the original `HDF5/**/*.cs` files.
+1. MSBuild builds the generator through a normal project reference and supplies the selected additional files to the compiler.
+2. The generator reads each selected file and the compiler's actual C# parse options, including preprocessor symbols.
+3. It validates syntax and string ownership at the original source locations, then replaces supported HDF5 `DllImport` declarations with managed forwarders, typed unmanaged delegates and lazy caches, or selects an explicit bridge for a special signature.
+4. It transforms UTF-8 marshalling attributes according to whether the call owns or borrows its string buffers.
+5. It adds the generated sources directly to the legacy compilation through Roslyn's `AddSource` API.
+
+Roslyn owns the generated syntax trees and their lifetime within each compilation. Changes to one input do not require transforming unrelated files within a retained generator driver; a fresh compiler process can still regenerate all inputs. Removing an input removes its generated tree from the next compilation. Relative source paths produce stable, collision-resistant generated names across checkout locations, including files with equal basenames in different directories.
 
 Calling conventions, parameter attributes, return marshalling, `ref`/`out` modifiers, optional public arguments and XML documentation are retained. Delegate declarations omit optional argument defaults; the public forwarding methods retain them. The rewriter changes attribute syntax rather than globally replacing strings, so comments and string literals containing names such as `UnmanagedType.LPUTF8Str` remain intact.
 
-The transformation deliberately recognizes a constrained set of import forms. Unknown library names, unsupported import options, string returns or `ref`/`out` strings without ownership handling, and unknown UTF-8 structure fields cause generation to fail. Parsing validates generated syntax; the subsequent C# compilation validates types. Neither check can prove that a native signature matches the C ABI, which is why header-derived probes and native integration tests remain necessary.
+The transformation deliberately recognizes a constrained set of import forms. Non-static or non-extern methods, generic imports, unknown library names, unsupported import options, string returns or `ref`/`out` strings without ownership handling, and unknown UTF-8 structure fields fail generation. Parsing validates generated syntax; the subsequent C# compilation validates types. Neither check can prove that a native signature matches the C ABI, which is why header-derived probes and native integration tests remain necessary.
+
+| Diagnostic | Meaning |
+| --- | --- |
+| `HDFGEN001` | Invalid source syntax or an unsupported binding declaration; points to the original input when available |
+| `HDFGEN002` | A selected additional file could not be read |
+| `HDFGEN003` | The selected input set contains no HDF5 imports |
+
+Additional-file diagnostics use external-file locations so editors can navigate to the original declaration. Errors detected when compiling the generated code still refer to generated sources. The original legacy inputs are additional files rather than normal compilation trees, so their semantic editing experience can differ from the modern target. Compiler cancellation propagates through parsing and rewriting instead of being reported as a binding failure.
 
 Generated methods carry an internal [LegacyImportAttribute](Sources/HDF.PInvoke/Interop/Legacy/LegacyImportAttribute.cs) recording the original library and entry-point names. Export validation can therefore inspect the legacy assembly even though these methods no longer carry `DllImport` metadata. The attribute is validation metadata; delegate resolution uses the generated library and symbol arguments directly.
 
-Generation processes files in deterministic order and avoids rewriting unchanged output. It removes obsolete files only when they carry its own generated-file marker. Generated files are build products: inspect them to debug a transformation, but change the shared declaration or generator rather than editing the generated copy.
+Generated files need not exist on disk. To inspect them, use the compiler's optional output setting:
+
+```sh
+dotnet build Sources/HDF.PInvoke -c Release -f netstandard2.0 --no-incremental -p:EmitCompilerGeneratedFiles=true
+```
+
+The default inspection directory is `obj/Release/netstandard2.0/generated` beneath the library project. These files are snapshots, not authoritative compilation inputs; change the shared declaration or generator instead. Generator regression tests run separately from generation, through the test project and the Windows/Unix and Alpine validation scripts.
 
 ### What a generated call does
 
@@ -112,7 +128,7 @@ This is not a general recovery guarantee after any failed HDF5 use. If loading f
 
 The loader first determines the process RID and applies the directory-selection rules above. It validates the core library with `H5get_libversion`, requiring the HDF5 2.2 release family before retaining the handle. The high-level library is loaded lazily from the same selected directory. Native dependencies still need to be compatible with the host: selecting the correct RID does not remove the VC++ runtime requirement or lower a Linux binary's glibc baseline.
 
-[H5DLLImporter](Sources/HDF.PInvoke/HDF5/H5DLLImporter.cs) handles exported data symbols, not managed assembly resolution. Predefined HDF5 identifiers such as datatype IDs are native global variables. The helper gets the same core handle used by the forwarding methods, calls `H5.open()` to initialize predefined identifiers, resolves the global's address and reads its 64-bit value. This prevents the old failure pattern in which function imports find one library while global lookup attempts a different fixed Linux path.
+[H5DLLImporter](Sources/HDF.PInvoke/HDF5/H5DLLImporter.cs) handles exported data symbols, not managed assembly resolution. Predefined HDF5 identifiers such as datatype IDs are native global variables. The helper gets the same core handle used by the forwarding methods, calls `H5.open()` to initialize predefined identifiers, resolves the global's address and reads its 64-bit value. Function calls and global lookup therefore use the same HDF5 instance, including when the application selects a custom native directory.
 
 Disabling native automatic shutdown needs special ordering. Even the version query initializes HDF5, so `H5.dont_atexit()` must ask the loader to invoke the native opt-out before performing that query. Normal calls initialize through the regular load-and-validate path. Native handles remain loaded for process lifetime because cached delegates and exported addresses depend on them. `H5.close()` shuts down HDF5 state; it does not unload the operating-system library handle.
 
@@ -162,8 +178,8 @@ This is targeted ownership handling for user-defined links. For other callback A
 
 | File or directory | Responsibility |
 | --- | --- |
-| [HDF.PInvoke.csproj](Sources/HDF.PInvoke/HDF.PInvoke.csproj) | Select target-specific files and invoke generation before legacy compilation |
-| [Program.cs](Tools/BindingGenerator/Program.cs) | Manage generator inputs, compilation symbols, deterministic output and stale generated files |
+| [HDF.PInvoke.csproj](Sources/HDF.PInvoke/HDF.PInvoke.csproj) | Select target-specific compilation inputs and the legacy analyzer reference |
+| [LegacyBindingGenerator.cs](Tools/BindingGenerator/LegacyBindingGenerator.cs) | Integrate incremental inputs, generated sources, cancellation and source diagnostics with Roslyn |
 | [LegacyBindings.cs](Tools/BindingGenerator/LegacyBindings.cs) | Rewrite imports, create delegate caches and generate the Windows cache-configuration bridge |
 | [BindingSource.cs](Tools/BindingGenerator/BindingSource.cs) | Validate syntax and rewrite UTF-8 attributes with explicit ownership rules |
 | [Interop/Legacy](Sources/HDF.PInvoke/Interop/Legacy) | Load native handles and provide compatibility types, UTF-8 marshalling and the error-walk bridge |
@@ -174,7 +190,7 @@ Add or correct ordinary signatures in the shared `HDF5` sources. If a declaratio
 
 The extra runtime work consists of lazy delegate resolution, a cached delegate invocation and any required string or structure conversion. Native symbol lookup occurs on first use of each cache, not on every successful call. There is no blanket performance guarantee relative to modern P/Invoke; profile representative workloads before adding further caching or allocation complexity.
 
-Legacy support is isolated in its target, loader files and generator integration. Retiring it would also remove legacy-only tests and package-validation cases. The shared native signatures and modern resolver can remain in place; the shared registration-lifetime fix is useful independently of legacy support.
+Legacy support is isolated in its target, loader files and generator integration. Shared native declarations and registration lifetime management serve both managed targets.
 
 ## Testing changes
 
@@ -182,20 +198,20 @@ After building native libraries, run:
 
 ```sh
 pwsh -File Build/testLegacy.ps1 -Rid win-x64
-dotnet run --project Tools/BindingGenerator -c Release -- --self-test
+dotnet test Tests/BindingGenerator.Tests -c Release -p:RestoreLockedMode=true
 ```
 
 Validation covers distinct failure classes:
 
 | Check | What it establishes |
 | --- | --- |
-| Generator regression checks | Preserve attributes, XML documentation and compilation symbols; reject unsupported signatures; select the intended bridges |
+| [Generator regression checks](Tests/BindingGenerator.Tests) | Preserve marshalling contracts and metadata; validate source diagnostics, cancellation, input removal, stable output names and incremental caching |
 | Shared integration suite with `HdfLegacy=true` | Exercise the actual .NET Standard assembly against native HDF5, including metadata-cache conversions, UTF-8 strings and callback lifetimes |
 | Windows net472 execution | Exercise legacy CLR marshalling on the installed .NET Framework 4.8 runtime |
 | Header-derived ABI and export checks | Compare native structure sizes/offsets with the layouts actually used by bridges, and verify imported symbols through legacy metadata |
 | Separate-process loader scenarios | Check first-use ordering, path failures, retry of direct initialization, version rejection, globals, load contexts and shutdown behavior |
 | Clean package consumers | Verify NuGet asset selection, native deployment, compression, core/high-level integration and both managed implementations |
 
-The [legacy test script](Build/testLegacy.ps1) runs the shared integration suite against `netstandard2.0`, adds a net472 run on Windows x64, and checks loader behavior in separate processes. `-SkipAbi` is available only for local reuse of previously validated native binaries. The native upstream suite validates HDF5 itself; it does not replace tests of managed signatures and marshalling.
+The [legacy test script](Build/testLegacy.ps1) first runs the generator regression suite, then runs the shared integration suite against `netstandard2.0`, adds a net472 run on Windows x64, and checks loader behavior in separate processes. `-SkipAbi` is available only for local reuse of previously validated native binaries. The native upstream suite validates HDF5 itself; it does not replace tests of managed signatures and marshalling.
 
 CI tests the legacy assembly on every supported native RID. Unix legacy tests execute on modern .NET hosts; they do not establish Mono or Unity compatibility. Clean consumers explicitly force the .NET Standard asset where NuGet would otherwise prefer the modern asset, then verify which implementation was loaded. See [ADVANCED.md](ADVANCED.md#validation-and-ci) for the shared native suite and package-validation process.

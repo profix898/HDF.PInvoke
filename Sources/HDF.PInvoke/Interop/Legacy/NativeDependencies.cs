@@ -267,7 +267,7 @@ namespace HDF.PInvoke
                 GetLibraryHandle(library == Constants.HLDLLFileName), symbol));
 
         /// <summary>
-        /// Returns a typed delegate for an optional core export, or null if it is unavailable.
+        /// Returns a typed delegate for an optional core export, throwing when the native build omits it.
         /// </summary>
         internal static T GetOptionalFunction<T>(string symbol) where T : Delegate
         {

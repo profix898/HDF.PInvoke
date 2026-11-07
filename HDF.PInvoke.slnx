@@ -8,7 +8,11 @@
   <Folder Name="/Sources/">
     <Project Path="Sources/HDF.PInvoke/HDF.PInvoke.csproj" />
   </Folder>
+  <Folder Name="/Tools/">
+    <Project Path="Tools/BindingGenerator/BindingGenerator.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
+    <Project Path="Tests/BindingGenerator.Tests/BindingGenerator.Tests.csproj" />
     <Project Path="Tests/HDF.PInvoke.Smoke/HDF.PInvoke.Smoke.csproj" />
     <Project Path="Tests/HDF.PInvoke.Tests/HDF.PInvoke.Tests.csproj" />
   </Folder>
