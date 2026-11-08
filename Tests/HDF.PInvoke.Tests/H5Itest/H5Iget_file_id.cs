@@ -53,7 +53,7 @@ namespace UnitTests
         public void H5Iget_file_idTest2()
         {
             Assert.IsFalse(
-                                        H5I.get_file_id(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5I.get_file_id(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

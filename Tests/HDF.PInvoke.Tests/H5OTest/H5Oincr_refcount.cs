@@ -51,7 +51,7 @@ namespace UnitTests
         public void H5Oincr_refcountTest2()
         {
             Assert.IsFalse(
-                                        H5O.incr_refcount(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5O.incr_refcount(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

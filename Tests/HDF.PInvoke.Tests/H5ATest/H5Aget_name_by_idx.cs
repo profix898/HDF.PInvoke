@@ -31,7 +31,7 @@ namespace UnitTests
         public void H5Aget_name_by_idxTest1()
         {
             var att = H5A.create(m_v2_test_file, "H5Aget_name",
-                                        H5T.IEEE_F64LE, m_space_scalar);
+                                                                H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
             att = H5A.create(m_v2_test_file, "H5Aget_name_by_idx",
@@ -80,8 +80,8 @@ namespace UnitTests
         public void H5Aget_name_by_idxTest2()
         {
             Assert.IsFalse(H5A.get_name_by_idx(Utilities.RandomInvalidHandle(),
-                                        ".", H5.index_t.NAME, H5.iter_order_t.NATIVE,
-                                        0, null, IntPtr.Zero).ToInt32() >= 0);
+                                                                ".", H5.index_t.NAME, H5.iter_order_t.NATIVE,
+                                                                0, null, IntPtr.Zero).ToInt32() >= 0);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace UnitTests
         public void H5Aget_name_by_idxTest3()
         {
             var att = H5A.create(m_v0_test_file, "H5Aget_name",
-                                        H5T.IEEE_F64LE, m_space_scalar);
+                                                                H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
             att = H5A.create(m_v0_test_file, "H5Aget_name_by_idx",
@@ -130,7 +130,7 @@ namespace UnitTests
         public void H5Aget_name_by_idxTest4()
         {
             var att = H5A.create(m_v2_test_file, "H5Aget_name",
-                                        H5T.IEEE_F64LE, m_space_scalar);
+                                                                H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
             att = H5A.create(m_v2_test_file, "H5Aget_name_by_idx",

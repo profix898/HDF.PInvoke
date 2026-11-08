@@ -29,7 +29,7 @@ namespace UnitTests
         public void H5Aopen_by_idxTest1()
         {
             var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
-                                        m_space_scalar);
+                                                                m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
             att = H5A.create(m_v2_test_file, "AA", H5T.IEEE_F64LE,
@@ -65,9 +65,9 @@ namespace UnitTests
         public void H5Aopen_by_idxTest2()
         {
             Assert.IsFalse(
-                                        H5A.open_by_idx(Utilities.RandomInvalidHandle(), ".",
-                                        H5.index_t.NAME, H5.iter_order_t.NATIVE,
-                                        44) >= 0);
+                                                                H5A.open_by_idx(Utilities.RandomInvalidHandle(), ".",
+                                                                H5.index_t.NAME, H5.iter_order_t.NATIVE,
+                                                                44) >= 0);
             Assert.IsFalse(
                 H5A.open_by_idx(m_v2_class_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE,

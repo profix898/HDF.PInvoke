@@ -47,7 +47,7 @@ namespace UnitTests
         public void H5Iget_typeTest2()
         {
             Assert.IsTrue(H5I.get_type(Utilities.RandomInvalidHandle()) ==
-                                        H5I.type_t.BADID);
+                                                                H5I.type_t.BADID);
         }
     }
 }

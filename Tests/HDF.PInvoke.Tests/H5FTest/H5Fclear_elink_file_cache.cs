@@ -39,7 +39,7 @@ namespace UnitTests
         public void H5Fclear_elink_cacheTest2()
         {
             Assert.IsFalse(
-                                        H5F.clear_elink_file_cache(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5F.clear_elink_file_cache(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

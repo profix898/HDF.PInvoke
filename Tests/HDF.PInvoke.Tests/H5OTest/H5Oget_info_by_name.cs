@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Oget_info_by_nameTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A/B/C", m_lcpl)) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A/B/C", m_lcpl)) >= 0);
 
             var info = new H5O.info_t();
             Assert.IsTrue(

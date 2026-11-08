@@ -57,8 +57,8 @@ namespace UnitTests
         public void H5Tcommit_anonTest3()
         {
             Assert.IsFalse(
-                                        H5T.commit_anon(m_v0_test_file,
-                                        Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5T.commit_anon(m_v0_test_file,
+                                                                Utilities.RandomInvalidHandle()) >= 0);
             Assert.IsFalse(
                 H5T.commit_anon(Utilities.RandomInvalidHandle(),
                 Utilities.RandomInvalidHandle()) >= 0);

@@ -58,7 +58,7 @@ namespace UnitTests
         public void H5Sselect_validTest2()
         {
             Assert.IsFalse(
-                                        H5S.select_valid(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5S.select_valid(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

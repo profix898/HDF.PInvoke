@@ -74,9 +74,9 @@ namespace UnitTests
         public void H5Adelete_by_idxTest2()
         {
             Assert.IsFalse(
-                                        H5A.delete_by_idx(Utilities.RandomInvalidHandle(), ".",
-                                        H5.index_t.NAME, H5.iter_order_t.NATIVE, 10)
-                                        >= 0);
+                                                                H5A.delete_by_idx(Utilities.RandomInvalidHandle(), ".",
+                                                                H5.index_t.NAME, H5.iter_order_t.NATIVE, 10)
+                                                                >= 0);
             Assert.IsFalse(
                 H5A.delete_by_idx(m_v0_class_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1024)

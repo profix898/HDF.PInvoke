@@ -49,8 +49,8 @@ namespace UnitTests
         public void H5OlinkTest2()
         {
             Assert.IsFalse(
-                                        H5O.link(Utilities.RandomInvalidHandle(), m_v0_test_file,
-                                        "A/B/C", m_lcpl) >= 0);
+                                                                H5O.link(Utilities.RandomInvalidHandle(), m_v0_test_file,
+                                                                "A/B/C", m_lcpl) >= 0);
         }
     }
 }

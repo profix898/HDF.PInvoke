@@ -7,7 +7,10 @@ namespace HDF.PInvoke
     public unsafe sealed class H5PT
     {
         /// <summary>Initializes native HDF5 before the first high-level call.</summary>
-        static H5PT() { H5.open(); }
+        static H5PT()
+        {
+            H5.open();
+        }
 
         /// <summary>Creates a packet table using dataset-creation properties; release it with H5PT.close.</summary>
         [DllImport(Constants.HLDLLFileName, EntryPoint = "H5PTcreate", CallingConvention = CallingConvention.Cdecl)]

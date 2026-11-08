@@ -12,6 +12,7 @@ namespace HDF.PInvoke
         {
             /// <summary>Identifies the object targeted by a hard link.</summary>
             [FieldOffset(0)] public H5O.token_t token;
+
             /// <summary>Gives the value buffer length for other link types.</summary>
             [FieldOffset(0)] public UIntPtr val_size;
         }
@@ -22,12 +23,16 @@ namespace HDF.PInvoke
         {
             /// <summary>Identifies the link category.</summary>
             public type_t type;
+
             /// <summary>Indicates whether creation order is available, as a one-byte C boolean.</summary>
             public byte corder_valid;
+
             /// <summary>Gives the tracked creation order.</summary>
             public long corder;
+
             /// <summary>Identifies the link name's character encoding.</summary>
             public H5T.cset_t cset;
+
             /// <summary>Contains the link token or value length.</summary>
             public info2_union_t u;
         }

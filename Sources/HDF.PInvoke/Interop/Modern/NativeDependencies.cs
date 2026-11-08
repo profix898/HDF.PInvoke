@@ -86,14 +86,6 @@ namespace HDF.PInvoke
         }
 
         /// <summary>
-        /// Loads and validates the core library. Does not change PATH or the working directory.
-        /// </summary>
-        /// <remarks>This initializes native HDF5. Call <see cref="H5.dont_atexit"/> first if automatic native shutdown must be disabled.</remarks>
-        /// <exception cref="DllNotFoundException">The selected core library or one of its dependencies cannot be loaded.</exception>
-        /// <exception cref="NotSupportedException">The native library is not from the supported HDF5 release family.</exception>
-        public static void ResolvePathToExternalDependencies() => GetLibraryHandle(false);
-
-        /// <summary>
         /// The runtime identifier selected from the current process architecture.
         /// </summary>
         /// <value>The packaged runtime identifier for the current process.</value>
@@ -165,7 +157,7 @@ namespace HDF.PInvoke
                 if (core == IntPtr.Zero)
                 {
                     var directory = configuredDirectory ?? AppContext.GetData(NativePathSetting) as string ??
-                        Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
+                                                                Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
                     IntPtr candidate;
 
                     if (!string.IsNullOrEmpty(directory))
@@ -209,7 +201,7 @@ namespace HDF.PInvoke
                             catch (DllNotFoundException e)
                             {
                                 throw new DllNotFoundException($"Cannot load HDF5 for {rid}. Deploy the matching runtimes/{rid}/native assets, " +
-                                    $"or call NativeDependencies.Configure with their absolute directory. Probed: {string.Join(", ", ProbeDirectories(rid))}", e);
+                                                                                                    $"or call NativeDependencies.Configure with their absolute directory. Probed: {string.Join(", ", ProbeDirectories(rid))}", e);
                             }
                         }
                     }
@@ -220,7 +212,7 @@ namespace HDF.PInvoke
                         if (disableAutomaticShutdown)
                         {
                             shutdownStatus = Marshal.GetDelegateForFunctionPointer<DisableAtExit>(
-                                NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
+                                                                                        NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
                         }
 
                         ValidateVersion(candidate);
@@ -244,8 +236,8 @@ namespace HDF.PInvoke
                 if (highLevel == IntPtr.Zero)
                 {
                     highLevel = loadedDirectory != null ? LoadFromDirectory(loadedDirectory, true) :
-                        NativeLibrary.Load(Constants.HLDLLFileName, typeof(NativeDependencies).Assembly,
-                            DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory);
+                                                                NativeLibrary.Load(Constants.HLDLLFileName, typeof(NativeDependencies).Assembly,
+                                                                    DllImportSearchPath.SafeDirectories | DllImportSearchPath.AssemblyDirectory);
                 }
 
                 return highLevel;

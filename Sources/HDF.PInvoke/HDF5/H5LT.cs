@@ -7,26 +7,36 @@ namespace HDF.PInvoke
     public unsafe sealed class H5LT
     {
         /// <summary>Initializes native HDF5 before the first operation.</summary>
-        static H5LT() { H5.open(); }
+        static H5LT()
+        {
+            H5.open();
+        }
 
         /// <summary>Selects the textual datatype language.</summary>
         public enum lang_t
         {
             /// <summary>Invalid language.</summary>
             ERR = -1,
+
             /// <summary>HDF5 data definition language.</summary>
             DDL = 0,
+
             /// <summary>C language selector; availability depends on the native formatter.</summary>
             C = 1,
+
             /// <summary>Fortran language selector; availability depends on the native formatter.</summary>
             FORTRAN = 2,
+
             /// <summary>Invalid terminal value.</summary>
             NO_LANG = 3
         }
+
         /// <summary>Opens a file image for read/write access.</summary>
         public const uint FILE_IMAGE_OPEN_RW = 1;
+
         /// <summary>Avoids copying the caller's file image; keep it alive until file close.</summary>
         public const uint FILE_IMAGE_DONT_COPY = 2;
+
         /// <summary>Keeps caller ownership when combined with FILE_IMAGE_DONT_COPY.</summary>
         public const uint FILE_IMAGE_DONT_RELEASE = 4;
 

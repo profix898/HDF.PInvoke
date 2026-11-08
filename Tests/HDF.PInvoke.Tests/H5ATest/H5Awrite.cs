@@ -62,8 +62,8 @@ namespace UnitTests
         public void H5AwriteTest2()
         {
             Assert.IsFalse(
-                                        H5A.write(Utilities.RandomInvalidHandle(),
-                                        Utilities.RandomInvalidHandle(), IntPtr.Zero) >= 0);
+                                                                H5A.write(Utilities.RandomInvalidHandle(),
+                                                                Utilities.RandomInvalidHandle(), IntPtr.Zero) >= 0);
             Assert.IsFalse(
                 H5A.write(Utilities.RandomInvalidHandle(),
                 H5T.NATIVE_DOUBLE, IntPtr.Zero) >= 0);

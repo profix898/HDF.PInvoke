@@ -41,7 +41,7 @@ namespace UnitTests
         public void H5Fget_create_plistTest2()
         {
             Assert.IsFalse(
-                                        H5F.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5F.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

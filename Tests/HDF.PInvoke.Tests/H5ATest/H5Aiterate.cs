@@ -31,7 +31,7 @@ namespace UnitTests
         public void H5AiterateTest1()
         {
             var att = H5A.create(m_v2_test_file, "IEEE_F32BE",
-                                        H5T.IEEE_F32BE, m_space_scalar);
+                                                                H5T.IEEE_F32BE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -109,7 +109,7 @@ namespace UnitTests
         public void H5AiterateTest3()
         {
             var att = H5A.create(m_v2_test_file, "IEEE_F32BE",
-                                        H5T.IEEE_F32BE, m_space_scalar);
+                                                                H5T.IEEE_F32BE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 

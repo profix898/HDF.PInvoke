@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Aget_storage_sizeTest1()
         {
             var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
-                                        m_space_scalar);
+                                                                m_space_scalar);
             Assert.IsTrue(att >= 0);
             var size = H5A.get_storage_size(att);
             Assert.IsTrue(size == 8);
@@ -49,7 +49,7 @@ namespace UnitTests
         public void H5Aget_storage_sizeTest2()
         {
             Assert.IsFalse(
-                                        H5A.get_storage_size(Utilities.RandomInvalidHandle()) > 0);
+                                                                H5A.get_storage_size(Utilities.RandomInvalidHandle()) > 0);
         }
     }
 }

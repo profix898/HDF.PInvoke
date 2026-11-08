@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Acreate_by_nameTest1()
         {
             var att = H5A.create_by_name(m_v0_class_file, ".", "BNA",
-                                        H5T.IEEE_F32BE, m_space_null);
+                                                                H5T.IEEE_F32BE, m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -54,8 +54,8 @@ namespace UnitTests
         public void H5Acreate_by_nameTest2()
         {
             Assert.IsFalse(
-                                        H5A.create(Utilities.RandomInvalidHandle(), "A",
-                                        H5T.IEEE_F32BE, m_space_null) >= 0);
+                                                                H5A.create(Utilities.RandomInvalidHandle(), "A",
+                                                                H5T.IEEE_F32BE, m_space_null) >= 0);
             Assert.IsFalse(
                 H5A.create(m_v0_test_file, "A",
                 Utilities.RandomInvalidHandle(), m_space_null) >= 0);

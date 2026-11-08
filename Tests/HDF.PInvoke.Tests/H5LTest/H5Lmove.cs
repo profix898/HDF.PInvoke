@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5LmoveTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl)) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl)) >= 0);
             Assert.IsTrue(
                 H5L.create_hard(m_v0_test_file, "A/B/C/D", m_v0_test_file,
                 "shortcut") >= 0);

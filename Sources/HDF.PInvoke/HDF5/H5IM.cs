@@ -7,7 +7,10 @@ namespace HDF.PInvoke
     public unsafe sealed class H5IM
     {
         /// <summary>Initializes native HDF5 before the first high-level call.</summary>
-        static H5IM() { H5.open(); }
+        static H5IM()
+        {
+            H5.open();
+        }
 
         /// <summary>Creates an indexed image from width times height bytes of pixel data.</summary>
         [DllImport(Constants.HLDLLFileName, EntryPoint = "H5IMmake_image_8bit", CallingConvention = CallingConvention.Cdecl)]

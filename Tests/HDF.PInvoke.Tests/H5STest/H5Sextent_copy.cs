@@ -47,7 +47,7 @@ namespace UnitTests
         public void H5Sextent_copyTest2()
         {
             Assert.IsFalse(H5S.extent_copy(Utilities.RandomInvalidHandle(),
-                                        Utilities.RandomInvalidHandle()) >= 0);
+                                                                Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

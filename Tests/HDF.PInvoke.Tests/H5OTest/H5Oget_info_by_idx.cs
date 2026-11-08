@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Oget_info_by_idxTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A")) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A")) >= 0);
             Assert.IsTrue(
                 H5G.close(H5G.create(m_v0_test_file, "AA")) >= 0);
             Assert.IsTrue(

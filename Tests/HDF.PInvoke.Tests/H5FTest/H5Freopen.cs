@@ -44,7 +44,7 @@ namespace UnitTests
         public void H5FreopenTest2()
         {
             Assert.IsFalse(
-                                        H5F.reopen(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5F.reopen(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

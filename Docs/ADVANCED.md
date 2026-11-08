@@ -1,6 +1,6 @@
 # HDF.PInvoke: integration and contributor guide
 
-This guide covers the modern `net8.0` implementation, native builds and package contributions. Start with [README.md](README.md) for installation and API examples. See [LEGACY.md](LEGACY.md) for .NET Standard and .NET Framework integration.
+This guide covers the modern `net8.0` implementation, native builds and package contributions. Start with [README.md](../README.md) for installation and API examples. See [LEGACY.md](LEGACY.md) for .NET Standard and .NET Framework integration.
 
 ## Repository layout
 
@@ -48,7 +48,7 @@ Before binding globals, the loader checks that the native library reports HDF5 2
 
 The package supplies shared core and high-level libraries with statically linked zlib. Canonical names are `hdf5.dll` / `hdf5_hl.dll`, `libhdf5.so` / `libhdf5_hl.so`, and `libhdf5.dylib` / `libhdf5_hl.dylib`. SONAME aliases are materialized as real files before upload and packaging, avoiding broken symlinks or empty placeholders.
 
-Linux artifacts use the Ubuntu 24.04/glibc 2.39 baseline. Alpine 3.24 builds provide `linux-musl-x64` and `linux-musl-arm64`; neither Linux variant is an Android build. macOS ARM64 uses deployment target 13.0; Windows needs the Microsoft Visual C++ v14 Redistributable for the process architecture, at least as recent as the MSVC toolset used for the native build. Visual Studio 2026 builds use the dynamic C runtime (`/MD`); the redistributable is installed separately. See the [version table and runtime downloads](README.md#versioning-and-file-compatibility). Native dependencies must match the process architecture. Mobile targets are outside the supported matrix.
+Linux artifacts use the Ubuntu 24.04/glibc 2.39 baseline. Alpine 3.24 builds provide `linux-musl-x64` and `linux-musl-arm64`; neither Linux variant is an Android build. macOS ARM64 uses deployment target 13.0; Windows needs the Microsoft Visual C++ v14 Redistributable for the process architecture, at least as recent as the MSVC toolset used for the native build. Visual Studio 2026 builds use the dynamic C runtime (`/MD`); the redistributable is installed separately. See the [version table and runtime downloads](../README.md#versioning-and-file-compatibility). Native dependencies must match the process architecture. Mobile targets are outside the supported matrix.
 
 The build intentionally disables MPI, SZIP/libaec, ROS3, HDFS and the C++/Fortran/Java bindings. Thread safety is disabled because upstream does not support the high-level/thread-safe combination without an unsupported-build override. Applications must serialize calls across all users of the library in a process.
 

@@ -32,7 +32,7 @@ namespace UnitTests
         public void H5DwriteTest1()
         {
             var utf8string
-                                        = "Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο";
+                                                                = "Γαζέες καὶ μυρτιὲς δὲν θὰ βρῶ πιὰ στὸ χρυσαφὶ ξέφωτο";
             var wdata = Encoding.UTF8.GetBytes(utf8string);
 
             var dtype = H5T.create(H5T.class_t.STRING,
@@ -85,8 +85,8 @@ namespace UnitTests
             for (var i = 0; i < utf8strings.Count; ++i)
             {
                 hnds[i] = GCHandle.Alloc(
-                                                    Encoding.UTF8.GetBytes((string)utf8strings[i] + "\0"),
-                                                    GCHandleType.Pinned);
+                                                                                    Encoding.UTF8.GetBytes((string)utf8strings[i] + "\0"),
+                                                                                    GCHandleType.Pinned);
                 wdata[i] = hnds[i].AddrOfPinnedObject();
             }
 

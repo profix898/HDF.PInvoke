@@ -67,7 +67,7 @@ namespace UnitTests
         public void H5Aget_nameTest2()
         {
             Assert.IsFalse(H5A.get_name(Utilities.RandomInvalidHandle(),
-                                        IntPtr.Zero, (StringBuilder)null).ToInt32() >= 0);
+                                                                IntPtr.Zero, (StringBuilder)null).ToInt32() >= 0);
 
             Assert.IsFalse(H5A.get_name(Utilities.RandomInvalidHandle(),
                 IntPtr.Zero, (byte[])null).ToInt32() >= 0);
@@ -80,7 +80,7 @@ namespace UnitTests
         public void H5Aget_nameTest3()
         {
             var name = Encoding.UTF8.GetBytes(
-                                        String.Join(":", m_utf8strings));
+                                                                String.Join(":", m_utf8strings));
             var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
             var att = H5A.create(m_v0_test_file, name_buf, H5T.IEEE_F64BE,
@@ -107,7 +107,7 @@ namespace UnitTests
         public void H5Aget_nameTest4()
         {
             var name = Encoding.UTF8.GetBytes(
-                                        String.Join(":", m_utf8strings));
+                                                                String.Join(":", m_utf8strings));
             var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
             var att = H5A.create(m_v2_test_file, name_buf, H5T.IEEE_F64BE,

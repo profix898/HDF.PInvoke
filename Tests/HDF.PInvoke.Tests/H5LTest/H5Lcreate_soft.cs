@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Lcreate_softTest1()
         {
             Assert.IsTrue(H5L.create_soft("/A/B/C/D", m_v0_test_file,
-                                        "this/is/a/soft/link", m_lcpl) >= 0);
+                                                                "this/is/a/soft/link", m_lcpl) >= 0);
 
             Assert.IsTrue(H5L.create_soft("/A/B/C/D", m_v2_test_file,
                 "this/is/a/soft/link", m_lcpl) >= 0);

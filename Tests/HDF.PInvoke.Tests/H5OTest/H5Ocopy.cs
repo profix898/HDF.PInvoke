@@ -45,7 +45,7 @@ namespace UnitTests
         public void H5OcopyTest2()
         {
             Assert.IsTrue(H5L.create_soft("/my/fantastic/path",
-                                        m_v0_test_file, "A") >= 0);
+                                                                m_v0_test_file, "A") >= 0);
 
             Assert.IsTrue(H5O.copy(m_v0_test_file, ".", m_v2_test_file,
                 "C/B/A_copy", H5P.DEFAULT, m_lcpl) >= 0);
