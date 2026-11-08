@@ -48,7 +48,7 @@ namespace UnitTests
         public void H5Sextent_equalTest2()
         {
             Assert.IsFalse(H5S.extent_equal(Utilities.RandomInvalidHandle(),
-                                        Utilities.RandomInvalidHandle()) >= 0);
+                                                                Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

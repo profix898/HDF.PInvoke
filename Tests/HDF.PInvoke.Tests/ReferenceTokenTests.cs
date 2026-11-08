@@ -23,6 +23,7 @@ namespace UnitTests
             var dataset = H5D.create(file, "数据", H5T.NATIVE_INT, space);
             var attribute = H5A.create(dataset, "标签", H5T.NATIVE_INT, scalar);
             var references = new List<H5R.ref_t>();
+
             try
             {
                 Assert.IsTrue(H5R.create_object(file, "数据", H5P.DEFAULT, out var obj) >= 0);
@@ -63,6 +64,7 @@ namespace UnitTests
                 var stored = H5D.create(file, "references", H5T.STD_REF, scalar);
                 Assert.IsTrue(stored >= 0);
                 H5R.ref_t read = default;
+
                 try
                 {
                     Assert.IsTrue(H5D.write(stored, H5T.STD_REF, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)(&obj)) >= 0);
@@ -71,13 +73,25 @@ namespace UnitTests
                     // Reclamation destroys reference resources but leaves caller-owned storage intact.
                     Assert.IsTrue(H5T.reclaim(H5T.STD_REF, scalar, H5P.DEFAULT, (IntPtr)(&read)) >= 0);
                 }
-                finally { H5D.close(stored); }
+                finally
+                {
+                    H5D.close(stored);
+                }
             }
             finally
             {
                 // The list is the sole owner; temporary struct copies above are borrowed views.
-                for (var i = 0; i < references.Count; i++) { var value = references[i]; H5R.destroy(ref value); }
-                H5A.close(attribute); H5D.close(dataset); H5S.close(scalar); H5S.close(space); H5F.close(file);
+                for (var i = 0; i < references.Count; i++)
+                {
+                    var value = references[i];
+                    H5R.destroy(ref value);
+                }
+
+                H5A.close(attribute);
+                H5D.close(dataset);
+                H5S.close(scalar);
+                H5S.close(space);
+                H5F.close(file);
                 File.Delete(path);
             }
         }
@@ -89,6 +103,7 @@ namespace UnitTests
             var path = Path.Combine(Path.GetTempPath(), "tokens-" + Guid.NewGuid() + ".h5");
             var file = H5F.create(path, H5F.ACC_TRUNC);
             var group = H5G.create(file, "组");
+
             try
             {
                 Assert.IsTrue(H5O.get_info3(group, out var direct) >= 0);
@@ -102,13 +117,25 @@ namespace UnitTests
                 Assert.AreEqual(0, comparison);
                 Assert.IsTrue(H5O.token_to_str(file, ref direct.token, out var text) >= 0);
                 H5O.token_t decoded;
+
                 try
                 {
-                    var length = 0; while (Marshal.ReadByte(text, length) != 0) length++;
-                    var bytes = new byte[length]; Marshal.Copy(text, bytes, 0, length);
+                    var length = 0;
+
+                    while (Marshal.ReadByte(text, length) != 0)
+                    {
+                        length++;
+                    }
+
+                    var bytes = new byte[length];
+                    Marshal.Copy(text, bytes, 0, length);
                     Assert.IsTrue(H5O.token_from_str(file, Encoding.UTF8.GetString(bytes), out decoded) >= 0);
                 }
-                finally { H5.free_memory(text); }
+                finally
+                {
+                    H5.free_memory(text);
+                }
+
                 var opened = H5O.open_by_token(file, decoded);
                 Assert.IsTrue(opened >= 0);
                 H5O.close(opened);
@@ -124,8 +151,13 @@ namespace UnitTests
                 var links = 0;
                 H5L.iterate2_t linkCallback = (long id, string name, ref H5L.info2_t info, IntPtr state) =>
                 {
-                    if (name != "组" || info.type != H5L.type_t.HARD || state != new IntPtr(42)) return -1;
-                    links++; return 0;
+                    if (name != "组" || info.type != H5L.type_t.HARD || state != new IntPtr(42))
+                    {
+                        return -1;
+                    }
+
+                    links++;
+                    return 0;
                 };
                 ulong position = 0;
                 Assert.IsTrue(H5L.iterate2(file, H5.index_t.NAME, H5.iter_order_t.INC, ref position, linkCallback, new IntPtr(42)) >= 0);
@@ -137,8 +169,13 @@ namespace UnitTests
                 var objects = 0;
                 H5O.iterate2_t objectCallback = (long id, string name, ref H5O.info2_t info, IntPtr state) =>
                 {
-                    if (info.type != H5O.type_t.GROUP || info.fileno != direct.fileno || state != new IntPtr(42)) return -1;
-                    objects++; return 0;
+                    if (info.type != H5O.type_t.GROUP || info.fileno != direct.fileno || state != new IntPtr(42))
+                    {
+                        return -1;
+                    }
+
+                    objects++;
+                    return 0;
                 };
                 Assert.IsTrue(H5O.visit3(file, H5.index_t.NAME, H5.iter_order_t.INC, objectCallback, new IntPtr(42)) >= 0);
                 Assert.IsTrue(H5O.visit_by_name3(file, ".", H5.index_t.NAME, H5.iter_order_t.INC, objectCallback, new IntPtr(42)) >= 0);
@@ -146,7 +183,12 @@ namespace UnitTests
                 GC.KeepAlive(linkCallback);
                 GC.KeepAlive(objectCallback);
             }
-            finally { H5G.close(group); H5F.close(file); File.Delete(path); }
+            finally
+            {
+                H5G.close(group);
+                H5F.close(file);
+                File.Delete(path);
+            }
         }
     }
 }

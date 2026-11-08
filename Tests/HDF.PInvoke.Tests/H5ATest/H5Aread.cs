@@ -58,8 +58,8 @@ namespace UnitTests
         public void H5AreadTest2()
         {
             Assert.IsFalse(
-                                        H5A.read(Utilities.RandomInvalidHandle(),
-                                        Utilities.RandomInvalidHandle(), IntPtr.Zero) >= 0);
+                                                                H5A.read(Utilities.RandomInvalidHandle(),
+                                                                Utilities.RandomInvalidHandle(), IntPtr.Zero) >= 0);
             Assert.IsFalse(
                 H5A.read(Utilities.RandomInvalidHandle(),
                 H5T.NATIVE_DOUBLE, IntPtr.Zero) >= 0);

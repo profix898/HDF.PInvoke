@@ -148,16 +148,16 @@ namespace HDF.PInvoke
 
         /// <summary>
         /// Function for freeing objects. This function will be called with an
-        /// object ID type number and a pointer to the object. The function
+        /// object pointer and optional asynchronous-request output storage. The function
         /// should free the object and return non-negative to indicate that
         /// the object can be removed from the ID type. If the function returns
         /// negative (failure) then the object will remain in the ID type.
         /// </summary>
         /// <param name="obj">The address of the registered native object.</param>
-        /// <param name="request">Receives an asynchronous request pointer when supported by the callback, or zero for synchronous completion.</param>
+        /// <param name="request">Optional address of an asynchronous-request pointer. Zero means synchronous execution with no output storage. Only write through a nonzero address, using Marshal.WriteIntPtr; write a zero pointer for synchronous completion.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate herr_t free_t(IntPtr obj, ref IntPtr request);
+        public delegate herr_t free_t(IntPtr obj, IntPtr request);
 
         /// <summary>
         /// Type of the function to compare objects and keys

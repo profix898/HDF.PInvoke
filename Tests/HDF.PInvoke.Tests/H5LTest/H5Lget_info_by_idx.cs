@@ -28,8 +28,8 @@ namespace UnitTests
         public void H5Lget_info_by_idxTest1()
         {
             Assert.IsTrue(
-                                        H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
-                                        "A", m_lcpl) >= 0);
+                                                                H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
+                                                                "A", m_lcpl) >= 0);
             Assert.IsTrue(
                 H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
                 "AB", m_lcpl) >= 0);

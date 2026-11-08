@@ -38,7 +38,7 @@ namespace UnitTests
         public void H5Eset_current_stackTest2()
         {
             Assert.IsFalse(
-                                        H5E.set_current_stack(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5E.set_current_stack(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

@@ -177,7 +177,11 @@ namespace HDF.PInvoke
             if (status >= 0)
             {
                 LinkClassRegistry.Clear();
-                lock (CloseCallbacks) CloseCallbacks.Clear();
+
+                lock (CloseCallbacks)
+                {
+                    CloseCallbacks.Clear();
+                }
             }
 
             return status;

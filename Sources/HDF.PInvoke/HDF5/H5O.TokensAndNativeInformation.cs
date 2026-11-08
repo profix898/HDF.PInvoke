@@ -16,16 +16,22 @@ namespace HDF.PInvoke
 
         /// <summary>Requests identity, object type and hard-link count.</summary>
         public const uint INFO_BASIC = 1;
+
         /// <summary>Requests object timestamps.</summary>
         public const uint INFO_TIME = 2;
+
         /// <summary>Requests the attribute count.</summary>
         public const uint INFO_NUM_ATTRS = 4;
+
         /// <summary>Requests all fields of modern object information.</summary>
         public const uint INFO_ALL = 7;
+
         /// <summary>Requests native object-header storage information.</summary>
         public const uint NATIVE_INFO_HDR = 8;
+
         /// <summary>Requests native index and heap storage information.</summary>
         public const uint NATIVE_INFO_META_SIZE = 16;
+
         /// <summary>Requests all native object storage information.</summary>
         public const uint NATIVE_INFO_ALL = 24;
 
@@ -43,6 +49,7 @@ namespace HDF.PInvoke
         {
             /// <summary>Describes the native object header.</summary>
             public hdr_info_t hdr;
+
             /// <summary>Describes object and attribute index/heap storage.</summary>
             public meta_size_t meta_size;
         }

@@ -49,7 +49,7 @@ namespace UnitTests
         public void H5FopenTest2()
         {
             Assert.IsFalse(
-                                        H5F.open("", H5F.ACC_RDONLY) >= 0);
+                                                                H5F.open("", H5F.ACC_RDONLY) >= 0);
         }
     }
 }

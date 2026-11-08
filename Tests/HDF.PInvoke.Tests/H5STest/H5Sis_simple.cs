@@ -67,7 +67,7 @@ namespace UnitTests
         public void H5Sis_simpleTest4()
         {
             Assert.IsFalse(
-                                        H5S.is_simple(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5S.is_simple(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

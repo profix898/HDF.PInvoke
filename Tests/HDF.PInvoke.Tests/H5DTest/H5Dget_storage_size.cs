@@ -63,7 +63,7 @@ namespace UnitTests
         public void H5Dget_storage_sizeTest2()
         {
             var dset = H5D.create(m_v0_test_file, "dset", H5T.STD_I16LE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(dset >= 0);
             var size = H5D.get_storage_size(dset);
             Assert.IsTrue(H5D.get_storage_size(dset) == 0);
@@ -84,7 +84,7 @@ namespace UnitTests
         public void H5Dget_storage_sizeTest3()
         {
             Assert.IsFalse(
-                                        H5D.get_storage_size(Utilities.RandomInvalidHandle()) > 0);
+                                                                H5D.get_storage_size(Utilities.RandomInvalidHandle()) > 0);
         }
     }
 }

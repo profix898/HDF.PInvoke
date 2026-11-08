@@ -51,7 +51,7 @@ namespace UnitTests
         public void H5LcopyTest2()
         {
             Assert.IsTrue(H5L.create_soft("/my/fantastic/path",
-                                        m_v0_test_file, "A") >= 0);
+                                                                m_v0_test_file, "A") >= 0);
 
             // copy symlink to the other test file
 
@@ -71,9 +71,9 @@ namespace UnitTests
             for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
-                                                    H5L.copy(m_v0_test_file, Encoding.ASCII.GetBytes("A" + "\0"), gid,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
-                                                    m_lcpl_utf8) >= 0);
+                                                                                    H5L.copy(m_v0_test_file, Encoding.ASCII.GetBytes("A" + "\0"), gid,
+                                                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
+                                                                                    m_lcpl_utf8) >= 0);
 
                 var path = "A/B/C/" + m_utf8strings[i] + "/B";
                 Assert.IsTrue(
@@ -88,9 +88,9 @@ namespace UnitTests
             for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
-                                                    H5L.copy(m_v2_test_file, Encoding.ASCII.GetBytes("A" + "\0"), gid,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
-                                                    m_lcpl_utf8) >= 0);
+                                                                                    H5L.copy(m_v2_test_file, Encoding.ASCII.GetBytes("A" + "\0"), gid,
+                                                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
+                                                                                    m_lcpl_utf8) >= 0);
 
                 var path = "A/B/C/" + m_utf8strings[i] + "/B";
                 Assert.IsTrue(

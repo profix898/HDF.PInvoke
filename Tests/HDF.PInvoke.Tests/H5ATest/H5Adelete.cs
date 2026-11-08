@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5AdeleteTest1()
         {
             var att = H5A.create(m_v0_class_file, "DNA", H5T.IEEE_F32BE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -59,7 +59,7 @@ namespace UnitTests
         public void H5AdeleteTest2()
         {
             Assert.IsFalse(
-                                        H5A.delete(Utilities.RandomInvalidHandle(), "A") >= 0);
+                                                                H5A.delete(Utilities.RandomInvalidHandle(), "A") >= 0);
             Assert.IsFalse(H5A.delete(m_v0_test_file, ".") >= 0);
         }
     }

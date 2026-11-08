@@ -48,7 +48,7 @@ namespace UnitTests
         public void H5Sset_extent_noneTest2()
         {
             Assert.IsFalse(
-                                        H5S.set_extent_none(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5S.set_extent_none(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

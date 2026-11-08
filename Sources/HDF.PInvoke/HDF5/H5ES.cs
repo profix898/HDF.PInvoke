@@ -8,12 +8,17 @@ namespace HDF.PInvoke
     public unsafe sealed class H5ES
     {
         /// <summary>Initializes native HDF5 before using event sets.</summary>
-        static H5ES() { H5.open(); }
+        static H5ES()
+        {
+            H5.open();
+        }
 
         /// <summary>Requests synchronous execution without tracking an event.</summary>
         public const long NONE = 0;
+
         /// <summary>Waits until all queued operations complete.</summary>
         public const ulong WAIT_FOREVER = ulong.MaxValue;
+
         /// <summary>Polls completion without waiting.</summary>
         public const ulong WAIT_NONE = 0;
 
@@ -22,10 +27,13 @@ namespace HDF.PInvoke
         {
             /// <summary>The operation has not completed.</summary>
             IN_PROGRESS = 0,
+
             /// <summary>The operation completed successfully.</summary>
             SUCCEED = 1,
+
             /// <summary>The operation was canceled.</summary>
             CANCELED = 2,
+
             /// <summary>The operation failed.</summary>
             FAIL = 3
         }
@@ -36,20 +44,28 @@ namespace HDF.PInvoke
         {
             /// <summary>Borrowed UTF-8 API name.</summary>
             public IntPtr api_name;
+
             /// <summary>Borrowed UTF-8 argument description.</summary>
             public IntPtr api_args;
+
             /// <summary>Borrowed UTF-8 source filename.</summary>
             public IntPtr app_file_name;
+
             /// <summary>Borrowed UTF-8 source function name.</summary>
             public IntPtr app_func_name;
+
             /// <summary>Source line number.</summary>
             public uint app_line_num;
+
             /// <summary>Operation insertion counter.</summary>
             public ulong op_ins_count;
+
             /// <summary>Insertion timestamp.</summary>
             public ulong op_ins_ts;
+
             /// <summary>Execution start timestamp.</summary>
             public ulong op_exec_ts;
+
             /// <summary>Execution duration in nanoseconds.</summary>
             public ulong op_exec_time;
         }
@@ -60,22 +76,31 @@ namespace HDF.PInvoke
         {
             /// <summary>Borrowed UTF-8 API name.</summary>
             public IntPtr api_name;
+
             /// <summary>Borrowed UTF-8 argument description.</summary>
             public IntPtr api_args;
+
             /// <summary>Borrowed UTF-8 source filename.</summary>
             public IntPtr app_file_name;
+
             /// <summary>Borrowed UTF-8 source function name.</summary>
             public IntPtr app_func_name;
+
             /// <summary>Source line number.</summary>
             public uint app_line_num;
+
             /// <summary>Operation insertion counter.</summary>
             public ulong op_ins_count;
+
             /// <summary>Insertion timestamp.</summary>
             public ulong op_ins_ts;
+
             /// <summary>Execution start timestamp.</summary>
             public ulong op_exec_ts;
+
             /// <summary>Execution duration in nanoseconds.</summary>
             public ulong op_exec_time;
+
             /// <summary>Identifies the error stack owned by this error record.</summary>
             public long err_stack_id;
         }

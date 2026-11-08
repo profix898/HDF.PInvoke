@@ -31,7 +31,7 @@ namespace UnitTests
         public void H5Rget_obj_typeTest1()
         {
             var path =
-                                        Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -63,7 +63,7 @@ namespace UnitTests
         public void H5Rget_obj_typeTest2()
         {
             var path =
-                                        Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -95,7 +95,7 @@ namespace UnitTests
         public void H5Rget_obj_typeTest3()
         {
             var path =
-                                           Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                   Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -140,7 +140,7 @@ namespace UnitTests
         public void H5Rget_obj_typeTest4()
         {
             var path =
-                                           Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                   Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);

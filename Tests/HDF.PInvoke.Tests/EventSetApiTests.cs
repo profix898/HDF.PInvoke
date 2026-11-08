@@ -17,6 +17,7 @@ namespace UnitTests
         {
             /// <summary>Retains each unmanaged allocation for deterministic release.</summary>
             private readonly List<IntPtr> allocations = new List<IntPtr>();
+
             /// <summary>Allocates a null-terminated UTF-8 value with stable native lifetime.</summary>
             internal IntPtr Add(string text)
             {
@@ -26,8 +27,15 @@ namespace UnitTests
                 allocations.Add(pointer);
                 return pointer;
             }
+
             /// <summary>Releases strings after the event set has drained.</summary>
-            public void Dispose() { foreach (var pointer in allocations) Marshal.FreeHGlobal(pointer); }
+            public void Dispose()
+            {
+                foreach (var pointer in allocations)
+                {
+                    Marshal.FreeHGlobal(pointer);
+                }
+            }
         }
 
         /// <summary>Checks every packaged asynchronous function with explicit completion boundaries and native-owned identifiers.</summary>
@@ -57,11 +65,26 @@ namespace UnitTests
                 Assert.AreEqual(0UL, pending.ToUInt64());
                 Assert.AreEqual((byte)0, failed);
             }
-            void Check(int result) { Assert.IsTrue(result >= 0); Wait(); }
-            long Own(long id, Func<long, int> close) { Assert.IsTrue(id >= 0); Wait(); owned.Add(id, close); return id; }
-            void Closed(long id, int result) { Check(result); owned.Remove(id); }
+            void Check(int result)
+            {
+                Assert.IsTrue(result >= 0);
+                Wait();
+            }
+            long Own(long id, Func<long, int> close)
+            {
+                Assert.IsTrue(id >= 0);
+                Wait();
+                owned.Add(id, close);
+                return id;
+            }
+            void Closed(long id, int result)
+            {
+                Check(result);
+                owned.Remove(id);
+            }
             H5ES.event_insert_t inserted = (ref H5ES.op_info_t info, IntPtr state) => 0;
             H5ES.event_complete_t completed = (ref H5ES.op_info_t info, H5ES.status_t status, long stack, IntPtr state) => 0;
+
             try
             {
                 Check(H5ES.register_insert_func(es, inserted, IntPtr.Zero));
@@ -133,7 +156,11 @@ namespace UnitTests
                 Assert.AreEqual((byte)1, exists);
                 ulong index = 0;
                 var visits = 0;
-                H5L.iterate2_t visitor = (long id, string name, ref H5L.info2_t details, IntPtr state) => { visits++; return 0; };
+                H5L.iterate2_t visitor = (long id, string name, ref H5L.info2_t details, IntPtr state) =>
+                {
+                    visits++;
+                    return 0;
+                };
                 Check(H5L.iterate_async(sourceFile, sourceFunction, line, file, H5.index_t.NAME, H5.iter_order_t.INC, (IntPtr)(&index), visitor, IntPtr.Zero, es));
                 Assert.IsTrue(visits >= 4);
                 GC.KeepAlive(visitor);
@@ -144,15 +171,31 @@ namespace UnitTests
                 Check(H5R.create_object(file, "/组/数据", H5P.DEFAULT, out var objectRef));
                 Check(H5R.create_region(file, "/组/数据", space, H5P.DEFAULT, out var regionRef));
                 Check(H5R.create_attr(file, "/组/数据", "attr", H5P.DEFAULT, out var attrRef));
+
                 try
                 {
                     Own(H5R.open_object_async(sourceFile, sourceFunction, line, (IntPtr)(&objectRef), H5P.DEFAULT, H5P.DEFAULT, es), H5O.close);
                     Own(H5R.open_region_async(sourceFile, sourceFunction, line, (IntPtr)(&regionRef), H5P.DEFAULT, H5P.DEFAULT, es), H5S.close);
                     Own(H5R.open_attr_async(sourceFile, sourceFunction, line, (IntPtr)(&attrRef), H5P.DEFAULT, H5P.DEFAULT, es), H5A.close);
                 }
-                finally { H5R.destroy(ref attrRef); H5R.destroy(ref regionRef); H5R.destroy(ref objectRef); }
+                finally
+                {
+                    H5R.destroy(ref attrRef);
+                    H5R.destroy(ref regionRef);
+                    H5R.destroy(ref objectRef);
+                }
+
                 Check(H5F.flush_async(sourceFile, sourceFunction, line, file, H5F.scope_t.GLOBAL, es));
-                foreach (var pair in new Dictionary<long, Func<long, int>>(owned)) if (pair.Key != file) { Check(pair.Value(pair.Key)); owned.Remove(pair.Key); }
+
+                foreach (var pair in new Dictionary<long, Func<long, int>>(owned))
+                {
+                    if (pair.Key != file)
+                    {
+                        Check(pair.Value(pair.Key));
+                        owned.Remove(pair.Key);
+                    }
+                }
+
                 Closed(file, H5F.close_async(sourceFile, sourceFunction, line, file, es));
                 file = Own(H5F.open_async(sourceFile, sourceFunction, line, filename, H5F.ACC_RDONLY, H5P.DEFAULT, es), H5F.close);
                 Closed(file, H5F.close_async(sourceFile, sourceFunction, line, file, es));
@@ -173,10 +216,20 @@ namespace UnitTests
             finally
             {
                 H5ES.wait(es, H5ES.WAIT_FOREVER, out _, out _);
-                foreach (var pair in owned) pair.Value(pair.Key);
+
+                foreach (var pair in owned)
+                {
+                    pair.Value(pair.Key);
+                }
+
                 H5ES.close(es);
-                GC.KeepAlive(inserted); GC.KeepAlive(completed);
-                if (File.Exists(path)) File.Delete(path);
+                GC.KeepAlive(inserted);
+                GC.KeepAlive(completed);
+
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
             }
         }
     }

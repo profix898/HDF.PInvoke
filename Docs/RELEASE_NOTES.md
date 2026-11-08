@@ -2,14 +2,14 @@
 
 ## 2.2.0
 
+- Corrected `H5I.free_t` to expose optional asynchronous-request output storage as `IntPtr`, so synchronous cleanup can safely pass a null address.
+- Removed `NativeDependencies.ResolvePathToExternalDependencies()` from both managed targets. Use automatic package loading, `Configure(path)` for private libraries, or `H5.open()` for explicit initialization.
+- Expanded HDF5 2.2 application API coverage with multi-dataset I/O, modern references/tokens, selection utilities, VOL discovery, event sets and high-level dataset, dimension-scale, packet-table, image and table operations.
+- Added cross-platform ABI probes and modern, .NET Standard, .NET Framework and Mono regression coverage for the new declarations and callback lifetimes.
+- Made generated legacy member names unique across partial binding classes while preserving deterministic source generation.
+- Added source-migration guidance and grouped API coverage, runtime integration and contributor documentation under Docs.
+- Package version is 2.2.0; assembly and file versions are 2.2.0.0. Native HDF5 is 2.2.0.
 - Managed targets are net8.0 and netstandard2.0, with separate build-selected modern and legacy loaders and shared binding declarations. Legacy validation includes net472 on .NET Framework 4.8 and Linux x64 Mono 6.8. Unity is not yet validated.
-- Added multi-dataset I/O, bounded chunk reads and datatype decoding, complex datatypes, live file format bounds, file locking and selection-I/O controls.
-- Added selection composition, projection and iteration, property serialization, error-stack pause/resume, identifier iteration, chunk metadata iteration and serial driver controls.
-- Added the complete H5LT, H5DS, H5PT, H5IM, H5TB and H5LD public function families, including packet tables, images/palettes, compound tables and growing datasets.
-- Added VOL discovery/configuration, current predefined datatype/property identifiers, event sets and asynchronous entry points with explicit unmanaged-buffer lifetimes. The packaged native connector completes operations synchronously; see ASYNC.md for connector and ownership requirements.
-- Added library-close callbacks retained until explicit shutdown, native version checks, driver capability queries and UTF-8 object comments. API_COVERAGE.md inventories the application headers and documents excluded compatibility and build-dependent functions.
-- Added modern object/region/attribute references, the STD_REF datatype, token serialization and current object/link information and traversal. Modern references own resources: duplicate them with H5R.copy and release each owner with H5R.destroy, or reclaim buffers with H5T.reclaim.
-- Corrected H5R.MAXTYPE to 5, H5O.NTYPES to 4 and H5T.NCLASSES to 12; added missing reference, map and complex enum values. Existing legacy reference enum aliases retain their numeric values.
 - Unified native loading for function imports and exported globals, with process-RID assets and explicit private-directory configuration.
 - HDF5 2.2.x is required. Updated native boolean widths, C long fields, callbacks, enums and versioned entry points.
 - Windows/Linux x64 and ARM64 plus macOS ARM64.

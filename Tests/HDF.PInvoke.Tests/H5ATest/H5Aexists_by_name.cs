@@ -42,7 +42,7 @@ namespace UnitTests
         public void H5Aexists_by_nameTest2()
         {
             Assert.IsFalse(
-                                        H5A.exists(Utilities.RandomInvalidHandle(), ".") >= 0);
+                                                                H5A.exists(Utilities.RandomInvalidHandle(), ".") >= 0);
             Assert.IsFalse(
                 H5A.exists(m_v2_class_file, "") >= 0);
         }

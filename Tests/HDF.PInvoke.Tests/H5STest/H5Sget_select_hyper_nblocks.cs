@@ -51,8 +51,8 @@ namespace UnitTests
         public void H5Sget_select_hyper_nblocksTest2()
         {
             Assert.IsFalse(
-                                        H5S.get_select_hyper_nblocks(Utilities.RandomInvalidHandle())
-                                        >= 0);
+                                                                H5S.get_select_hyper_nblocks(Utilities.RandomInvalidHandle())
+                                                                >= 0);
         }
     }
 }

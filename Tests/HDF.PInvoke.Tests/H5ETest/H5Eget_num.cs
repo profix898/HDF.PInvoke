@@ -41,7 +41,7 @@ namespace UnitTests
         public void H5Eget_numTest2()
         {
             Assert.IsFalse(
-                                        H5E.get_num(Utilities.RandomInvalidHandle()).ToInt32() >= 0);
+                                                                H5E.get_num(Utilities.RandomInvalidHandle()).ToInt32() >= 0);
         }
     }
 }

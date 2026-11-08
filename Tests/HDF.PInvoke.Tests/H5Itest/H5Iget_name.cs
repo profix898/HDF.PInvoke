@@ -63,7 +63,7 @@ namespace UnitTests
         public void H5Iget_nameTest2()
         {
             var size = H5I.get_name(Utilities.RandomInvalidHandle(), null,
-                                        IntPtr.Zero);
+                                                                IntPtr.Zero);
             Assert.IsFalse(size.ToInt32() >= 0);
         }
     }

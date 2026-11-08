@@ -7,7 +7,10 @@ namespace HDF.PInvoke
     public unsafe sealed class H5LD
     {
         /// <summary>Initializes native HDF5 before the first high-level call.</summary>
-        static H5LD() { H5.open(); }
+        static H5LD()
+        {
+            H5.open();
+        }
 
         /// <summary>Gets current dataset dimensions into a buffer containing one unsigned 64-bit value per dimension.</summary>
         [DllImport(Constants.HLDLLFileName, EntryPoint = "H5LDget_dset_dims", CallingConvention = CallingConvention.Cdecl)]

@@ -32,7 +32,7 @@ namespace UnitTests
         public void H5LiterateTest1()
         {
             Assert.IsTrue(H5L.create_soft("this/is/a/soft/link",
-                                        m_v0_test_file, "A", m_lcpl) >= 0);
+                                                                m_v0_test_file, "A", m_lcpl) >= 0);
             Assert.IsTrue(H5L.create_soft("this/is/a/soft/link",
                 m_v0_test_file, "B", m_lcpl) >= 0);
             Assert.IsTrue(H5L.create_soft("this/is/a/soft/link",
@@ -95,9 +95,9 @@ namespace UnitTests
             for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(H5L.create_soft(
-                                                    Encoding.ASCII.GetBytes("this/is/a/soft/link" + "\0"),
-                                                    m_v0_test_file, Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
-                                                    m_lcpl_utf8) >= 0);
+                                                                                    Encoding.ASCII.GetBytes("this/is/a/soft/link" + "\0"),
+                                                                                    m_v0_test_file, Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0"),
+                                                                                    m_lcpl_utf8) >= 0);
 
                 Assert.IsTrue(H5L.create_soft(
                     Encoding.ASCII.GetBytes("this/is/a/soft/link" + "\0"),

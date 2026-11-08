@@ -65,6 +65,7 @@ namespace UnitTests
                 H5P.close(list);
             }
         }
+
         /// <summary>Retrieves an error handler, invokes it and observes a cleared native callback.</summary>
         [TestMethod]
         public void ErrorCallbackGetterReturnsAndClearsNativeCallback()
@@ -72,6 +73,7 @@ namespace UnitTests
             var stack = H5E.create_stack();
             Assert.IsTrue(stack >= 0);
             H5E.auto_t callback = (id, state) => 29;
+
             try
             {
                 Assert.IsTrue(H5E.set_auto(stack, callback, new IntPtr(41)) >= 0);
@@ -91,17 +93,18 @@ namespace UnitTests
                 GC.KeepAlive(callback);
             }
         }
+
         /// <summary>Round-trips an external-link callback with UTF-8 strings and a by-reference flags argument.</summary>
         [TestMethod]
         public void ExternalLinkCallbackGetterPreservesSignature()
         {
             H5L.elink_traverse_t callback = (string parentFile, string parentGroup, string childFile, string childObject,
-                ref uint flags, long access, IntPtr state) =>
-            {
-                Assert.AreEqual("日本語", childObject);
-                flags = 17;
-                return 19;
-            };
+                                        ref uint flags, long access, IntPtr state) =>
+                                    {
+                                        Assert.AreEqual("日本語", childObject);
+                                        flags = 17;
+                                        return 19;
+                                    };
             RoundTrip(H5P.LINK_ACCESS, callback, H5P.get_elink_cb, H5P.set_elink_cb, actual =>
             {
                 uint flags = 0;
@@ -145,6 +148,7 @@ namespace UnitTests
             Assert.IsTrue(list >= 0);
             H5MM.allocate_t allocate = (size, state) => Marshal.AllocHGlobal(size);
             H5MM.free_t release = (pointer, state) => Marshal.FreeHGlobal(pointer);
+
             try
             {
                 var actualAllocate = allocate;

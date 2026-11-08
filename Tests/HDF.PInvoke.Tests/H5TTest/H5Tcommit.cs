@@ -57,8 +57,8 @@ namespace UnitTests
         public void H5TcommitTest3()
         {
             Assert.IsFalse(
-                                        H5T.commit(m_v0_test_file, "foo",
-                                        Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5T.commit(m_v0_test_file, "foo",
+                                                                Utilities.RandomInvalidHandle()) >= 0);
             Assert.IsFalse(
                 H5T.commit(Utilities.RandomInvalidHandle(), "foo",
                 Utilities.RandomInvalidHandle()) >= 0);

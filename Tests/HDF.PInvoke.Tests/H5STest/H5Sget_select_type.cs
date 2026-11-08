@@ -85,8 +85,8 @@ namespace UnitTests
         public void H5Sget_select_typeTest4()
         {
             Assert.IsTrue(
-                                        H5S.get_select_type(Utilities.RandomInvalidHandle())
-                                        == H5S.sel_type.ERROR);
+                                                                H5S.get_select_type(Utilities.RandomInvalidHandle())
+                                                                == H5S.sel_type.ERROR);
         }
     }
 }

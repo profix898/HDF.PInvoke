@@ -61,7 +61,7 @@ namespace UnitTests
         public void H5Dget_space_statusTest2()
         {
             var dset = H5D.create(m_v0_test_file, "dset", H5T.STD_I16LE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(dset >= 0);
             var status = H5D.space_status_t.ERROR;
             Assert.IsTrue(H5D.get_space_status(dset, ref status) >= 0);

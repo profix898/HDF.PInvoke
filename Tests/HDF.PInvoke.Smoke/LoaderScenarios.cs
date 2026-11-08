@@ -42,20 +42,35 @@ internal static class LoaderScenarios
         {
             NativeDependencies.Configure(Path.Combine(Path.GetTempPath(), "missing-hdf-" + Guid.NewGuid()));
             var rejected = false;
+
             try
             {
                 H5.open();
             }
-            catch (DllNotFoundException) { rejected = true; }
+            catch (DllNotFoundException)
+            {
+                rejected = true;
+            }
+
             if (!rejected)
+            {
                 throw new Exception("Missing native directory was accepted.");
+            }
 
             var directory = Path.Combine(AppContext.BaseDirectory, "runtimes", NativeDependencies.RuntimeIdentifier, "native");
+
             if (!Directory.Exists(directory))
+            {
                 directory = AppContext.BaseDirectory;
+            }
+
             NativeDependencies.Configure(directory);
+
             if (H5.open() < 0)
+            {
                 throw new Exception("Corrected native configuration could not initialize.");
+            }
+
             Console.WriteLine("PASS: corrected configuration recovers a failed direct initialization");
             return true;
         }
@@ -104,8 +119,20 @@ internal static class LoaderScenarios
 
         if (args[0] == "--concurrent-first")
         {
-            // Serialize HDF5 calls; only loader initialization is raced.
-            System.Threading.Tasks.Parallel.For(0, 16, _ => NativeDependencies.ResolvePathToExternalDependencies());
+            // Race only the internal loader; concurrent calls into serial HDF5 are unsupported.
+            var method = typeof(NativeDependencies).GetMethod("GetLibraryHandle", BindingFlags.NonPublic | BindingFlags.Static)
+                ?? throw new Exception("Cannot find internal loader for the concurrency regression.");
+            var load = (Func<bool, IntPtr>)method.CreateDelegate(typeof(Func<bool, IntPtr>));
+            var handles = new IntPtr[16];
+            System.Threading.Tasks.Parallel.For(0, handles.Length, index => handles[index] = load(false));
+
+            foreach (var handle in handles)
+            {
+                if (handle == IntPtr.Zero || handle != handles[0])
+                {
+                    throw new Exception("Concurrent loading did not retain a single core library handle.");
+                }
+            }
 
             if (H5.open() < 0)
             {
@@ -168,7 +195,7 @@ internal static class LoaderScenarios
 
             try
             {
-                NativeDependencies.ResolvePathToExternalDependencies();
+                H5.open();
             }
             catch (DllNotFoundException e)
             {
@@ -205,7 +232,7 @@ internal static class LoaderScenarios
 
             try
             {
-                NativeDependencies.ResolvePathToExternalDependencies();
+                H5.open();
             }
             catch (NotSupportedException e)
             {

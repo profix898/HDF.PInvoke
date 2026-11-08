@@ -31,7 +31,7 @@ namespace UnitTests
         public void H5RcreateTest1()
         {
             var path =
-                                        Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -72,7 +72,7 @@ namespace UnitTests
         public void H5RcreateTest2()
         {
             var path =
-                                        Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -113,7 +113,7 @@ namespace UnitTests
         public void H5RcreateTest3()
         {
             var path =
-                                           Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                   Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
@@ -177,7 +177,7 @@ namespace UnitTests
         public void H5RcreateTest4()
         {
             var path =
-                                           Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
+                                                                   Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
             var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);

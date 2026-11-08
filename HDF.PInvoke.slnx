@@ -1,9 +1,12 @@
 <Solution>
   <Folder Name="/Documentation/">
     <File Path="README.md" />
-    <File Path="ADVANCED.md" />
-    <File Path="LEGACY.md" />
-    <File Path="RELEASE_NOTES.md" />
+    <File Path="Docs/ADVANCED.md" />
+    <File Path="Docs/LEGACY.md" />
+    <File Path="Docs/ASYNC.md" />
+    <File Path="Docs/API_COVERAGE.md" />
+    <File Path="Docs/MIGRATION.md" />
+    <File Path="Docs/RELEASE_NOTES.md" />
   </Folder>
   <Folder Name="/Sources/">
     <Project Path="Sources/HDF.PInvoke/HDF.PInvoke.csproj" />

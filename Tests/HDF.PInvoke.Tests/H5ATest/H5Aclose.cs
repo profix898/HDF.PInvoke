@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5AcloseTest1()
         {
             var att = H5A.create(m_v0_class_file, "NAC", H5T.IEEE_F32BE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -54,7 +54,7 @@ namespace UnitTests
         public void H5AcloseTest2()
         {
             Assert.IsFalse(
-                                        H5A.close(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5A.close(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

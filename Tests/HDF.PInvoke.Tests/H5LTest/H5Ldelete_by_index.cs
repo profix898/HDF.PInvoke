@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Ldelete_by_indexTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A/B/C/D0", m_lcpl)) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A/B/C/D0", m_lcpl)) >= 0);
             Assert.IsTrue(
                 H5G.close(H5G.create(m_v0_test_file, "A/B/C/D1", m_lcpl)) >= 0);
             Assert.IsTrue(

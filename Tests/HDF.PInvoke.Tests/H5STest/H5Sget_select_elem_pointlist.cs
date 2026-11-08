@@ -56,8 +56,8 @@ namespace UnitTests
         public void H5Sget_select_elem_pointlistTest2()
         {
             Assert.IsFalse(
-                                        H5S.get_select_elem_pointlist(Utilities.RandomInvalidHandle(),
-                                        0, 0, null) >= 0);
+                                                                H5S.get_select_elem_pointlist(Utilities.RandomInvalidHandle(),
+                                                                0, 0, null) >= 0);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace UnitTests
         public void H5Sselect_allTest2()
         {
             Assert.IsFalse(
-                                        H5S.select_all(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5S.select_all(Utilities.RandomInvalidHandle()) >= 0);
         }
 
         /// <summary>

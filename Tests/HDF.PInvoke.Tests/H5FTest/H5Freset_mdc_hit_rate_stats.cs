@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Freset_mdc_hit_rate_statsTest1()
         {
             Assert.IsTrue(
-                                        H5F.reset_mdc_hit_rate_stats(m_v0_class_file) >= 0);
+                                                                H5F.reset_mdc_hit_rate_stats(m_v0_class_file) >= 0);
             Assert.IsTrue(
                 H5F.reset_mdc_hit_rate_stats(m_v2_class_file) >= 0);
         }
@@ -39,8 +39,8 @@ namespace UnitTests
         public void H5Freset_mdc_hit_rate_statsTest2()
         {
             Assert.IsFalse(
-                                        H5F.reset_mdc_hit_rate_stats(Utilities.RandomInvalidHandle())
-                                        >= 0);
+                                                                H5F.reset_mdc_hit_rate_stats(Utilities.RandomInvalidHandle())
+                                                                >= 0);
         }
     }
 }

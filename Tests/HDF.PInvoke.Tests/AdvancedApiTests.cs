@@ -16,6 +16,7 @@ namespace UnitTests
             var source = H5S.create_simple(1, new ulong[] { 8 }, null);
             var destination = H5S.copy(source);
             long combined = -1, projected = -1, hyperslab = -1, iterator = -1, decoded = -1;
+
             try
             {
                 Assert.IsTrue(H5S.select_hyperslab(source, H5S.seloper_t.SET, new ulong[] { 2 }, null, new ulong[] { 3 }, null) >= 0);
@@ -59,8 +60,18 @@ namespace UnitTests
             }
             finally
             {
-                if (iterator >= 0) H5S.sel_iter_close(iterator);
-                foreach (var id in new[] { decoded, hyperslab, projected, combined, destination, source }) if (id >= 0) H5S.close(id);
+                if (iterator >= 0)
+                {
+                    H5S.sel_iter_close(iterator);
+                }
+
+                foreach (var id in new[] { decoded, hyperslab, projected, combined, destination, source })
+                {
+                    if (id >= 0)
+                    {
+                        H5S.close(id);
+                    }
+                }
             }
         }
 
@@ -72,6 +83,7 @@ namespace UnitTests
             var creation = H5P.create(H5P.DATASET_ACCESS);
             var transfer = H5P.create(H5P.DATASET_XFER);
             long decoded = -1;
+
             try
             {
                 Assert.IsTrue(H5P.set_file_locking(access, 0, 1) >= 0);
@@ -102,7 +114,17 @@ namespace UnitTests
                 ulong start = 0, count = 2;
                 Assert.IsTrue(H5P.set_dataset_io_hyperslab_selection(transfer, 1, H5S.seloper_t.SET, (IntPtr)(&start), IntPtr.Zero, (IntPtr)(&count), IntPtr.Zero) >= 0);
             }
-            finally { if (decoded >= 0) H5P.close(decoded); H5P.close(transfer); H5P.close(creation); H5P.close(access); }
+            finally
+            {
+                if (decoded >= 0)
+                {
+                    H5P.close(decoded);
+                }
+
+                H5P.close(transfer);
+                H5P.close(creation);
+                H5P.close(access);
+            }
         }
 
         /// <summary>Checks stack pause/resume, stack ownership transfer and library lifecycle queries.</summary>
@@ -111,6 +133,7 @@ namespace UnitTests
         {
             var first = H5E.create_stack();
             var second = H5E.create_stack();
+
             try
             {
                 Assert.IsTrue(H5E.pause_stack(first) >= 0);
@@ -125,7 +148,15 @@ namespace UnitTests
                 Assert.IsTrue(H5.is_library_terminating(out var terminating) >= 0);
                 Assert.AreEqual((byte)0, terminating);
             }
-            finally { if (second >= 0) H5E.close_stack(second); H5E.close_stack(first); }
+            finally
+            {
+                if (second >= 0)
+                {
+                    H5E.close_stack(second);
+                }
+
+                H5E.close_stack(first);
+            }
         }
 
         /// <summary>Checks custom identifier registration, synchronous iteration and final release callback.</summary>
@@ -133,22 +164,55 @@ namespace UnitTests
         public void IdentifierIterationAndRelease()
         {
             var freed = 0;
-            H5I.free_t release = (IntPtr value, ref IntPtr request) => { if (value == new IntPtr(123)) freed++; return 0; };
+            var synchronousRequests = true;
+            H5I.free_t release = (IntPtr value, IntPtr request) =>
+            {
+                // Synchronous identifier cleanup supplies no request-output storage.
+                synchronousRequests &= request == IntPtr.Zero;
+
+                if (value == new IntPtr(123))
+                {
+                    freed++;
+                }
+
+                return 0;
+            };
             var type = H5I.register_type2(0, release);
             Assert.IsTrue((int)type >= 0);
+
             try
             {
                 var id = H5I.register(type, new IntPtr(123));
                 Assert.IsTrue(id >= 0);
                 var visits = 0;
-                H5I.iterate_t callback = (identifier, state) => { if (identifier != id || state != new IntPtr(42)) return -1; visits++; return 0; };
+                H5I.iterate_t callback = (identifier, state) =>
+                {
+                    if (identifier != id || state != new IntPtr(42))
+                    {
+                        return -1;
+                    }
+
+                    visits++;
+                    return 0;
+                };
                 Assert.IsTrue(H5I.iterate(type, callback, new IntPtr(42)) >= 0);
                 Assert.AreEqual(1, visits);
                 Assert.IsTrue(H5I.dec_ref(id) >= 0);
                 Assert.AreEqual(1, freed);
+                Assert.IsTrue(synchronousRequests);
+
+                // Clearing an identifier type uses a separate native callback path.
+                Assert.IsTrue(H5I.register(type, new IntPtr(123)) >= 0);
+                Assert.IsTrue(H5I.clear_type(type, 1) >= 0);
+                Assert.AreEqual(2, freed);
+                Assert.IsTrue(synchronousRequests);
                 GC.KeepAlive(callback);
             }
-            finally { H5I.destroy_type(type); GC.KeepAlive(release); }
+            finally
+            {
+                H5I.destroy_type(type);
+                GC.KeepAlive(release);
+            }
         }
     }
 }

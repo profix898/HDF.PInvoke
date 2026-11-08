@@ -98,8 +98,8 @@ namespace UnitTests
             for (var i = 0; i < m_utf8strings.Count; ++i)
             {
                 hnds[i] = GCHandle.Alloc(
-                                                    Encoding.UTF8.GetBytes((string)m_utf8strings[i] + "\0"),
-                                                    GCHandleType.Pinned);
+                                                                                    Encoding.UTF8.GetBytes((string)m_utf8strings[i] + "\0"),
+                                                                                    GCHandleType.Pinned);
                 wdata1[i] = hnds[i].AddrOfPinnedObject();
             }
 

@@ -27,8 +27,8 @@ namespace UnitTests
         public void H5EpushTest1()
         {
             Assert.IsTrue(
-                                        H5E.push(H5E.DEFAULT, "hello.c", "sqrt", 77, H5E.ERR_CLS,
-                                        H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
+                                                                H5E.push(H5E.DEFAULT, "hello.c", "sqrt", 77, H5E.ERR_CLS,
+                                                                H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
             Assert.IsTrue(
                 H5E.get_num(H5E.DEFAULT).ToInt32() > 0);
         }
@@ -40,9 +40,9 @@ namespace UnitTests
         public void H5EpushTest2()
         {
             Assert.IsFalse(
-                                        H5E.push(Utilities.RandomInvalidHandle(), "hello.c", "sqrt",
-                                        77, H5E.ERR_CLS, H5E.NONE_MAJOR, H5E.NONE_MINOR,
-                                        "Hello, World!") >= 0);
+                                                                H5E.push(Utilities.RandomInvalidHandle(), "hello.c", "sqrt",
+                                                                77, H5E.ERR_CLS, H5E.NONE_MAJOR, H5E.NONE_MINOR,
+                                                                "Hello, World!") >= 0);
         }
     }
 }

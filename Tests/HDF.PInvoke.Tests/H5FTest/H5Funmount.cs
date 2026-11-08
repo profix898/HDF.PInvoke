@@ -54,7 +54,7 @@ namespace UnitTests
         public void H5FunmountTest2()
         {
             Assert.IsFalse(
-                                        H5F.unmount(Utilities.RandomInvalidHandle(), "AA") >= 0);
+                                                                H5F.unmount(Utilities.RandomInvalidHandle(), "AA") >= 0);
 
             Assert.IsFalse(H5F.unmount(m_v0_class_file, "") >= 0);
         }

@@ -45,7 +45,7 @@ namespace UnitTests
         public void H5Sget_select_npointsTest2()
         {
             Assert.IsFalse(
-                                        H5S.get_select_npoints(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5S.get_select_npoints(Utilities.RandomInvalidHandle()) >= 0);
         }
 
         /// <summary>

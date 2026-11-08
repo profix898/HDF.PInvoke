@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Fset_mdc_configTest1()
         {
             var conf = new H5AC.cache_config_t(
-                                        H5AC.CURR_CACHE_CONFIG_VERSION);
+                                                                H5AC.CURR_CACHE_CONFIG_VERSION);
             Assert.IsTrue(H5F.get_mdc_config(m_v0_class_file, ref conf) >= 0);
             Assert.IsTrue(H5F.set_mdc_config(m_v0_class_file, ref conf) >= 0);
             Assert.IsTrue(H5F.get_mdc_config(m_v2_class_file, ref conf) >= 0);
@@ -41,7 +41,7 @@ namespace UnitTests
         public void H5Fset_mdc_configTest2()
         {
             var conf = new H5AC.cache_config_t(
-                                        H5AC.CURR_CACHE_CONFIG_VERSION);
+                                                                H5AC.CURR_CACHE_CONFIG_VERSION);
             Assert.IsFalse(
                 H5F.set_mdc_config(Utilities.RandomInvalidHandle(),
                 ref conf) >= 0);

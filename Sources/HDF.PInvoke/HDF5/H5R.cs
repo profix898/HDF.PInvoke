@@ -62,12 +62,16 @@ namespace HDF.PInvoke
 
             /// <summary>Legacy object reference, equivalent to OBJECT.</summary>
             OBJECT1 = OBJECT,
+
             /// <summary>Legacy region reference, equivalent to DATASET_REGION.</summary>
             DATASET_REGION1 = DATASET_REGION,
+
             /// <summary>Modern object reference stored in ref_t.</summary>
             OBJECT2 = 2,
+
             /// <summary>Modern region reference stored in ref_t.</summary>
             DATASET_REGION2 = 3,
+
             /// <summary>Modern attribute reference stored in ref_t.</summary>
             ATTR = 4
         }

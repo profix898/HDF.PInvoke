@@ -7,7 +7,10 @@ namespace HDF.PInvoke
     public unsafe sealed class H5TB
     {
         /// <summary>Initializes native HDF5 before the first high-level call.</summary>
-        static H5TB() { H5.open(); }
+        static H5TB()
+        {
+            H5.open();
+        }
 
         /// <summary>Creates a compound table with native field-name, offset and datatype arrays containing nfields entries.</summary>
         /// <remarks>Offsets and sizes use native size_t elements. Data buffers must cover the requested record count and record size. String-pointer arrays contain null-terminated UTF-8 strings; output string buffers must be sized from the corresponding datatype/attribute metadata before calling.</remarks>

@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Oopen_by_idxTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A")) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A")) >= 0);
             Assert.IsTrue(
                 H5G.close(H5G.create(m_v0_test_file, "AA")) >= 0);
             Assert.IsTrue(
@@ -73,9 +73,9 @@ namespace UnitTests
         public void H5Oopen_by_idxTest2()
         {
             Assert.IsFalse(
-                                        H5O.open_by_idx(Utilities.RandomInvalidHandle(), ".",
-                                        H5.index_t.NAME, H5.iter_order_t.NATIVE,
-                                        44) >= 0);
+                                                                H5O.open_by_idx(Utilities.RandomInvalidHandle(), ".",
+                                                                H5.index_t.NAME, H5.iter_order_t.NATIVE,
+                                                                44) >= 0);
             Assert.IsFalse(
                 H5O.open_by_idx(m_v2_class_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE,

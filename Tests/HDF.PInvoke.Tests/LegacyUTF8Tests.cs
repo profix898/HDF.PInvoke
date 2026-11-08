@@ -19,7 +19,7 @@ namespace UnitTests
         [TestMethod]
         public void BorrowedCleanupPreservesTheOuterCallsBuffer()
         {
-            var owner = GetMarshaler(null);
+var owner = GetMarshaler(null);
             var borrower = GetMarshaler("borrowed");
             const string input = "Grüße 数据 😀 \ud800";
             string expected = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(input));
@@ -27,15 +27,15 @@ namespace UnitTests
 
             try
             {
-                Assert.AreEqual(expected, borrower.MarshalNativeToManaged(buffer));
+Assert.AreEqual(expected, borrower.MarshalNativeToManaged(buffer));
                 borrower.CleanUpNativeData(buffer);
                 Assert.AreEqual(expected, owner.MarshalNativeToManaged(buffer));
-            }
+}
             finally
             {
-                owner.CleanUpNativeData(buffer);
-            }
-        }
+owner.CleanUpNativeData(buffer);
+}
+}
 
         /// <summary>
         /// Verifies null And Empty Strings Retain Distinct Native Representations.
@@ -43,7 +43,7 @@ namespace UnitTests
         [TestMethod]
         public void NullAndEmptyStringsRetainDistinctNativeRepresentations()
         {
-            var marshaler = GetMarshaler(null);
+var marshaler = GetMarshaler(null);
             Assert.AreEqual(IntPtr.Zero, marshaler.MarshalManagedToNative(null));
             Assert.IsNull(marshaler.MarshalNativeToManaged(IntPtr.Zero));
             Assert.ThrowsExactly<MarshalDirectiveException>(() => marshaler.MarshalManagedToNative(42));
@@ -51,15 +51,15 @@ namespace UnitTests
 
             try
             {
-                Assert.AreNotEqual(IntPtr.Zero, empty);
+Assert.AreNotEqual(IntPtr.Zero, empty);
                 Assert.AreEqual((byte)0, Marshal.ReadByte(empty));
                 Assert.AreEqual(string.Empty, marshaler.MarshalNativeToManaged(empty));
-            }
+}
             finally
             {
-                marshaler.CleanUpNativeData(empty);
-            }
-        }
+marshaler.CleanUpNativeData(empty);
+}
+}
 
         /// <summary>
         /// Obtains the internal UTF-8 marshaler by reflection to verify ownership without exposing a public test API.

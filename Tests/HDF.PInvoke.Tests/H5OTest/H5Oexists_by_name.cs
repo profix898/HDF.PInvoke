@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Oexists_by_nameTest1()
         {
             Assert.IsTrue(H5L.create_soft("/oh my",
-                                        m_v0_test_file, "AA") >= 0);
+                                                                m_v0_test_file, "AA") >= 0);
 
             var gid = H5G.create(m_v0_test_file, "A/B/C", m_lcpl);
             Assert.IsTrue(gid >= 0);
@@ -65,8 +65,8 @@ namespace UnitTests
         public void H5Oexists_by_nameTest2()
         {
             Assert.IsFalse(
-                                        H5O.exists_by_name(Utilities.RandomInvalidHandle(),
-                                        (string)null) >= 0);
+                                                                H5O.exists_by_name(Utilities.RandomInvalidHandle(),
+                                                                (string)null) >= 0);
         }
     }
 }

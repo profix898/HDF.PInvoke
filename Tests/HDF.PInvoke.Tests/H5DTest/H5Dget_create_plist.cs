@@ -33,7 +33,7 @@ namespace UnitTests
         public void H5Dget_create_plistTest1()
         {
             var dset = H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(dset >= 0);
 
             var dapl = H5D.get_create_plist(dset);
@@ -60,7 +60,7 @@ namespace UnitTests
         public void H5Dget_create_plistTest2()
         {
             Assert.IsFalse(
-                                        H5D.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5D.get_create_plist(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

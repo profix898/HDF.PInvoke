@@ -28,8 +28,8 @@ namespace UnitTests
         public void H5Lget_infoTest1()
         {
             Assert.IsTrue(
-                                        H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
-                                        "A/B/C", m_lcpl) >= 0);
+                                                                H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
+                                                                "A/B/C", m_lcpl) >= 0);
 
             var info = new H5L.info_t();
             Assert.IsTrue(H5L.get_info(m_v0_test_file, "A/B/C", ref info) >= 0);
@@ -56,7 +56,7 @@ namespace UnitTests
         public void H5Lget_infoTest2()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl)) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl)) >= 0);
             var info = new H5L.info_t();
             Assert.IsTrue(H5L.get_info(m_v0_test_file, "A/B/C/D", ref info) >= 0);
             Assert.IsTrue(info.type == H5L.type_t.HARD);

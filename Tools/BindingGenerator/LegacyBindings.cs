@@ -82,6 +82,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
         foreach (var member in node.Members)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
             if (member is not MethodDeclarationSyntax method)
             {
                 members.Add((MemberDeclarationSyntax)Visit(member)!);
@@ -149,6 +150,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             {
                 throw new BindingGenerationException("Expected a static, non-generic extern import without a method body.", method.GetLocation());
             }
+
             if (import.ArgumentList == null || import.ArgumentList.Arguments.Count == 0)
             {
                 throw new BindingGenerationException("Missing import library.", method.GetLocation());
@@ -234,7 +236,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             if (config != null)
             {
                 var windowsDeclaration = declaration.Replace(suffix + "Delegate", suffix + "WindowsDelegate")
-                                                    .Replace("H5AC.cache_config_t", "H5AC.WindowsCacheConfig");
+                                                                                    .Replace("H5AC.cache_config_t", "H5AC.WindowsCacheConfig");
                 members.Add(SyntaxFactory.ParseMemberDeclaration(windowsDeclaration)!);
                 members.Add(CreateCache(suffix + "WindowsCache", suffix + "WindowsDelegate", library, entryPoint));
                 var name = config.Identifier.Text;
@@ -251,7 +253,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             if (entryPoint == "\"H5Ewalk2\"")
             {
                 implementation = implementation.WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
-                    SyntaxFactory.ParseExpression($"LegacyErrorWalk.Invoke({actuals})")));
+                                                    SyntaxFactory.ParseExpression($"LegacyErrorWalk.Invoke({actuals})")));
             }
 
             // Removing an attribute list must not discard the method's XML docs or directives.

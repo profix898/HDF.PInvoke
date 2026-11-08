@@ -33,8 +33,8 @@ namespace UnitTests
         public void H5DopenTest1()
         {
             Assert.IsTrue(
-                                        H5D.close(H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
-                                        m_space_null)) >= 0);
+                                                                H5D.close(H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
+                                                                m_space_null)) >= 0);
             var dset = H5D.open(m_v0_test_file, "dset");
             Assert.IsTrue(dset >= 0);
             Assert.IsTrue(H5D.close(dset) >= 0);
@@ -54,7 +54,7 @@ namespace UnitTests
         public void H5DopenTest2()
         {
             Assert.IsFalse(
-                                        H5D.open(Utilities.RandomInvalidHandle(), "dset") >= 0);
+                                                                H5D.open(Utilities.RandomInvalidHandle(), "dset") >= 0);
         }
     }
 }

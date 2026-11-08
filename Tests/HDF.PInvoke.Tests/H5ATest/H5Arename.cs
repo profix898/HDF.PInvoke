@@ -29,7 +29,7 @@ namespace UnitTests
         public void H5ArenameTest1()
         {
             var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
-                                        m_space_scalar);
+                                                                m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
             Assert.IsTrue(H5A.rename(m_v2_test_file, "A", "new A") >= 0);
@@ -49,7 +49,7 @@ namespace UnitTests
         public void H5ArenameTest2()
         {
             Assert.IsFalse(
-                                        H5A.rename(Utilities.RandomInvalidHandle(), "foo", "bar") >= 0);
+                                                                H5A.rename(Utilities.RandomInvalidHandle(), "foo", "bar") >= 0);
             Assert.IsFalse(H5A.rename(m_v0_test_file, "foo", "bar") >= 0);
         }
     }

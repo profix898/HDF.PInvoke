@@ -8,6 +8,7 @@ namespace HDF.PInvoke
     {
         /// <summary>Requests selection sequences sorted by offset.</summary>
         public const uint SEL_ITER_GET_SEQ_LIST_SORTED = 1;
+
         /// <summary>Shares the dataspace selection; keep the dataspace open and unchanged while iterating.</summary>
         public const uint SEL_ITER_SHARE_WITH_DATASPACE = 2;
 

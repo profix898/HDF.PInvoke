@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5Aget_spaceTest1()
         {
             var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
-                                        m_space_scalar);
+                                                                m_space_scalar);
             Assert.IsTrue(att >= 0);
             var space = H5A.get_space(att);
             Assert.IsTrue(space >= 0);
@@ -50,7 +50,7 @@ namespace UnitTests
         public void H5Aget_spaceTest2()
         {
             Assert.IsFalse(
-                                        H5A.get_space(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5A.get_space(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

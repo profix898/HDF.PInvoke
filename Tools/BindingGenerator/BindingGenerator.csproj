@@ -10,7 +10,7 @@
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Include="AnalyzerReleases.Shipped.md;AnalyzerReleases.Unshipped.md" />
+    <AdditionalFiles Include="../../Docs/BindingGenerator/AnalyzerReleases.Shipped.md;../../Docs/BindingGenerator/AnalyzerReleases.Unshipped.md" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <InternalsVisibleTo Include="HDF.PInvoke.BindingGenerator.Tests" />
   </ItemGroup>

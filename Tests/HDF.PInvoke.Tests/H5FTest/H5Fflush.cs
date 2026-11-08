@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5FflushTest1()
         {
             Assert.IsTrue(
-                                        H5F.flush(m_v0_class_file, H5F.scope_t.GLOBAL) >= 0);
+                                                                H5F.flush(m_v0_class_file, H5F.scope_t.GLOBAL) >= 0);
             Assert.IsTrue(
                 H5F.flush(m_v2_class_file, H5F.scope_t.GLOBAL) >= 0);
             Assert.IsTrue(
@@ -43,8 +43,8 @@ namespace UnitTests
         public void H5FflushTest2()
         {
             Assert.IsFalse(
-                                        H5F.flush(Utilities.RandomInvalidHandle(),
-                                        H5F.scope_t.GLOBAL) >= 0);
+                                                                H5F.flush(Utilities.RandomInvalidHandle(),
+                                                                H5F.scope_t.GLOBAL) >= 0);
         }
     }
 }
