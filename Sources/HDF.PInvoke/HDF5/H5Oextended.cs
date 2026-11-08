@@ -6,6 +6,14 @@ namespace HDF.PInvoke
     /// <summary>Provides current HDF5 reference and token-aware H5O operations.</summary>
     public unsafe sealed partial class H5O
     {
+        /// <summary>Sets or removes an object's UTF-8 comment; attributes are preferable for new application metadata.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int set_comment(long objectId, [MarshalAs(UnmanagedType.LPUTF8Str)] string comment);
+
+        /// <summary>Sets or removes a named object's UTF-8 comment; pass null to remove it.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment_by_name", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int set_comment_by_name(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string comment, long access = H5P.DEFAULT);
+
         /// <summary>Requests identity, object type and hard-link count.</summary>
         public const uint INFO_BASIC = 1;
         /// <summary>Requests object timestamps.</summary>

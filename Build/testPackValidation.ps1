@@ -58,7 +58,7 @@ try {
                 if ($case -eq 'wrong-frameworks') { $content = $original.Replace('targetFramework="net8.0"', 'targetFramework="net10.0"') }
                 if ($case -eq 'wrong-license-metadata') { $content = $original.Replace('>LICENSE.txt<', '>other.txt<') }
                 if ($case -eq 'wrong-pin') { $manifest.hdf5Revision = 'wrong'; $content = $manifest | ConvertTo-Json -Depth 10 }
-                if ($case -eq 'unverified-suite', 'extra-managed', 'corrupt-api-docs', 'corrupt-readme', 'wrong-frameworks', 'wrong-license-metadata') { $manifest.upstreamTests.passed = $false; $content = $manifest | ConvertTo-Json -Depth 10 }
+                if ($case -eq 'unverified-suite') { $manifest.upstreamTests.passed = $false; $content = $manifest | ConvertTo-Json -Depth 10 }
                 $writer = [IO.StreamWriter]::new($zip.CreateEntry($target).Open())
                 try { $writer.Write($content) } finally { $writer.Dispose() }
             }

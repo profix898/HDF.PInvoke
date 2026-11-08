@@ -38,6 +38,7 @@ namespace UnitTests
         {
             // close the HDF5 library
             Assert.IsTrue(H5.close() >= 0);
+            NativeLifecycleTests.VerifyAfterClose();
         }
     }
 }

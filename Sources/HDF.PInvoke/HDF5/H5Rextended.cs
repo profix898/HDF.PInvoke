@@ -7,7 +7,7 @@ namespace HDF.PInvoke
     public unsafe sealed partial class H5R
     {
         /// <summary>Owns opaque native reference resources in 64 bytes of eight-byte-aligned storage.</summary>
-        /// <remarks>Initialize through create or copy APIs. Use H5R.copy rather than struct assignment to duplicate ownership, and H5R.destroy for every successfully created reference.</remarks>
+        /// <remarks>Initialize through create or copy APIs. Use H5R.copy rather than struct assignment to duplicate ownership, and H5R.destroy for every successfully created reference. Output destinations must not already own resources: destroy an existing reference before replacing it through an out parameter.</remarks>
         [StructLayout(LayoutKind.Sequential, Size = 64)]
         public struct ref_t
         {

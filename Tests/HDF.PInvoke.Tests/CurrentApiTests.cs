@@ -64,6 +64,7 @@ namespace UnitTests
                 };
                 Assert.IsTrue(H5D.chunk_iter(first, H5P.DEFAULT, chunkCallback, new IntPtr(42)) >= 0);
                 Assert.AreEqual(1, chunks);
+                Assert.IsTrue(H5D.debug(first) >= 0);
                 GC.KeepAlive(chunkCallback);
                 Assert.IsTrue(H5P.get_no_selection_io_cause(transfer, out _) >= 0);
                 Assert.ThrowsExactly<ArgumentException>(() => H5D.read_multi(ids, new long[1], spaces, spaces, transfer, new IntPtr[2]));

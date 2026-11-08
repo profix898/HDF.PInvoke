@@ -5,6 +5,9 @@
 - Managed targets are net8.0 and netstandard2.0, with separate build-selected modern and legacy loaders and shared binding declarations. Legacy validation includes net472 on .NET Framework 4.8 and Linux x64 Mono 6.8. Unity is not yet validated.
 - Added multi-dataset I/O, bounded chunk reads and datatype decoding, complex datatypes, live file format bounds, file locking and selection-I/O controls.
 - Added selection composition, projection and iteration, property serialization, error-stack pause/resume, identifier iteration, chunk metadata iteration and serial driver controls.
+- Added the complete H5LT, H5DS, H5PT, H5IM, H5TB and H5LD public function families, including packet tables, images/palettes, compound tables and growing datasets.
+- Added VOL discovery/configuration, current predefined datatype/property identifiers, event sets and asynchronous entry points with explicit unmanaged-buffer lifetimes. The packaged native connector completes operations synchronously; see ASYNC.md for connector and ownership requirements.
+- Added library-close callbacks retained until explicit shutdown, native version checks, driver capability queries and UTF-8 object comments. API_COVERAGE.md inventories the application headers and documents excluded compatibility and build-dependent functions.
 - Added modern object/region/attribute references, the STD_REF datatype, token serialization and current object/link information and traversal. Modern references own resources: duplicate them with H5R.copy and release each owner with H5R.destroy, or reclaim buffers with H5T.reclaim.
 - Corrected H5R.MAXTYPE to 5, H5O.NTYPES to 4 and H5T.NCLASSES to 12; added missing reference, map and complex enum values. Existing legacy reference enum aliases retain their numeric values.
 - Unified native loading for function imports and exported globals, with process-RID assets and explicit private-directory configuration.

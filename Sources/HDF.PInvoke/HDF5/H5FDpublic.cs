@@ -23,6 +23,20 @@ namespace HDF.PInvoke
     /// </summary>
     public unsafe sealed class H5FD
     {
+        /// <summary>Queries virtual-file-driver capability flags, widening native unsigned long output on Windows.</summary>
+        public static int driver_query(long driver, out ulong flags)
+        {
+            // Zero padding before a four-byte Windows write into the portable eight-byte result.
+            ulong value = 0;
+            var result = driver_query_native(driver, (IntPtr)(&value));
+            flags = result >= 0 ? value : 0;
+            return result;
+        }
+
+        /// <summary>Imports native driver flags using caller-owned unsigned-long storage.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5FDdriver_query", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int driver_query_native(long driver, IntPtr flags);
+
         /// <summary>
         /// Initializes HDF5 before this API is first used.
         /// </summary>

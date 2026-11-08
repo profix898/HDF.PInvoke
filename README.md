@@ -100,7 +100,7 @@ Bounds constrain new format structures; they do not downgrade an existing file. 
 - **Review interop declarations in calling code.** Native booleans are `byte` (0 or 1), IDs are 64-bit, and platform-dependent C fields use `CLong`/`CULong`. Several structures, enums and callback signatures were corrected.
 - **Strings are UTF-8 across platforms.** Buffer lengths are byte counts. Raw `byte[]` name arguments remain C buffers and need a NUL terminator, such as `Encoding.UTF8.GetBytes(name + "\0")`. Keep callbacks alive for as long as native code may call them.
 - **Optional native features are checked.** Unavailable driver APIs throw `PlatformNotSupportedException`.
-- **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. The binding retains compatibility entry points but does not expose every new HDF5 2.2 API.
+- **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. Current application APIs are catalogued in [API_COVERAGE.md](API_COVERAGE.md); MPI, map operations and driver/connector-author interfaces are outside the packaged application surface.
 
 For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](https://github.com/profix898/HDF.PInvoke/blob/master/ADVANCED.md) for configuration, loading and troubleshooting.
 
