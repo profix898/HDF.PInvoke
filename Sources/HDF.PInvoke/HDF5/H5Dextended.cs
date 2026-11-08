@@ -11,8 +11,10 @@ namespace HDF.PInvoke
         {
             /// <summary>Let the native library choose the I/O strategy.</summary>
             DEFAULT = 0,
+
             /// <summary>Disable selection I/O.</summary>
             OFF = 1,
+
             /// <summary>Request selection I/O when supported.</summary>
             ON = 2
         }
@@ -36,13 +38,35 @@ namespace HDF.PInvoke
         /// <summary>Checks parallel arrays before native code reads their elements.</summary>
         private static void ValidateMulti(long[] datasets, long[] memoryTypes, long[] memorySpaces, long[] fileSpaces, IntPtr[] buffers)
         {
-            if (datasets == null) throw new ArgumentNullException(nameof(datasets));
-            if (memoryTypes == null) throw new ArgumentNullException(nameof(memoryTypes));
-            if (memorySpaces == null) throw new ArgumentNullException(nameof(memorySpaces));
-            if (fileSpaces == null) throw new ArgumentNullException(nameof(fileSpaces));
-            if (buffers == null) throw new ArgumentNullException(nameof(buffers));
+            if (datasets == null)
+            {
+                throw new ArgumentNullException(nameof(datasets));
+            }
+
+            if (memoryTypes == null)
+            {
+                throw new ArgumentNullException(nameof(memoryTypes));
+            }
+
+            if (memorySpaces == null)
+            {
+                throw new ArgumentNullException(nameof(memorySpaces));
+            }
+
+            if (fileSpaces == null)
+            {
+                throw new ArgumentNullException(nameof(fileSpaces));
+            }
+
+            if (buffers == null)
+            {
+                throw new ArgumentNullException(nameof(buffers));
+            }
+
             if (datasets.Length == 0 || memoryTypes.Length != datasets.Length || memorySpaces.Length != datasets.Length || fileSpaces.Length != datasets.Length || buffers.Length != datasets.Length)
+            {
                 throw new ArgumentException("Provide equally sized, nonempty dataset, type, space and buffer arrays.");
+            }
         }
 
         /// <summary>Imports native multi-dataset reads after array bounds validation.</summary>

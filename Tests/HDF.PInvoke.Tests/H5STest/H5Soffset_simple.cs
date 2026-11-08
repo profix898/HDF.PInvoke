@@ -55,7 +55,7 @@ namespace UnitTests
         public void H5Soffset_simpleTest2()
         {
             Assert.IsFalse(
-                                        H5S.offset_simple(Utilities.RandomInvalidHandle(), null) >= 0);
+                                                                H5S.offset_simple(Utilities.RandomInvalidHandle(), null) >= 0);
         }
     }
 }

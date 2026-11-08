@@ -65,7 +65,7 @@ public sealed class IncrementalGeneratorTests
     public void ReportsMalformedImportMetadata(string attributes)
     {
         var result = Create(new Input("/repo/HDF5/Bad.cs", "class H5 { " + attributes + " public static extern int Call(); }"))
-            .RunGenerators(Compilation).GetRunResult();
+                            .RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual("HDFGEN001", result.Diagnostics.Single().Id);
         Assert.IsNull(result.Results[0].Exception);
     }
@@ -83,6 +83,7 @@ public sealed class IncrementalGeneratorTests
         Assert.AreEqual("HDFGEN001", result.Diagnostics.Single().Id);
         Assert.IsNull(result.Results[0].Exception);
     }
+
     /// <summary>Checks that unreadable files and missing imports cannot silently produce an empty assembly.</summary>
     [TestMethod]
     public void ReportsMissingOrUnreadableInputs()
@@ -148,7 +149,7 @@ public sealed class IncrementalGeneratorTests
     public void IgnoresUnmarkedAdditionalFiles()
     {
         var result = Create(new Input("/repo/HDF5/H5.cs", Import), new Input("/repo/other.txt", "not C#"))
-            .RunGenerators(Compilation).GetRunResult();
+                            .RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual(0, result.Diagnostics.Length);
         Assert.AreEqual(1, result.GeneratedTrees.Length);
     }

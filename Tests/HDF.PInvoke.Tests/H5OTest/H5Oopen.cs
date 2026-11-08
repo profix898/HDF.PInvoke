@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5OopenTest1()
         {
             Assert.IsTrue(
-                                        H5G.close(H5G.create(m_v0_test_file, "A/B/C", m_lcpl)) >= 0);
+                                                                H5G.close(H5G.create(m_v0_test_file, "A/B/C", m_lcpl)) >= 0);
             var obj = H5O.open(m_v0_test_file, "A/B");
             Assert.IsTrue(obj >= 0);
             Assert.IsTrue(H5O.close(obj) >= 0);
@@ -47,7 +47,7 @@ namespace UnitTests
         public void H5OopenTest2()
         {
             Assert.IsFalse(
-                                        H5O.open(Utilities.RandomInvalidHandle(), ".") >= 0);
+                                                                H5O.open(Utilities.RandomInvalidHandle(), ".") >= 0);
         }
     }
 }

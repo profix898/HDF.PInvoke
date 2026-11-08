@@ -6,9 +6,9 @@
     <AssemblyName>HDF.PInvoke</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>HDF.PInvoke.snk</AssemblyOriginatorKeyFile>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
+    <FileVersion>2.2.1.0</FileVersion>
     <Description>.NET 8 and .NET Standard 2.0 bindings for HDF5 2.2, with native libraries for Windows and Linux x64/ARM64 and macOS ARM64.</Description>
     <Authors>The HDF Group;HDF.PInvoke contributors</Authors>
     <IsPackable>true</IsPackable>

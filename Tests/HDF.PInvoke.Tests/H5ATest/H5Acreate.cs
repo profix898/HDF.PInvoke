@@ -27,7 +27,7 @@ namespace UnitTests
         public void H5AcreateTest1()
         {
             var att = H5A.create(m_v0_class_file, "NA", H5T.IEEE_F32BE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -54,8 +54,8 @@ namespace UnitTests
         public void H5AcreateTest2()
         {
             Assert.IsFalse(
-                                        H5A.create(Utilities.RandomInvalidHandle(), "A",
-                                        H5T.IEEE_F32BE, m_space_null) >= 0);
+                                                                H5A.create(Utilities.RandomInvalidHandle(), "A",
+                                                                H5T.IEEE_F32BE, m_space_null) >= 0);
             Assert.IsFalse(
                 H5A.create(m_v0_test_file, "A",
                 Utilities.RandomInvalidHandle(), m_space_null) >= 0);
@@ -71,7 +71,7 @@ namespace UnitTests
         public void H5AcreateTest3()
         {
             var otype = H5T.create(H5T.class_t.OPAQUE,
-                                        new IntPtr(1024 * 1024));
+                                                                new IntPtr(1024 * 1024));
             Assert.IsTrue(otype >= 0);
 
             // the 1.8 version of the file format supports large attributes

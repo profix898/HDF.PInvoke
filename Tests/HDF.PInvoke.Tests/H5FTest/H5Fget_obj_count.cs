@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Fget_obj_countTest1()
         {
             Assert.IsTrue(
-                                        H5F.get_obj_count(m_v0_class_file, H5F.OBJ_ALL).ToInt32() > 0);
+                                                                H5F.get_obj_count(m_v0_class_file, H5F.OBJ_ALL).ToInt32() > 0);
             Assert.IsTrue(
                 H5F.get_obj_count(m_v0_class_file,
                 H5F.OBJ_DATASET).ToInt32() >= 0);
@@ -98,8 +98,8 @@ namespace UnitTests
         public void H5Fget_obj_countTest2()
         {
             Assert.IsFalse(
-                                        H5F.get_obj_count(Utilities.RandomInvalidHandle(),
-                                        H5F.OBJ_ALL).ToInt32() >= 0);
+                                                                H5F.get_obj_count(Utilities.RandomInvalidHandle(),
+                                                                H5F.OBJ_ALL).ToInt32() >= 0);
         }
     }
 }

@@ -45,14 +45,14 @@ namespace UnitTests
         public void H5Lcreate_hardTest2()
         {
             Assert.IsTrue(
-                                        H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl_utf8) >= 0);
+                                                                H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl_utf8) >= 0);
 
             for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
-                                                    H5L.create_hard(m_v0_test_file,
-                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v0_test_file,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
+                                                                                    H5L.create_hard(m_v0_test_file,
+                                                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v0_test_file,
+                                                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
             }
 
             Assert.IsTrue(
@@ -61,9 +61,9 @@ namespace UnitTests
             for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
-                                                    H5L.create_hard(m_v2_test_file,
-                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v2_test_file,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
+                                                                                    H5L.create_hard(m_v2_test_file,
+                                                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v2_test_file,
+                                                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
             }
         }
     }

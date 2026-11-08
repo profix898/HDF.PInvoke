@@ -18,11 +18,16 @@ namespace HDF.PInvoke
         /// <remarks>Coordinate explicit H5.close before managed runtime teardown. Call H5.dont_atexit before any initialization when automatic native shutdown must be disabled. State remains caller-owned; do not recursively close or register callbacks during shutdown.</remarks>
         public static int atclose(atclose_t callback, IntPtr state)
         {
-            if (callback == null) throw new ArgumentNullException(nameof(callback));
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             lock (CloseCallbacks)
             {
                 CloseCallbacks.Add(callback);
                 var accepted = false;
+
                 try
                 {
                     var result = atclose_native(callback, state);
@@ -32,7 +37,10 @@ namespace HDF.PInvoke
                 finally
                 {
                     // Failed registration must not leave an otherwise unreferenced delegate rooted.
-                    if (!accepted) CloseCallbacks.Remove(callback);
+                    if (!accepted)
+                    {
+                        CloseCallbacks.Remove(callback);
+                    }
                 }
             }
         }

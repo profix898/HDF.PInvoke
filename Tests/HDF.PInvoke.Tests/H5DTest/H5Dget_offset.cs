@@ -33,7 +33,7 @@ namespace UnitTests
         public void H5Dget_offsetTest1()
         {
             var dset = H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(dset >= 0);
 
             Assert.IsTrue(H5D.get_offset(dset) > 0);
@@ -56,8 +56,8 @@ namespace UnitTests
         public void H5Dget_offsetTest2()
         {
             Assert.IsTrue(
-                                        H5D.get_offset(Utilities.RandomInvalidHandle())
-                                        == H5.HADDR_UNDEF);
+                                                                H5D.get_offset(Utilities.RandomInvalidHandle())
+                                                                == H5.HADDR_UNDEF);
         }
     }
 }

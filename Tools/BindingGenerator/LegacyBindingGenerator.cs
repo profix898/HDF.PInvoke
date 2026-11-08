@@ -35,14 +35,14 @@ public sealed class LegacyBindingGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var inputs = context.AdditionalTextsProvider.Combine(context.AnalyzerConfigOptionsProvider)
-            .Select((input, cancellation) =>
-            {
-                input.Right.GetOptions(input.Left).TryGetValue("build_metadata.AdditionalFiles.HdfBindingPath", out var relativePath);
-                return (File: input.Left, RelativePath: relativePath);
-            })
-            .Where(input => !string.IsNullOrEmpty(input.RelativePath))
-            .Select((input, cancellation) => (input.File.Path, RelativePath: input.RelativePath!.Replace('\\', '/'),
-                Text: input.File.GetText(cancellation)?.ToString()));
+                            .Select((input, cancellation) =>
+                            {
+                                input.Right.GetOptions(input.Left).TryGetValue("build_metadata.AdditionalFiles.HdfBindingPath", out var relativePath);
+                                return (File: input.Left, RelativePath: relativePath);
+                            })
+                            .Where(input => !string.IsNullOrEmpty(input.RelativePath))
+                            .Select((input, cancellation) => (input.File.Path, RelativePath: input.RelativePath!.Replace('\\', '/'),
+                                Text: input.File.GetText(cancellation)?.ToString()));
 
         // Value-equatable inputs prevent unrelated compilation changes from regenerating every binding.
         var bindings = inputs.Combine(context.ParseOptionsProvider)

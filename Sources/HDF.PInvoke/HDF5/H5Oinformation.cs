@@ -13,20 +13,28 @@ namespace HDF.PInvoke
         {
             /// <summary>File identity assigned by the connector.</summary>
             public ulong fileno;
+
             /// <summary>Opaque object identity.</summary>
             public token_t token;
+
             /// <summary>Object category.</summary>
             public type_t type;
+
             /// <summary>Hard-link reference count.</summary>
             public uint rc;
+
             /// <summary>Last access time, in native time_t units.</summary>
             public long atime;
+
             /// <summary>Last modification time.</summary>
             public long mtime;
+
             /// <summary>Last metadata change time.</summary>
             public long ctime;
+
             /// <summary>Object birth time.</summary>
             public long btime;
+
             /// <summary>Number of attached attributes.</summary>
             public ulong num_attrs;
         }
@@ -37,20 +45,28 @@ namespace HDF.PInvoke
         {
             /// <summary>File identity assigned by the connector.</summary>
             public uint fileno;
+
             /// <summary>Opaque object identity.</summary>
             public token_t token;
+
             /// <summary>Object category.</summary>
             public type_t type;
+
             /// <summary>Hard-link reference count.</summary>
             public uint rc;
+
             /// <summary>Last access time, in native time_t units.</summary>
             public long atime;
+
             /// <summary>Last modification time.</summary>
             public long mtime;
+
             /// <summary>Last metadata change time.</summary>
             public long ctime;
+
             /// <summary>Object birth time.</summary>
             public long btime;
+
             /// <summary>Number of attached attributes.</summary>
             public ulong num_attrs;
         }
@@ -59,7 +75,10 @@ namespace HDF.PInvoke
         private static info2_t ReadInfo2(IntPtr pointer)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
                 return Marshal.PtrToStructure<info2_t>(pointer);
+            }
+
             var value = Marshal.PtrToStructure<WindowsInfo2>(pointer);
             return new info2_t { fileno = value.fileno, token = value.token, type = value.type, rc = value.rc, atime = value.atime, mtime = value.mtime, ctime = value.ctime, btime = value.btime, num_attrs = value.num_attrs };
         }
@@ -68,7 +87,11 @@ namespace HDF.PInvoke
         /// <remarks>The pointer must address at least 72 bytes of valid native information on supported 64-bit platforms. Wait for operation completion before calling this method.</remarks>
         public static info2_t read_info2(IntPtr pointer)
         {
-            if (pointer == IntPtr.Zero) throw new ArgumentNullException(nameof(pointer));
+            if (pointer == IntPtr.Zero)
+            {
+                throw new ArgumentNullException(nameof(pointer));
+            }
+
             return ReadInfo2(pointer);
         }
 
@@ -124,7 +147,11 @@ namespace HDF.PInvoke
         /// <summary>Synchronously visits objects with current information; callback and state must remain valid until this call returns.</summary>
         public static int visit3(long location, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, uint fields = INFO_ALL)
         {
-            if (callback == null) throw new ArgumentNullException(nameof(callback));
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             NativeIterate2 bridge = (root, objectName, pointer, data) =>
             {
                 var information = ReadInfo2(pointer);
@@ -142,7 +169,11 @@ namespace HDF.PInvoke
         /// <summary>Synchronously visits objects with current information; callback and state must remain valid until this call returns.</summary>
         public static int visit_by_name3(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, uint fields = INFO_ALL, long access = H5P.DEFAULT)
         {
-            if (callback == null) throw new ArgumentNullException(nameof(callback));
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
             NativeIterate2 bridge = (root, objectName, pointer, data) =>
             {
                 var information = ReadInfo2(pointer);

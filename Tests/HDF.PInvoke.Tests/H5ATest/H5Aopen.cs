@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5AopenTest1()
         {
             var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
-                                        m_space_scalar);
+                                                                m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
@@ -53,7 +53,7 @@ namespace UnitTests
         public void H5AopenTest2()
         {
             Assert.IsFalse(
-                                        H5A.open(Utilities.RandomInvalidHandle(), ".") >= 0);
+                                                                H5A.open(Utilities.RandomInvalidHandle(), ".") >= 0);
             Assert.IsFalse(
                 H5A.open(m_v2_class_file, "") >= 0);
         }

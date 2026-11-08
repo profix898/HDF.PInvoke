@@ -28,7 +28,7 @@ namespace UnitTests
         public void H5Fget_mdc_sizeTest1()
         {
             size_t max_size = IntPtr.Zero, min_clean_size = IntPtr.Zero,
-                                        cur_size = IntPtr.Zero;
+                                                                cur_size = IntPtr.Zero;
             var cur_num_entries = 0;
             Assert.IsTrue(H5F.get_mdc_size(m_v0_class_file, ref max_size,
                 ref min_clean_size, ref cur_size, ref cur_num_entries) >= 0);
@@ -47,7 +47,7 @@ namespace UnitTests
         public void H5Fget_mdc_sizeTest2()
         {
             size_t max_size = IntPtr.Zero, min_clean_size = IntPtr.Zero,
-                                        cur_size = IntPtr.Zero;
+                                                                cur_size = IntPtr.Zero;
             var cur_num_entries = 0;
             Assert.IsFalse(
                 H5F.get_mdc_size(Utilities.RandomInvalidHandle(), ref max_size,

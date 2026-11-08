@@ -7,7 +7,10 @@ namespace HDF.PInvoke
     public unsafe sealed class H5DS
     {
         /// <summary>Initializes native HDF5 before the first operation.</summary>
-        static H5DS() { H5.open(); }
+        static H5DS()
+        {
+            H5.open();
+        }
 
         /// <summary>Receives a dataset, dimension, borrowed scale identifier and caller state; do not throw through native code.</summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

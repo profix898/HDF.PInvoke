@@ -6,14 +6,14 @@
 
 Low-level C# bindings for HDF5, with native libraries included for supported desktop platforms. The 2.x wrapper targets **.NET 8+ and .NET Standard 2.0** and **native HDF5 2.2.x**.
 
-CI produces `2.2.0` package artifacts but does not publish them to NuGet.org. Configure a package feed containing the built package before using the installation command below.
+CI produces `2.2.1` package artifacts but does not publish them to NuGet.org. Configure a package feed containing the built package before using the installation command below.
 
 ## Quick start
 
 Create a .NET 8 or later application, then add the **HDF.PInvoke** package:
 
 ```sh
-dotnet add package HDF.PInvoke --version 2.2.0
+dotnet add package HDF.PInvoke --version 2.2.1
 ```
 
 Create an HDF5 file:
@@ -38,7 +38,7 @@ finally
 
 `ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`. CI tests a net472 consumer on the installed .NET Framework 4.8 runtime. See [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/LEGACY.md) for legacy deployment and runtime compatibility. Standalone Mono 6.8 on Linux x64 is locally validated; see the legacy guide for the test procedure and scope. Unity and AOT runtimes are outside the validated configurations.
+For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`. CI tests a net472 consumer on the installed .NET Framework 4.8 runtime. See [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) for legacy deployment and runtime compatibility. Standalone Mono 6.8 on Linux x64 is locally validated; see the legacy guide for the test procedure and scope. Unity and AOT runtimes are outside the validated configurations.
 
 ## Supported platforms
 
@@ -65,7 +65,7 @@ The bundled core/high-level library is not thread-safe: serialize all HDF5 calls
 
 | Version | Meaning |
 | --- | --- |
-| `2.2.0` | Managed wrapper/package version |
+| `2.2.1` | Managed wrapper/package version |
 | `2.2.0.0` | Managed assembly version |
 | `2.2.0` | Pinned native HDF5 release shipped by this build |
 | `net8.0` / `netstandard2.0` | Modern .NET / legacy-compatible managed assets |
@@ -73,7 +73,7 @@ The bundled core/high-level library is not thread-safe: serialize all HDF5 calls
 
 On Windows, install the latest supported [Microsoft Visual C++ v14 Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist/) for the process architecture ([x64](https://aka.ms/vc14/vc_redist.x64.exe) or [ARM64](https://aka.ms/vc14/vc_redist.arm64.exe)). Its version must be at least as recent as the MSVC toolset used to build the native libraries. Windows builds use Visual Studio 2026 with the dynamic C runtime (`/MD`); the redistributable is a separate prerequisite and is not bundled in the NuGet package.
 
-Starting with 2.2.0, wrapper major/minor numbers match the wrapped native HDF5 major/minor. The patch number counts wrapper releases: 2.2.0, 2.2.1, 2.2.2, and so on. It does not identify the native patch release; the exact native version is recorded separately in Build/HDF5.props. A wrapper version is not a file-format version. The historical wrapper `1.10.11` already shipped HDF5 1.14.3 with compatibility APIs; consult [release notes](https://github.com/profix898/HDF.PInvoke/blob/master/RELEASE_NOTES.md) rather than inferring native versions from package numbers.
+Starting with 2.2.0, wrapper major/minor numbers match the wrapped native HDF5 major/minor. The patch number counts wrapper releases: 2.2.0, 2.2.1, 2.2.2, and so on. It does not identify the native patch release; the exact native version is recorded separately in Build/HDF5.props. A wrapper version is not a file-format version. The historical wrapper `1.10.11` already shipped HDF5 1.14.3 with compatibility APIs; consult [release notes](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/RELEASE_NOTES.md) rather than inferring native versions from package numbers.
 
 HDF5 2.2 can read files produced by HDF5 1.8 and 1.10, provided any required compression filters and external data are available. To create files restricted to 1.10-compatible format features, set an upper format bound on the file-access property list before creating the file:
 
@@ -95,20 +95,23 @@ Bounds constrain new format structures; they do not downgrade an existing file. 
 
 ## Breaking changes since the 1.10.x wrapper series
 
+Version 2.2 is not a guaranteed source-compatible replacement. See the [migration guide](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/MIGRATION.md) for concrete signature, callback and structure changes that can require source edits before recompilation.
+
 - **Recompile consumers.** Version 2 is not a binary replacement for the 1.x assembly. The package provides net8.0 and netstandard2.0 assets; .NET Framework consumers use the latter.
 - **Use the supplied HDF5 2.2.x libraries.** The loader rejects other native release families. Old `bin32`/`bin64` deployments and app.config configuration are removed.
+- **Remove the old explicit loading call.** `NativeDependencies.ResolvePathToExternalDependencies()` is removed from both targets. Normal loading is automatic; use `Configure(path)` for a private native directory and `H5.open()` for explicit initialization.
 - **Review interop declarations in calling code.** Native booleans are `byte` (0 or 1), IDs are 64-bit, and platform-dependent C fields use `CLong`/`CULong`. Several structures, enums and callback signatures were corrected.
 - **Strings are UTF-8 across platforms.** Buffer lengths are byte counts. Raw `byte[]` name arguments remain C buffers and need a NUL terminator, such as `Encoding.UTF8.GetBytes(name + "\0")`. Keep callbacks alive for as long as native code may call them.
 - **Optional native features are checked.** Unavailable driver APIs throw `PlatformNotSupportedException`.
-- **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. Current application APIs are catalogued in [API_COVERAGE.md](API_COVERAGE.md); MPI, map operations and driver/connector-author interfaces are outside the packaged application surface.
+- **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. Current application APIs are catalogued in [API_COVERAGE.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/API_COVERAGE.md); MPI, map operations and driver/connector-author interfaces are outside the packaged application surface.
 
-For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](https://github.com/profix898/HDF.PInvoke/blob/master/ADVANCED.md) for configuration, loading and troubleshooting.
+For a private native installation, call `NativeDependencies.Configure(absoluteDirectory)` before any HDF5 use. Normal package consumers should leave this unset. See [advanced documentation](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/ADVANCED.md) for configuration, loading and troubleshooting.
 
 ## Contributing
 
-[ADVANCED.md](https://github.com/profix898/HDF.PInvoke/blob/master/ADVANCED.md) covers modern integration, builds, tests and packaging. [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/LEGACY.md) covers .NET Standard integration and implementation.
+[ADVANCED.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/ADVANCED.md) covers modern integration, builds, tests and packaging. [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) covers .NET Standard integration and implementation.
 
-[API_COVERAGE.md](https://github.com/profix898/HDF.PInvoke/blob/master/API_COVERAGE.md) lists native function and predefined-identifier coverage by API group. [ASYNC.md](https://github.com/profix898/HDF.PInvoke/blob/master/ASYNC.md) explains event-set ownership and the distinction between async entry points and actual background execution.
+[API_COVERAGE.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/API_COVERAGE.md) lists native function and predefined-identifier coverage by API group. [ASYNC.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/ASYNC.md) explains event-set ownership and the distinction between async entry points and actual background execution.
 
 ## License
 

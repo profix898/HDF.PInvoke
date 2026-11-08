@@ -29,13 +29,19 @@ namespace UnitTests
         [DataRow("double", 8)]
         public void NumericConvenienceRoundTrip(string suffix, int width)
         {
-            if (width == 0) width = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 4 : 8;
+            if (width == 0)
+            {
+                width = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 4 : 8;
+            }
+
             var path = Path.Combine(Path.GetTempPath(), "lite-" + Guid.NewGuid() + ".h5");
             var file = H5F.create(path, H5F.ACC_TRUNC);
+
             try
             {
                 var input = new byte[width * 2];
-                input[0] = 1; input[width] = 2;
+                input[0] = 1;
+                input[width] = 2;
                 var output = new byte[input.Length];
                 ulong dimensions = 2;
                 fixed (byte* source = input, destination = output)
@@ -46,6 +52,7 @@ namespace UnitTests
                     Assert.IsTrue((int)getter.Invoke(null, new object[] { file, "/", "值", (IntPtr)destination }) >= 0);
                     CollectionAssert.AreEqual(input, output);
                     var make = typeof(H5LT).GetMethod("make_dataset_" + suffix);
+
                     if (make != null)
                     {
                         Array.Clear(output, 0, output.Length);
@@ -55,7 +62,11 @@ namespace UnitTests
                     }
                 }
             }
-            finally { H5F.close(file); File.Delete(path); }
+            finally
+            {
+                H5F.close(file);
+                File.Delete(path);
+            }
         }
 
         /// <summary>Checks generic data access, metadata, strings, datatype text and copied file images.</summary>
@@ -64,6 +75,7 @@ namespace UnitTests
         {
             var path = Path.Combine(Path.GetTempPath(), "lite-metadata-" + Guid.NewGuid() + ".h5");
             var file = H5F.create(path, H5F.ACC_TRUNC);
+
             try
             {
                 int value = 42, actual = 0;
@@ -105,8 +117,15 @@ namespace UnitTests
                     Assert.IsTrue(H5LT.dtype_to_text(H5T.IEEE_F64LE, (IntPtr)p, H5LT.lang_t.DDL, ref size) >= 0);
                     var type = H5LT.text_to_dtype(Decode(bytes), H5LT.lang_t.DDL);
                     Assert.IsTrue(type >= 0);
-                    try { Assert.IsTrue(H5T.equal(type, H5T.IEEE_F64LE) > 0); }
-                    finally { H5T.close(type); }
+
+                    try
+                    {
+                        Assert.IsTrue(H5T.equal(type, H5T.IEEE_F64LE) > 0);
+                    }
+                    finally
+                    {
+                        H5T.close(type);
+                    }
                 }
                 Assert.IsTrue(H5F.flush(file, H5F.scope_t.GLOBAL) >= 0);
                 var length = H5F.get_file_image(file, IntPtr.Zero, IntPtr.Zero);
@@ -117,11 +136,22 @@ namespace UnitTests
                     Assert.AreEqual(length, H5F.get_file_image(file, (IntPtr)p, length));
                     var copy = H5LT.open_file_image((IntPtr)p, new UIntPtr((uint)image.Length), 0);
                     Assert.IsTrue(copy >= 0);
-                    try { Assert.IsTrue(H5LT.find_dataset(copy, "data") > 0); }
-                    finally { H5F.close(copy); }
+
+                    try
+                    {
+                        Assert.IsTrue(H5LT.find_dataset(copy, "data") > 0);
+                    }
+                    finally
+                    {
+                        H5F.close(copy);
+                    }
                 }
             }
-            finally { H5F.close(file); File.Delete(path); }
+            finally
+            {
+                H5F.close(file);
+                File.Delete(path);
+            }
         }
 
         /// <summary>Checks attachment, labels, scale iteration and reference-format queries.</summary>
@@ -133,6 +163,7 @@ namespace UnitTests
             var space = H5S.create_simple(1, new ulong[] { 2 }, null);
             var data = H5D.create(file, "data", H5T.NATIVE_INT, space);
             var scale = H5D.create(file, "scale", H5T.NATIVE_DOUBLE, space);
+
             try
             {
                 Assert.IsTrue(H5DS.with_new_ref(file, out var modern) >= 0);
@@ -154,8 +185,13 @@ namespace UnitTests
                 var visits = 0;
                 H5DS.iterate_t callback = (dataset, dimension, attached, state) =>
                 {
-                    if (dimension != 0 || H5DS.is_scale(attached) <= 0 || state != new IntPtr(42)) return -1;
-                    visits++; return 0;
+                    if (dimension != 0 || H5DS.is_scale(attached) <= 0 || state != new IntPtr(42))
+                    {
+                        return -1;
+                    }
+
+                    visits++;
+                    return 0;
                 };
                 var index = 0;
                 Assert.IsTrue(H5DS.iterate_scales(data, 0, ref index, callback, new IntPtr(42)) >= 0);
@@ -164,7 +200,14 @@ namespace UnitTests
                 Assert.AreEqual(0, H5DS.is_attached(data, scale, 0));
                 GC.KeepAlive(callback);
             }
-            finally { H5D.close(scale); H5D.close(data); H5S.close(space); H5F.close(file); File.Delete(path); }
+            finally
+            {
+                H5D.close(scale);
+                H5D.close(data);
+                H5S.close(space);
+                H5F.close(file);
+                File.Delete(path);
+            }
         }
 
         /// <summary>Decodes a null-terminated UTF-8 test output without relying on runtime-specific helpers.</summary>

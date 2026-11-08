@@ -70,8 +70,8 @@ namespace UnitTests
         public void H5Sget_simple_extent_typeTest4()
         {
             Assert.IsTrue(
-                                        H5S.get_simple_extent_type(Utilities.RandomInvalidHandle())
-                                        == H5S.class_t.NO_CLASS);
+                                                                H5S.get_simple_extent_type(Utilities.RandomInvalidHandle())
+                                                                == H5S.class_t.NO_CLASS);
         }
     }
 }

@@ -63,8 +63,8 @@ namespace UnitTests
         public void H5Sget_select_hyper_blocklistTest2()
         {
             Assert.IsFalse(
-                                        H5S.get_select_hyper_blocklist(Utilities.RandomInvalidHandle(),
-                                        0, 0, null) >= 0);
+                                                                H5S.get_select_hyper_blocklist(Utilities.RandomInvalidHandle(),
+                                                                0, 0, null) >= 0);
         }
     }
 }

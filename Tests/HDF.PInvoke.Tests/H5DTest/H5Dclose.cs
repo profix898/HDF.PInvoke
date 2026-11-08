@@ -33,7 +33,7 @@ namespace UnitTests
         public void H5DcloseTest1()
         {
             var dset = H5D.create_anon(m_v0_test_file, H5T.STD_I16LE,
-                                        m_space_null);
+                                                                m_space_null);
             Assert.IsTrue(dset >= 0);
             Assert.IsTrue(H5D.close(dset) >= 0);
 

@@ -38,7 +38,7 @@ namespace UnitTests
         public void H5Eclose_stackTest2()
         {
             Assert.IsFalse(
-                                        H5E.close_stack(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5E.close_stack(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

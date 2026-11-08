@@ -13,99 +13,99 @@ internal static class Program
     /// </summary>
     private static int Main(string[] args)
     {
-        try
+try
         {
-            if (args.Length == 1 && args[0] == "--configure-first")
+if (args.Length == 1 && args[0] == "--configure-first")
             {
-                NativeDependencies.Configure(AppDomain.CurrentDomain.BaseDirectory);
-            }
+NativeDependencies.Configure(AppDomain.CurrentDomain.BaseDirectory);
+}
 
             if (args.Length == 1 && args[0] == "--missing-direct")
             {
-                string missing = Path.Combine(Path.GetTempPath(), "missing-hdf-" + Guid.NewGuid());
+string missing = Path.Combine(Path.GetTempPath(), "missing-hdf-" + Guid.NewGuid());
                 NativeDependencies.Configure(missing);
 
                 try
                 {
-                    H5.open();
-                }
+H5.open();
+}
                 catch (Exception error)
                 {
-                    while (error is TypeInitializationException && error.InnerException != null)
+while (error is TypeInitializationException && error.InnerException != null)
                     {
-                        error = error.InnerException;
-                    }
+error = error.InnerException;
+}
 
                     if (error is DllNotFoundException && error.Message.Contains(missing))
                     {
-                        Console.WriteLine("PASS: Framework direct call obeys explicit path without fallback");
+Console.WriteLine("PASS: Framework direct call obeys explicit path without fallback");
                         return 0;
-                    }
+}
 
                     throw;
-                }
+}
 
                 throw new Exception("Missing private library unexpectedly loaded.");
-            }
+}
 
             if (args.Length == 1 && args[0] == "--dont-atexit" && H5.dont_atexit() != 0)
             {
-                throw new Exception("Early shutdown opt-out failed.");
-            }
+throw new Exception("Early shutdown opt-out failed.");
+}
 
             uint major = 0, minor = 0, patch = 0;
             Check(H5.get_libversion(ref major, ref minor, ref patch));
 
             if (major != 2 || minor != 2)
             {
-                throw new Exception("Wrong native version.");
-            }
+throw new Exception("Wrong native version.");
+}
 
             if (typeof(H5).Assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") == null)
             {
-                throw new Exception("Framework must select the .NET Standard assembly.");
-            }
+throw new Exception("Framework must select the .NET Standard assembly.");
+}
 
             RoundTrip();
 
             if (H5.dont_atexit() >= 0)
             {
-                throw new Exception("Late shutdown opt-out succeeded.");
-            }
+throw new Exception("Late shutdown opt-out succeeded.");
+}
 
             Console.WriteLine("PASS: Framework selects netstandard2.0; UTF-8, Deflate, high-level append, globals and shutdown");
             return 0;
-        }
+}
         catch (Exception error)
         {
-            Console.Error.WriteLine(error);
+Console.Error.WriteLine(error);
             return 1;
-        }
-    }
+}
+}
 
     /// <summary>
     /// Rejects negative HDF5 status codes during package validation.
     /// </summary>
     private static void Check(long status)
     {
-        if (status < 0)
+if (status < 0)
         {
-            throw new Exception("HDF5 operation failed.");
-        }
-    }
+throw new Exception("HDF5 operation failed.");
+}
+}
 
     /// <summary>
     /// Writes and reads a compressed UTF-8 dataset through the packaged core and high-level libraries.
     /// </summary>
     private static void RoundTrip()
     {
-        string path = Path.Combine(Path.GetTempPath(), "legacy-hdf-" + Guid.NewGuid() + ".h5");
+string path = Path.Combine(Path.GetTempPath(), "legacy-hdf-" + Guid.NewGuid() + ".h5");
         long file = -1, space = -1, properties = -1, dataset = -1;
         GCHandle buffer = default;
 
         try
         {
-            Check(file = H5F.create(path, H5F.ACC_EXCL));
+Check(file = H5F.create(path, H5F.ACC_EXCL));
             Check(space = H5S.create_simple(1, new ulong[] { 0 }, new ulong[] { H5S.UNLIMITED }));
             Check(properties = H5P.create(H5P.DATASET_CREATE));
             Check(H5P.set_chunk(properties, 1, new ulong[] { 3 }));
@@ -125,37 +125,37 @@ internal static class Program
 
             if (values[0] != 17 || values[1] != -42 || values[2] != 12345)
             {
-                throw new Exception("Data mismatch.");
-            }
-        }
+throw new Exception("Data mismatch.");
+}
+}
         finally
         {
-            if (buffer.IsAllocated)
+if (buffer.IsAllocated)
             {
-                buffer.Free();
-            }
+buffer.Free();
+}
 
             if (dataset >= 0)
             {
-                H5D.close(dataset);
-            }
+H5D.close(dataset);
+}
 
             if (properties >= 0)
             {
-                H5P.close(properties);
-            }
+H5P.close(properties);
+}
 
             if (space >= 0)
             {
-                H5S.close(space);
-            }
+H5S.close(space);
+}
 
             if (file >= 0)
             {
-                H5F.close(file);
-            }
+H5F.close(file);
+}
 
             File.Delete(path);
-        }
-    }
+}
+}
 }

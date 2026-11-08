@@ -56,8 +56,8 @@ namespace UnitTests
         public void H5Sget_select_boundsTest2()
         {
             Assert.IsFalse(
-                                        H5S.get_select_bounds(Utilities.RandomInvalidHandle(), null,
-                                        null) >= 0);
+                                                                H5S.get_select_bounds(Utilities.RandomInvalidHandle(), null,
+                                                                null) >= 0);
         }
     }
 }

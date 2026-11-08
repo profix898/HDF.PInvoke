@@ -37,7 +37,7 @@ namespace UnitTests
         public void H5Fget_freespaceTest2()
         {
             Assert.IsFalse(
-                                        H5F.get_freespace(Utilities.RandomInvalidHandle()) >= 0);
+                                                                H5F.get_freespace(Utilities.RandomInvalidHandle()) >= 0);
         }
     }
 }

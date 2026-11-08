@@ -20,6 +20,7 @@ namespace UnitTests
             var creation = H5P.create(H5P.DATASET_CREATE);
             var transfer = H5P.create(H5P.DATASET_XFER);
             long first = -1, second = -1;
+
             try
             {
                 Assert.IsTrue(file >= 0 && space >= 0);
@@ -58,7 +59,11 @@ namespace UnitTests
                 var chunks = 0;
                 H5D.chunk_iter_t chunkCallback = (offset, filters, address, size, state) =>
                 {
-                    if (Marshal.ReadInt64(offset) != 0 || size != 16 || state != new IntPtr(42)) return -1;
+                    if (Marshal.ReadInt64(offset) != 0 || size != 16 || state != new IntPtr(42))
+                    {
+                        return -1;
+                    }
+
                     chunks++;
                     return 0;
                 };
@@ -77,20 +82,35 @@ namespace UnitTests
             }
             finally
             {
-                if (second >= 0) H5D.close(second);
-                if (first >= 0) H5D.close(first);
+                if (second >= 0)
+                {
+                    H5D.close(second);
+                }
+
+                if (first >= 0)
+                {
+                    H5D.close(first);
+                }
+
                 H5P.close(transfer);
                 H5P.close(creation);
                 H5S.close(space);
                 H5F.close(file);
             }
+
             try
             {
                 Assert.IsTrue(H5F.is_accessible(path) > 0);
                 Assert.IsTrue(H5F.delete(path) >= 0);
                 Assert.IsFalse(File.Exists(path));
             }
-            finally { if (File.Exists(path)) File.Delete(path); }
+            finally
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
         }
 
         /// <summary>Checks byte-sized boolean output and selection-I/O enum round-trips.</summary>
@@ -99,6 +119,7 @@ namespace UnitTests
         {
             var access = H5P.create(H5P.FILE_ACCESS);
             var transfer = H5P.create(H5P.DATASET_XFER);
+
             try
             {
                 Assert.IsTrue(H5P.set_file_locking(access, 0, 1) >= 0);
@@ -115,7 +136,11 @@ namespace UnitTests
                 Assert.IsTrue(H5P.get_modify_write_buf(transfer, out var modify) >= 0);
                 Assert.AreEqual((byte)1, modify);
             }
-            finally { H5P.close(transfer); H5P.close(access); }
+            finally
+            {
+                H5P.close(transfer);
+                H5P.close(access);
+            }
         }
 
         /// <summary>Checks complex datatype encoding and bounds-aware decoding.</summary>
@@ -126,6 +151,7 @@ namespace UnitTests
             Assert.IsTrue(type >= 0);
             long decoded = -1;
             var space = H5S.create(H5S.class_t.SCALAR);
+
             try
             {
                 Assert.AreEqual(H5T.class_t.COMPLEX, H5T.get_class(type));
@@ -144,7 +170,16 @@ namespace UnitTests
                 double* value = stackalloc double[2];
                 Assert.IsTrue(H5T.reclaim(type, space, H5P.DEFAULT, (IntPtr)value) >= 0);
             }
-            finally { if (decoded >= 0) H5T.close(decoded); H5S.close(space); H5T.close(type); }
+            finally
+            {
+                if (decoded >= 0)
+                {
+                    H5T.close(decoded);
+                }
+
+                H5S.close(space);
+                H5T.close(type);
+            }
         }
     }
 }

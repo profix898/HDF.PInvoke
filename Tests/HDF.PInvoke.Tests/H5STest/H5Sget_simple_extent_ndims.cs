@@ -67,8 +67,8 @@ namespace UnitTests
         public void H5Sget_simple_extent_ndimsTest4()
         {
             Assert.IsFalse(
-                                        H5S.get_simple_extent_ndims(Utilities.RandomInvalidHandle())
-                                        >= 0);
+                                                                H5S.get_simple_extent_ndims(Utilities.RandomInvalidHandle())
+                                                                >= 0);
         }
     }
 }
