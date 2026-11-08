@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -12,13 +12,11 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -124,29 +122,29 @@ namespace UnitTests
             //
             // create target datasets
             //
-            hid_t dcpl = H5P.create(H5P.DATASET_CREATE);
+            var dcpl = H5P.create(H5P.DATASET_CREATE);
             Assert.IsTrue(dcpl >= 0);
-            int fill_value = 1;
-            GCHandle hnd = GCHandle.Alloc(fill_value, GCHandleType.Pinned);
+            var fill_value = 1;
+            var hnd = GCHandle.Alloc(fill_value, GCHandleType.Pinned);
             Assert.IsTrue(H5P.set_fill_value(dcpl, H5T.NATIVE_INT,
                 hnd.AddrOfPinnedObject()) >= 0);
 
             hsize_t[] dims = { 6 };
-            hid_t src_dsp = H5S.create_simple(1, dims, null);
+            var src_dsp = H5S.create_simple(1, dims, null);
 
             // A
             fill_value = 1;
-            hid_t a = H5D.create(m_a_class_file, "A", H5T.STD_I32LE, src_dsp);
+            var a = H5D.create(m_a_class_file, "A", H5T.STD_I32LE, src_dsp);
             Assert.IsTrue(a >= 0);
             Assert.IsTrue(H5D.close(a) >= 0);
             // B
             fill_value = 2;
-            hid_t b = H5D.create(m_b_class_file, "B", H5T.STD_I32LE, src_dsp);
+            var b = H5D.create(m_b_class_file, "B", H5T.STD_I32LE, src_dsp);
             Assert.IsTrue(b >= 0);
             Assert.IsTrue(H5D.close(b) >= 0);
             // B
             fill_value = 3;
-            hid_t c = H5D.create(m_c_class_file, "C", H5T.STD_I32LE, src_dsp);
+            var c = H5D.create(m_c_class_file, "C", H5T.STD_I32LE, src_dsp);
             Assert.IsTrue(c >= 0);
             Assert.IsTrue(H5D.close(c) >= 0);
 
@@ -155,7 +153,7 @@ namespace UnitTests
             //
             fill_value = -1;
             hsize_t[] vds_dims = { 4, 6 };
-            hid_t vds_dsp = H5S.create_simple(2, vds_dims, null);
+            var vds_dsp = H5S.create_simple(2, vds_dims, null);
 
             hsize_t[] start = { 0, 0 };
             hsize_t[] count = { 1, 1 };
@@ -179,7 +177,7 @@ namespace UnitTests
             Assert.IsTrue(H5P.set_virtual(dcpl, vds_dsp,
                 m_c_class_file_name, "C", src_dsp) >= 0);
 
-            hid_t vds = H5D.create(m_vds_class_file, "VDS", H5T.STD_I32LE,
+            var vds = H5D.create(m_vds_class_file, "VDS", H5T.STD_I32LE,
                 vds_dsp, H5P.DEFAULT, dcpl, H5P.DEFAULT);
             Assert.IsTrue(vds >= 0);
             Assert.IsTrue(H5D.close(vds) >= 0);

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,8 +26,8 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_info_by_nameTest1()
         {
-            H5A.info_t info = new H5A.info_t();
-            hid_t att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
+            var info = new H5A.info_t();
+            var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
                 m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -59,7 +58,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_info_by_nameTest2()
         {
-            H5A.info_t info = new H5A.info_t();
+            var info = new H5A.info_t();
             Assert.IsFalse(
                 H5A.get_info_by_name(Utilities.RandomInvalidHandle(), ".", ".",
                 ref info) >= 0);

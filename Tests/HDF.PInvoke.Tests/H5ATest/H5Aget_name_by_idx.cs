@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using hid_t = System.Int64;
 using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -32,7 +30,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_name_by_idxTest1()
         {
-            hid_t att = H5A.create(m_v2_test_file, "H5Aget_name",
+            var att = H5A.create(m_v2_test_file, "H5Aget_name",
                                         H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -41,15 +39,15 @@ namespace UnitTests
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
-            size_t buf_size = IntPtr.Zero;
-            ssize_t size = IntPtr.Zero;
-            StringBuilder nameBuilder = new StringBuilder(19);
+            var buf_size = IntPtr.Zero;
+            var size = IntPtr.Zero;
+            var nameBuilder = new StringBuilder(19);
             buf_size = new IntPtr(19);
             size = H5A.get_name_by_idx(m_v2_test_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE,
                 0, nameBuilder, buf_size);
             Assert.IsTrue(size.ToInt32() == 11);
-            string name = nameBuilder.ToString();
+            var name = nameBuilder.ToString();
             // names should match
             Assert.AreEqual("H5Aget_name", name);
 
@@ -92,7 +90,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_name_by_idxTest3()
         {
-            hid_t att = H5A.create(m_v0_test_file, "H5Aget_name",
+            var att = H5A.create(m_v0_test_file, "H5Aget_name",
                                         H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -101,23 +99,23 @@ namespace UnitTests
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
-            byte[] name = Encoding.UTF8.GetBytes(
+            var name = Encoding.UTF8.GetBytes(
                 String.Join(":", m_utf8strings));
-            byte[] name_buf = new byte[name.Length + 1];
+            var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
             att = H5A.create(m_v0_test_file, name_buf, H5T.IEEE_F64BE,
                 m_space_scalar, m_acpl);
             Assert.IsTrue(att >= 0);
 
-            ssize_t buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
+            var buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
             Assert.IsTrue(buf_size.ToInt32() > 1);
-            byte[] buf = new byte[buf_size.ToInt32()];
+            var buf = new byte[buf_size.ToInt32()];
             Assert.IsTrue(
                 H5A.get_name_by_idx(m_v0_test_file,
-                Encoding.ASCII.GetBytes("."), H5.index_t.NAME,
+                Encoding.ASCII.GetBytes("." + "\0"), H5.index_t.NAME,
                 H5.iter_order_t.NATIVE, 2, buf, buf_size).ToInt32() >= 0);
 
-            for (int i = 0; i < buf.Length; ++i)
+            for (var i = 0; i < buf.Length; ++i)
             {
                 Assert.IsTrue(name_buf[i] == buf[i]);
             }
@@ -131,7 +129,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_name_by_idxTest4()
         {
-            hid_t att = H5A.create(m_v2_test_file, "H5Aget_name",
+            var att = H5A.create(m_v2_test_file, "H5Aget_name",
                                         H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -140,23 +138,23 @@ namespace UnitTests
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
-            byte[] name = Encoding.UTF8.GetBytes(
+            var name = Encoding.UTF8.GetBytes(
                 String.Join(":", m_utf8strings));
-            byte[] name_buf = new byte[name.Length + 1];
+            var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
             att = H5A.create(m_v2_test_file, name_buf, H5T.IEEE_F64BE,
                 m_space_scalar, m_acpl);
             Assert.IsTrue(att >= 0);
 
-            ssize_t buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
+            var buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
             Assert.IsTrue(buf_size.ToInt32() > 1);
-            byte[] buf = new byte[buf_size.ToInt32()];
+            var buf = new byte[buf_size.ToInt32()];
             Assert.IsTrue(
                 H5A.get_name_by_idx(m_v2_test_file,
-                Encoding.ASCII.GetBytes("."), H5.index_t.NAME,
+                Encoding.ASCII.GetBytes("." + "\0"), H5.index_t.NAME,
                 H5.iter_order_t.NATIVE, 2, buf, buf_size).ToInt32() >= 0);
 
-            for (int i = 0; i < buf.Length; ++i)
+            for (var i = 0; i < buf.Length; ++i)
             {
                 Assert.IsTrue(name_buf[i] == buf[i]);
             }

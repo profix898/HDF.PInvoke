@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,15 +10,13 @@
 
 using System;
 using System.Collections;
-using System.Text;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Text;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -43,9 +41,9 @@ namespace UnitTests
                 H5L.create_hard(m_v2_test_file, "A/B/C/D", m_v2_test_file,
                 "shortcut") >= 0);
 
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             // the callback is defined in H5LTest.cs
             H5L.iterate_t cb = DelegateMethod;
 
@@ -68,15 +66,15 @@ namespace UnitTests
         [TestMethod]
         public void H5LvisitTest2()
         {
-            string path = String.Join("/", m_utf8strings);
+            var path = String.Join("/", m_utf8strings);
             Assert.IsTrue(H5G.create(m_v0_test_file,
-                Encoding.UTF8.GetBytes(path), m_lcpl_utf8) >= 0);
+                Encoding.UTF8.GetBytes(path + "\0"), m_lcpl_utf8) >= 0);
             Assert.IsTrue(H5G.create(m_v2_test_file,
-                Encoding.UTF8.GetBytes(path), m_lcpl_utf8) >= 0);
+                Encoding.UTF8.GetBytes(path + "\0"), m_lcpl_utf8) >= 0);
 
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             // the callback is defined in H5LTest.cs
             H5L.iterate_t cb = DelegateMethod;
 

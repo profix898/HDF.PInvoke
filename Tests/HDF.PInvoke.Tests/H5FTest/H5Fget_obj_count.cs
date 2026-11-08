@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using ssize_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using ssize_t = System.IntPtr;
 
 namespace UnitTests
 {

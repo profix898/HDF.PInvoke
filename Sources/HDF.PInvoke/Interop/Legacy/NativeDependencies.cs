@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -99,7 +99,7 @@ namespace HDF.PInvoke
             get
             {
                 var arch = RuntimeInformation.ProcessArchitecture;
-                string os = LegacyNativeLibrary.IsWindows ? "win" : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
+                var os = LegacyNativeLibrary.IsWindows ? "win" : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" :
                     LegacyNativeLibrary.IsMacOS ? "osx" : throw new PlatformNotSupportedException("Unsupported HDF5 operating system.");
 
                 if (os == "linux" && LegacyNativeLibrary.IsMusl)
@@ -128,7 +128,7 @@ namespace HDF.PInvoke
                     return -1;
                 }
 
-                LoadLibraryHandle(false, true, out int status);
+                LoadLibraryHandle(false, true, out var status);
                 return status;
             }
         }
@@ -147,11 +147,11 @@ namespace HDF.PInvoke
 
             lock (Sync)
             {
-                string rid = RuntimeIdentifier;
+                var rid = RuntimeIdentifier;
 
                 if (core == IntPtr.Zero)
                 {
-                    string directory = configuredDirectory ?? AppContext.GetData(NativePathSetting) as string ??
+                    var directory = configuredDirectory ?? AppContext.GetData(NativePathSetting) as string ??
                         Environment.GetEnvironmentVariable(NativePathEnvironmentVariable);
                     IntPtr candidate;
 
@@ -169,7 +169,7 @@ namespace HDF.PInvoke
                     {
                         candidate = IntPtr.Zero;
 
-                        foreach (string probe in ProbeDirectories(rid))
+                        foreach (var probe in ProbeDirectories(rid))
                         {
                             if (!File.Exists(Path.Combine(probe, FileName(false))))
                             {
@@ -230,17 +230,17 @@ namespace HDF.PInvoke
         /// </summary>
         private static IEnumerable<string> ProbeDirectories(string rid)
         {
-            string assemblyDirectory = Path.GetDirectoryName(typeof(NativeDependencies).Assembly.Location);
+            var assemblyDirectory = Path.GetDirectoryName(typeof(NativeDependencies).Assembly.Location);
             var seen = new HashSet<string>(LegacyNativeLibrary.IsWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 
-            foreach (string root in new[] { assemblyDirectory, AppContext.BaseDirectory })
+            foreach (var root in new[] { assemblyDirectory, AppContext.BaseDirectory })
             {
                 if (string.IsNullOrEmpty(root))
                 {
                     continue;
                 }
 
-                foreach (string path in new[] { Path.Combine(root, "runtimes", rid, "native"), root })
+                foreach (var path in new[] { Path.Combine(root, "runtimes", rid, "native"), root })
                 {
                     if (seen.Add(path))
                     {
@@ -271,7 +271,7 @@ namespace HDF.PInvoke
         /// </summary>
         internal static T GetOptionalFunction<T>(string symbol) where T : Delegate
         {
-            if (!LegacyNativeLibrary.TryGetExport(GetLibraryHandle(false), symbol, out IntPtr address))
+            if (!LegacyNativeLibrary.TryGetExport(GetLibraryHandle(false), symbol, out var address))
             {
                 throw new PlatformNotSupportedException($"The loaded HDF5 build does not support {symbol} on {RuntimeIdentifier}.");
             }
@@ -284,7 +284,7 @@ namespace HDF.PInvoke
         /// </summary>
         private static string FileName(bool high)
         {
-            string name = high ? "hdf5_hl" : "hdf5";
+            var name = high ? "hdf5_hl" : "hdf5";
             return LegacyNativeLibrary.IsWindows ? name + ".dll" : "lib" + name + (LegacyNativeLibrary.IsMacOS ? ".dylib" : ".so");
         }
 
@@ -293,7 +293,7 @@ namespace HDF.PInvoke
         /// </summary>
         private static IntPtr LoadFromDirectory(string directory, bool high)
         {
-            string file = Path.Combine(directory, FileName(high));
+            var file = Path.Combine(directory, FileName(high));
 
             if (!File.Exists(file) || new FileInfo(file).Length == 0)
             {
@@ -329,7 +329,7 @@ namespace HDF.PInvoke
         {
             var getVersion = Marshal.GetDelegateForFunctionPointer<GetVersion>(LegacyNativeLibrary.GetExport(handle, "H5get_libversion"));
 
-            if (getVersion(out uint major, out uint minor, out uint release) < 0 || major != 2 || minor != 2)
+            if (getVersion(out var major, out var minor, out var release) < 0 || major != 2 || minor != 2)
             {
                 throw new NotSupportedException($"This binding requires HDF5 2.2.x; the loaded native library reports {major}.{minor}.{release}.");
             }

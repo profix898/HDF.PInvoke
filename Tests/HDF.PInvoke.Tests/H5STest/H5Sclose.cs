@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,12 +11,10 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -32,7 +30,7 @@ namespace UnitTests
         public void H5ScloseTest1()
         {
             hsize_t[] dims = { 1, 2, 3 };
-            hid_t space = H5S.create_simple(dims.Length, dims, dims);
+            var space = H5S.create_simple(dims.Length, dims, dims);
 
             Assert.IsTrue(space > 0);
             Assert.IsTrue(H5S.close(space) >= 0);

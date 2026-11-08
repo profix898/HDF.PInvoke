@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,12 +10,10 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -30,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_evict_on_closeTest1()
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
             Assert.IsTrue(H5P.set_evict_on_close(fapl, 1) >= 0);
             Assert.IsTrue(H5P.close(fapl) >= 0);
@@ -42,7 +40,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_evict_on_closeTest2()
         {
-            hid_t fcpl = H5P.create(H5P.FILE_CREATE);
+            var fcpl = H5P.create(H5P.FILE_CREATE);
             Assert.IsTrue(fcpl >= 0);
             Assert.IsFalse(H5P.set_evict_on_close(fcpl, 1) >= 0);
             Assert.IsTrue(H5P.close(fcpl) >= 0);

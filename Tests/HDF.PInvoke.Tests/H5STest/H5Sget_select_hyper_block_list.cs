@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,14 +11,12 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using hssize_t = System.Int64;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -34,7 +32,7 @@ namespace UnitTests
         public void H5Sget_select_hyper_blocklistTest1()
         {
             hsize_t[] dims = { 1, 2, 3 };
-            hid_t space = H5S.create_simple(dims.Length, dims, dims);
+            var space = H5S.create_simple(dims.Length, dims, dims);
             Assert.IsTrue(space > 0);
             hsize_t[] start = { 0, 0, 0 };
             hsize_t[] count = { 1, 1, 1 };
@@ -44,12 +42,12 @@ namespace UnitTests
                 count, block) >= 0);
             Assert.IsTrue(H5S.get_select_hyper_nblocks(space) == 1);
 
-            hsize_t[] buf = new hsize_t[2 * dims.Length];
+            var buf = new hsize_t[2 * dims.Length];
 
             Assert.IsTrue(
                 H5S.get_select_hyper_blocklist(space, 0, 1, buf) >= 0);
 
-            for (int i = 0; i < dims.Length; ++i)
+            for (var i = 0; i < dims.Length; ++i)
             {
                 buf[i] = 0;
                 buf[i + 3] = dims[i] - 1;

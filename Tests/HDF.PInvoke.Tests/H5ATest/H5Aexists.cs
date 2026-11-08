@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using htri_t = System.Int32;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using htri_t = System.Int32;
 
 namespace UnitTests
 {
@@ -29,14 +27,14 @@ namespace UnitTests
         [TestMethod]
         public void H5AexistsTest1()
         {
-            htri_t check = H5A.exists(m_v0_class_file, ".");
+            var check = H5A.exists(m_v0_class_file, ".");
             Assert.IsTrue(check >= 0);
             check = H5A.exists(m_v0_class_file, "NAC");
             Assert.IsTrue(check >= 0);
             check = H5A.exists(m_v2_class_file, "A");
             Assert.IsTrue(check >= 0);
 
-            hid_t att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
+            var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
                 m_space_scalar);
             Assert.IsTrue(att >= 0);
             check = H5A.exists(m_v2_test_file, "A");

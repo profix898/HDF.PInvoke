@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using size_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using size_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -31,7 +29,7 @@ namespace UnitTests
         {
             size_t max_size = IntPtr.Zero, min_clean_size = IntPtr.Zero,
                                         cur_size = IntPtr.Zero;
-            int cur_num_entries = 0;
+            var cur_num_entries = 0;
             Assert.IsTrue(H5F.get_mdc_size(m_v0_class_file, ref max_size,
                 ref min_clean_size, ref cur_size, ref cur_num_entries) >= 0);
             Assert.IsTrue(H5F.get_mdc_size(m_v2_class_file, ref max_size,
@@ -50,7 +48,7 @@ namespace UnitTests
         {
             size_t max_size = IntPtr.Zero, min_clean_size = IntPtr.Zero,
                                         cur_size = IntPtr.Zero;
-            int cur_num_entries = 0;
+            var cur_num_entries = 0;
             Assert.IsFalse(
                 H5F.get_mdc_size(Utilities.RandomInvalidHandle(), ref max_size,
                 ref min_clean_size, ref cur_size, ref cur_num_entries) >= 0);

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,10 +26,10 @@ namespace UnitTests
         [TestMethod]
         public void H5Oget_infoTest1()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A/B/C", m_lcpl);
+            var gid = H5G.create(m_v0_test_file, "A/B/C", m_lcpl);
             Assert.IsTrue(gid >= 0);
 
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsTrue(H5O.get_info(gid, ref info) >= 0);
             Assert.IsTrue(info.type == H5O.type_t.GROUP);
 
@@ -52,7 +51,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Oget_infoTest2()
         {
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsFalse(
                 H5O.get_info(Utilities.RandomInvalidHandle(), ref info) >= 0);
         }

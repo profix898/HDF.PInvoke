@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,10 +27,10 @@ namespace UnitTests
         [TestMethod]
         public void H5Gcreate_anonTest1()
         {
-            hid_t gid = H5G.create_anon(m_v0_test_file);
+            var gid = H5G.create_anon(m_v0_test_file);
             Assert.IsTrue(gid > 0);
 
-            hid_t gid1 = H5G.create_anon(gid);
+            var gid1 = H5G.create_anon(gid);
             Assert.IsTrue(gid1 > 0);
 
             Assert.IsTrue(H5G.close(gid1) >= 0);
@@ -53,8 +52,8 @@ namespace UnitTests
         [TestMethod]
         public void H5Gcreate_anonTest2()
         {
-            hid_t file = Utilities.RandomInvalidHandle();
-            hid_t gid = H5G.create_anon(file);
+            var file = Utilities.RandomInvalidHandle();
+            var gid = H5G.create_anon(file);
             Assert.IsTrue(gid < 0);
         }
     }

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -13,13 +13,11 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -52,7 +50,7 @@ namespace UnitTests
 
             hsize_t[] dims = { 256 };
 
-            hid_t space = H5S.create_simple(1, dims, null);
+            var space = H5S.create_simple(1, dims, null);
             m_v0_ascii_dset = H5D.create(m_v0_class_file, "ASCII",
                 H5T.FORTRAN_S1, space);
             m_v2_ascii_dset = H5D.create(m_v2_class_file, "ASCII",
@@ -61,17 +59,17 @@ namespace UnitTests
 
             // we write from C and must provide null-terminated strings
 
-            byte[] wdata = new byte[512];
+            var wdata = new byte[512];
 
-            for (int i = 0; i < 256; ++i)
+            for (var i = 0; i < 256; ++i)
             {
                 wdata[2 * i] = (byte)i;
             }
 
-            hid_t mem_type = H5T.copy(H5T.C_S1);
+            var mem_type = H5T.copy(H5T.C_S1);
             Assert.IsTrue(H5T.set_size(mem_type, new IntPtr(2)) >= 0);
 
-            GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
+            var hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             Assert.IsTrue(H5D.write(m_v0_ascii_dset, mem_type, H5S.ALL,
                 H5S.ALL, H5P.DEFAULT, hnd.AddrOfPinnedObject()) >= 0);
             Assert.IsTrue(H5D.write(m_v2_ascii_dset, mem_type, H5S.ALL,
@@ -82,11 +80,11 @@ namespace UnitTests
 
             // create UTF-8 encoded test datasets
 
-            hid_t dtype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            var dtype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             Assert.IsTrue(H5T.set_cset(dtype, H5T.cset_t.UTF8) >= 0);
             Assert.IsTrue(H5T.set_strpad(dtype, H5T.str_t.SPACEPAD) >= 0);
 
-            hid_t dspace = H5S.create_simple(1,
+            var dspace = H5S.create_simple(1,
                 new hsize_t[] { (hsize_t)m_utf8strings.Count }, null);
 
             m_v0_utf8_dset = H5D.create(m_v0_class_file, "UTF-8", dtype, dspace);
@@ -94,13 +92,13 @@ namespace UnitTests
             m_v2_utf8_dset = H5D.create(m_v2_class_file, "UTF-8", dtype, dspace);
             Assert.IsTrue(m_v2_utf8_dset >= 0);
 
-            GCHandle[] hnds = new GCHandle[m_utf8strings.Count];
-            IntPtr[] wdata1 = new IntPtr[m_utf8strings.Count];
+            var hnds = new GCHandle[m_utf8strings.Count];
+            var wdata1 = new IntPtr[m_utf8strings.Count];
 
-            for (int i = 0; i < m_utf8strings.Count; ++i)
+            for (var i = 0; i < m_utf8strings.Count; ++i)
             {
                 hnds[i] = GCHandle.Alloc(
-                                                    Encoding.UTF8.GetBytes((string)m_utf8strings[i]),
+                                                    Encoding.UTF8.GetBytes((string)m_utf8strings[i] + "\0"),
                                                     GCHandleType.Pinned);
                 wdata1[i] = hnds[i].AddrOfPinnedObject();
             }
@@ -112,7 +110,7 @@ namespace UnitTests
                 H5P.DEFAULT, hnd.AddrOfPinnedObject()) >= 0);
             hnd.Free();
 
-            for (int i = 0; i < m_utf8strings.Count; ++i)
+            for (var i = 0; i < m_utf8strings.Count; ++i)
             {
                 hnds[i].Free();
             }
@@ -262,7 +260,7 @@ namespace UnitTests
             IntPtr op_data
             )
         {
-            int count = Marshal.ReadInt32(op_data) + Marshal.ReadInt32(elem);
+            var count = Marshal.ReadInt32(op_data) + Marshal.ReadInt32(elem);
             Marshal.WriteInt32(op_data, count);
             return 0;
         }

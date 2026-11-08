@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using size_t = System.IntPtr;
 using uint32_t = System.UInt32;
-
-using hid_t = System.Int64;
 
 namespace HDF.PInvoke
 {

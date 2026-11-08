@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -40,7 +40,7 @@ namespace HDF.PInvoke
             }
 
             // Inspect the running process, not installed loaders: glibc hosts may also have musl installed.
-            foreach (string mapping in System.IO.File.ReadLines("/proc/self/maps"))
+            foreach (var mapping in System.IO.File.ReadLines("/proc/self/maps"))
             {
                 if (mapping.IndexOf("ld-musl-", StringComparison.Ordinal) >= 0 || mapping.IndexOf("libc.musl-", StringComparison.Ordinal) >= 0)
                 {
@@ -88,7 +88,7 @@ namespace HDF.PInvoke
         /// </summary>
         internal static IntPtr GetExport(IntPtr handle, string name)
         {
-            if (!TryGetExport(handle, name, out IntPtr address))
+            if (!TryGetExport(handle, name, out var address))
             {
                 throw new EntryPointNotFoundException($"Missing native export: {name}");
             }
@@ -138,7 +138,7 @@ namespace HDF.PInvoke
                 return new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error()).Message;
             }
 
-            IntPtr error = IsMacOS ? MacError() : IsMusl ? MuslError() : LinuxError();
+            var error = IsMacOS ? MacError() : IsMusl ? MuslError() : LinuxError();
             return error == IntPtr.Zero ? "unknown loader error" : Marshal.PtrToStringAnsi(error);
         }
 

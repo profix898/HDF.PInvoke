@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using HDF.PInvoke;
 
 /// <summary>
@@ -18,8 +18,8 @@ static class Program
     {
         try
         {
-            string expectedBinding = Environment.GetEnvironmentVariable("HDF5_EXPECTED_BINDING");
-            bool legacyBinding = typeof(H5).Assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") != null;
+            var expectedBinding = Environment.GetEnvironmentVariable("HDF5_EXPECTED_BINDING");
+            var legacyBinding = typeof(H5).Assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") != null;
 
             if (expectedBinding != null && legacyBinding != (expectedBinding == "legacy"))
             {
@@ -31,8 +31,8 @@ static class Program
                 return 0;
             }
 
-            string originalCwd = Environment.CurrentDirectory;
-            string originalPath = Environment.GetEnvironmentVariable("PATH");
+            var originalCwd = Environment.CurrentDirectory;
+            var originalPath = Environment.GetEnvironmentVariable("PATH");
 
             if (args.Length > 0 && !args[0].StartsWith("--"))
             {
@@ -44,7 +44,7 @@ static class Program
                 _ = H5P.FILE_ACCESS;
             }
 
-            string expectedRid = Environment.GetEnvironmentVariable("HDF5_EXPECTED_RID");
+            var expectedRid = Environment.GetEnvironmentVariable("HDF5_EXPECTED_RID");
 
             if (expectedRid != null && expectedRid != NativeDependencies.RuntimeIdentifier)
             {
@@ -66,13 +66,13 @@ static class Program
 
             if (args.Length > 1)
             {
-                int checks = 0;
+                var checks = 0;
 
-                foreach (string line in File.ReadLines(args[1]))
+                foreach (var line in File.ReadLines(args[1]))
                 {
-                    string[] parts = line.Split('|');
-                    string typeName = parts[0];
-                    bool legacy = typeof(H5).Assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") != null;
+                    var parts = line.Split('|');
+                    var typeName = parts[0];
+                    var legacy = typeof(H5).Assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") != null;
 
                     if (legacy && OperatingSystem.IsWindows() && typeName == "HDF.PInvoke.H5AC+cache_config_t")
                     {
@@ -89,8 +89,8 @@ static class Program
                         typeName = "HDF.PInvoke.LinkClassRegistry+ClassInfo";
                     }
 
-                    Type type = typeof(H5).Assembly.GetType(typeName, throwOnError: true);
-                    long actual = parts[1] == "$size" ? Marshal.SizeOf(type) : Marshal.OffsetOf(type, parts[1]).ToInt64();
+                    var type = typeof(H5).Assembly.GetType(typeName, throwOnError: true);
+                    var actual = parts[1] == "$size" ? Marshal.SizeOf(type) : Marshal.OffsetOf(type, parts[1]).ToInt64();
 
                     if (actual != long.Parse(parts[2]))
                     {
@@ -115,8 +115,8 @@ static class Program
                     continue;
                 }
 
-                string library = legacy == null ? import.Value : (string)legacy.ConstructorArguments[0].Value;
-                string symbol = legacy == null ? import.EntryPoint : (string)legacy.ConstructorArguments[1].Value;
+                var library = legacy == null ? import.Value : (string)legacy.ConstructorArguments[0].Value;
+                var symbol = legacy == null ? import.EntryPoint : (string)legacy.ConstructorArguments[1].Value;
                 imports++;
 
                 if (!NativeLibrary.TryGetExport(library == Constants.HLDLLFileName ? hl : handle, symbol, out _))
@@ -161,7 +161,7 @@ static class Program
                 throw new Exception("Native loading changed process-wide state");
             }
 
-            bool rejected = false;
+            var rejected = false;
 
             try
             {
@@ -191,7 +191,7 @@ static class Program
     /// </summary>
     static void VerifyDatasetRoundTrip()
     {
-        string path = Path.Combine(Path.GetTempPath(), "hdf-package-" + Guid.NewGuid() + ".h5");
+        var path = Path.Combine(Path.GetTempPath(), "hdf-package-" + Guid.NewGuid() + ".h5");
         long file = -1, space = -1, properties = -1, dataset = -1;
         GCHandle pinned = default;
 

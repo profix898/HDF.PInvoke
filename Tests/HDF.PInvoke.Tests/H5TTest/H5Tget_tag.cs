@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,11 +10,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -30,13 +28,13 @@ namespace UnitTests
         [TestMethod]
         public void H5Tget_tagTest1()
         {
-            hid_t dtype = H5T.create(H5T.class_t.OPAQUE, new IntPtr(1024));
+            var dtype = H5T.create(H5T.class_t.OPAQUE, new IntPtr(1024));
             Assert.IsTrue(dtype >= 0);
 
             Assert.IsTrue(
                 H5T.set_tag(dtype, "Mary had a little lamb...") >= 0);
 
-            IntPtr tag = H5T.get_tag(dtype);
+            var tag = H5T.get_tag(dtype);
             Assert.IsTrue(tag.ToInt64() >= 0);
 
             Assert.IsTrue(Marshal.PtrToStringAnsi(tag)
@@ -53,7 +51,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Tget_tagTest2()
         {
-            IntPtr tag = H5T.get_tag(Utilities.RandomInvalidHandle());
+            var tag = H5T.get_tag(Utilities.RandomInvalidHandle());
             Assert.IsTrue(tag == IntPtr.Zero);
         }
     }

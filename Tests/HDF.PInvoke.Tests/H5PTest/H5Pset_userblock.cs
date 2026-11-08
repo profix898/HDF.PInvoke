@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,12 +10,10 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -30,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_userblockTest1()
         {
-            hid_t fcpl = H5P.create(H5P.FILE_CREATE);
+            var fcpl = H5P.create(H5P.FILE_CREATE);
             Assert.IsTrue(fcpl >= 0);
             Assert.IsTrue(H5P.set_userblock(fcpl, 1024) >= 0);
             Assert.IsTrue(H5P.close(fcpl) >= 0);
@@ -42,12 +40,12 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_userblockTest2()
         {
-            hid_t fcpl = H5P.create(H5P.FILE_CREATE);
+            var fcpl = H5P.create(H5P.FILE_CREATE);
             Assert.IsTrue(fcpl >= 0);
             Assert.IsTrue(H5P.set_userblock(fcpl, 1024) >= 0);
 
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_TRUNC, fcpl);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_TRUNC, fcpl);
             Assert.IsTrue(file >= 0);
             Assert.IsTrue(H5F.close(file) >= 0);
 
@@ -65,7 +63,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_userblockTest3()
         {
-            hid_t fcpl = H5P.create(H5P.FILE_CREATE);
+            var fcpl = H5P.create(H5P.FILE_CREATE);
             Assert.IsTrue(fcpl >= 0);
             Assert.IsTrue(H5P.set_userblock(fcpl, 0) >= 0);
             Assert.IsFalse(H5P.set_userblock(fcpl, 111) >= 0);

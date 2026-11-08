@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -16,7 +16,7 @@ internal static class LoaderScenarios
     private static WeakReference RegisterShutdownCallback()
     {
         // A captured value prevents the compiler from caching the delegate for process lifetime.
-        string marker = Guid.NewGuid().ToString();
+        var marker = Guid.NewGuid().ToString();
         H5L.traverse_func_t callback = (name, group, data, size, lapl, dxpl) => -marker.Length;
         var registration = new H5L.class_t { version = H5L.LINK_CLASS_T_VERS, id = (H5L.type_t)203, comment = "关闭", trav_func = callback };
 
@@ -41,7 +41,7 @@ internal static class LoaderScenarios
         if (args[0] == "--recover-loader")
         {
             NativeDependencies.Configure(Path.Combine(Path.GetTempPath(), "missing-hdf-" + Guid.NewGuid()));
-            bool rejected = false;
+            var rejected = false;
             try
             {
                 H5.open();
@@ -50,7 +50,7 @@ internal static class LoaderScenarios
             if (!rejected)
                 throw new Exception("Missing native directory was accepted.");
 
-            string directory = Path.Combine(AppContext.BaseDirectory, "runtimes", NativeDependencies.RuntimeIdentifier, "native");
+            var directory = Path.Combine(AppContext.BaseDirectory, "runtimes", NativeDependencies.RuntimeIdentifier, "native");
             if (!Directory.Exists(directory))
                 directory = AppContext.BaseDirectory;
             NativeDependencies.Configure(directory);
@@ -62,7 +62,7 @@ internal static class LoaderScenarios
 
         if (args[0] == "--registered-close")
         {
-            WeakReference callback = RegisterShutdownCallback();
+            var callback = RegisterShutdownCallback();
 
             if (H5.close() < 0)
             {
@@ -84,7 +84,7 @@ internal static class LoaderScenarios
 
         if (args[0] == "--configure-first")
         {
-            string directory = Path.Combine(AppContext.BaseDirectory, "runtimes", NativeDependencies.RuntimeIdentifier, "native");
+            var directory = Path.Combine(AppContext.BaseDirectory, "runtimes", NativeDependencies.RuntimeIdentifier, "native");
 
             if (!Directory.Exists(directory))
             {
@@ -225,17 +225,17 @@ internal static class LoaderScenarios
         {
             // Load a separate managed binding instance, as a plugin host would.
             var context = new AssemblyLoadContext("HDF5 plugin regression", isCollectible: true);
-            Assembly plugin = context.LoadFromAssemblyPath(Path.Combine(AppContext.BaseDirectory, "HDF.PInvoke.dll"));
-            Type propertyLists = plugin.GetType("HDF.PInvoke.H5P", throwOnError: true);
-            long cls = (long)propertyLists.GetProperty("FILE_ACCESS").GetValue(null);
-            long plist = (long)propertyLists.GetMethod("create", new[] { typeof(long) }).Invoke(null, new object[] { cls });
+            var plugin = context.LoadFromAssemblyPath(Path.Combine(AppContext.BaseDirectory, "HDF.PInvoke.dll"));
+            var propertyLists = plugin.GetType("HDF.PInvoke.H5P", throwOnError: true);
+            var cls = (long)propertyLists.GetProperty("FILE_ACCESS").GetValue(null);
+            var plist = (long)propertyLists.GetMethod("create", new[] { typeof(long) }).Invoke(null, new object[] { cls });
 
             if (plist < 0)
             {
                 throw new Exception("Property list failed in plugin load context");
             }
 
-            int status = (int)propertyLists.GetMethod("close").Invoke(null, new object[] { plist });
+            var status = (int)propertyLists.GetMethod("close").Invoke(null, new object[] { plist });
 
             if (status < 0)
             {

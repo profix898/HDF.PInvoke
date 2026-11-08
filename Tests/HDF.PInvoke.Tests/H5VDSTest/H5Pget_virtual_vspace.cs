@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,13 +10,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using size_t = System.IntPtr;
-
 using hid_t = System.Int64;
+using size_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -31,20 +29,20 @@ namespace UnitTests
         [TestMethod]
         public void H5Pget_virtual_vspaceTestVDS1()
         {
-            hid_t vds = H5D.open(m_vds_class_file, "VDS");
+            var vds = H5D.open(m_vds_class_file, "VDS");
             Assert.IsTrue(vds >= 0);
 
-            hid_t dcpl = H5D.get_create_plist(vds);
+            var dcpl = H5D.get_create_plist(vds);
             Assert.IsTrue(dcpl >= 0);
 
-            IntPtr count = IntPtr.Zero;
+            var count = IntPtr.Zero;
             Assert.IsTrue(H5P.get_virtual_count(dcpl, ref count) >= 0);
             Assert.IsTrue(3 == count.ToInt32());
 
-            for (int i = 0; i < count.ToInt32(); ++i)
+            for (var i = 0; i < count.ToInt32(); ++i)
             {
-                size_t index = new size_t(i);
-                hid_t vspace = H5P.get_virtual_vspace(dcpl, index);
+                var index = new size_t(i);
+                var vspace = H5P.get_virtual_vspace(dcpl, index);
                 Assert.IsTrue(vspace >= 0);
 
                 Assert.IsTrue(H5S.is_regular_hyperslab(vspace) > 0);

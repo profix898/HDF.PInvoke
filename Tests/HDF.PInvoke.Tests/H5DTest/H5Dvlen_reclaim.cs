@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -13,13 +13,11 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -36,23 +34,23 @@ namespace UnitTests
         {
             // write a VLEN dataset
 
-            hid_t vlen = H5T.vlen_create(H5T.NATIVE_INT);
+            var vlen = H5T.vlen_create(H5T.NATIVE_INT);
             Assert.IsTrue(vlen >= 0);
 
             hsize_t[] dims = { 10 };
-            hid_t space = H5S.create_simple(1, dims, null);
+            var space = H5S.create_simple(1, dims, null);
             Assert.IsTrue(space >= 0);
 
-            hid_t dset = H5D.create(m_v0_test_file, "vlen", vlen, space);
+            var dset = H5D.create(m_v0_test_file, "vlen", vlen, space);
             Assert.IsTrue(space >= 0);
-            hid_t dset1 = H5D.create(m_v2_test_file, "vlen", vlen, space);
+            var dset1 = H5D.create(m_v2_test_file, "vlen", vlen, space);
             Assert.IsTrue(space >= 0);
 
-            H5T.hvl_t[] wdata = new H5T.hvl_t[dims[0]];
-            GCHandle[] whndl = new GCHandle[wdata.Length];
-            int[][] jagged = new int[wdata.Length][];
+            var wdata = new H5T.hvl_t[dims[0]];
+            var whndl = new GCHandle[wdata.Length];
+            var jagged = new int[wdata.Length][];
 
-            for (int i = 0; i < wdata.Length; ++i)
+            for (var i = 0; i < wdata.Length; ++i)
             {
                 jagged[i] = new int[i + 1];
                 whndl[i] = GCHandle.Alloc(jagged[i], GCHandleType.Pinned);
@@ -60,27 +58,27 @@ namespace UnitTests
                 wdata[i].p = whndl[i].AddrOfPinnedObject();
             }
 
-            GCHandle wdata_hndl = GCHandle.Alloc(wdata, GCHandleType.Pinned);
+            var wdata_hndl = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             Assert.IsTrue(H5D.write(dset, vlen, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 wdata_hndl.AddrOfPinnedObject()) >= 0);
             Assert.IsTrue(H5D.write(dset1, vlen, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 wdata_hndl.AddrOfPinnedObject()) >= 0);
             wdata_hndl.Free();
 
-            for (int i = 0; i < wdata.Length; ++i)
+            for (var i = 0; i < wdata.Length; ++i)
             {
                 whndl[i].Free();
             }
 
             // read it back
 
-            H5T.hvl_t[] rdata = new H5T.hvl_t[dims[0]];
-            GCHandle rdata_hndl = GCHandle.Alloc(rdata, GCHandleType.Pinned);
+            var rdata = new H5T.hvl_t[dims[0]];
+            var rdata_hndl = GCHandle.Alloc(rdata, GCHandleType.Pinned);
 
             Assert.IsTrue(H5D.read(dset, vlen, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 rdata_hndl.AddrOfPinnedObject()) >= 0);
 
-            for (int i = 0; i < rdata.Length; ++i)
+            for (var i = 0; i < rdata.Length; ++i)
             {
                 Assert.IsTrue(rdata[i].len.ToInt32() == i + 1);
             }
@@ -91,7 +89,7 @@ namespace UnitTests
             Assert.IsTrue(H5D.read(dset1, vlen, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 rdata_hndl.AddrOfPinnedObject()) >= 0);
 
-            for (int i = 0; i < rdata.Length; ++i)
+            for (var i = 0; i < rdata.Length; ++i)
             {
                 Assert.IsTrue(rdata[i].len.ToInt32() == i + 1);
             }

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -12,24 +12,21 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using htri_t = System.Int32;
 using off_t = System.IntPtr;
+using prp_close_func_t = HDF.PInvoke.H5P.prp_cb1_t;
+using prp_copy_func_t = HDF.PInvoke.H5P.prp_cb1_t;
+using prp_create_func_t = HDF.PInvoke.H5P.prp_cb1_t;
+using prp_delete_func_t = HDF.PInvoke.H5P.prp_cb2_t;
+using prp_get_func_t = HDF.PInvoke.H5P.prp_cb2_t;
+using prp_set_func_t = HDF.PInvoke.H5P.prp_cb2_t;
 using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
-
-using prp_create_func_t = HDF.PInvoke.H5P.prp_cb1_t;
-using prp_set_func_t = HDF.PInvoke.H5P.prp_cb2_t;
-using prp_get_func_t = HDF.PInvoke.H5P.prp_cb2_t;
-using prp_delete_func_t = HDF.PInvoke.H5P.prp_cb2_t;
-using prp_copy_func_t = HDF.PInvoke.H5P.prp_cb1_t;
-using prp_close_func_t = HDF.PInvoke.H5P.prp_cb1_t;
 
 namespace HDF.PInvoke
 {
@@ -414,13 +411,30 @@ namespace HDF.PInvoke
         /// <param name="udata">The user-defined input data.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_append_flush",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_append_flush
-            (hid_t dapl_id, uint ndims,
-            [In][Out] hsize_t[] boundary,
-            ref H5D.append_cb_t func, ref IntPtr udata);
+        /// <exception cref="ArgumentException">A non-null boundary buffer has fewer than ndims elements.</exception>
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_append_flush(hid_t dapl_id, uint ndims, [In][Out] hsize_t[] boundary, ref H5D.append_cb_t func, ref IntPtr udata)
+        {
+            // Native HDF5 writes ndims entries whenever a boundary buffer is supplied.
+            if (boundary != null && boundary.LongLength < ndims)
+            {
+                throw new ArgumentException("The boundary buffer must contain at least ndims elements.", nameof(boundary));
+            }
+
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_append_flush_native(dapl_id, ndims, boundary, out var funcPointer, ref udata);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5D.append_cb_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_append_flush", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_append_flush_native(hid_t dapl_id, uint ndims, [In][Out] hsize_t[] boundary, out IntPtr func, ref IntPtr udata);
 
         /// <summary>
         /// Retrieves tracking and indexing settings for attribute creation order.
@@ -678,7 +692,7 @@ namespace HDF.PInvoke
         /// Otherwise returns a negative value.</returns>
         public static ssize_t get_data_transform(hid_t plist_id, StringBuilder expression, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(expression, size);
+            var buffer = Utf8Buffer.Create(expression, size);
             var result = get_data_transform_utf8(plist_id, buffer, size);
 
             if (result.ToInt64() >= 0)
@@ -797,11 +811,23 @@ namespace HDF.PInvoke
         /// function.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_elink_cb",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_elink_cb
-            (hid_t lapl_id, ref H5L.elink_traverse_t func, ref IntPtr op_data);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_elink_cb(hid_t lapl_id, ref H5L.elink_traverse_t func, ref IntPtr op_data)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_elink_cb_native(lapl_id, out var funcPointer, ref op_data);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5L.elink_traverse_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_elink_cb", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_elink_cb_native(hid_t lapl_id, out IntPtr func, ref IntPtr op_data);
 
         /// <summary>
         /// Retrieves the file access property list identifier associated with
@@ -1331,12 +1357,23 @@ namespace HDF.PInvoke
         /// function</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Pget_mcdt_search_cb",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_mcdt_search_cb
-            (hid_t ocpypl_id, ref H5O.mcdt_search_cb_t func, ref IntPtr op_data);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_mcdt_search_cb(hid_t ocpypl_id, ref H5O.mcdt_search_cb_t func, ref IntPtr op_data)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_mcdt_search_cb_native(ocpypl_id, out var funcPointer, ref op_data);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5O.mcdt_search_cb_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_mcdt_search_cb", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_mcdt_search_cb_native(hid_t ocpypl_id, out IntPtr func, ref IntPtr op_data);
 
         /// <summary>
         /// Get the current initial metadata cache configuration from the
@@ -1389,7 +1426,7 @@ namespace HDF.PInvoke
         public static herr_t get_mdc_log_options(hid_t fapl_id, ref hbool_t is_enabled, StringBuilder location,
             ref size_t location_size, ref hbool_t start_on_access)
         {
-            byte[] buffer = Utf8Buffer.Create(location, location_size);
+            var buffer = Utf8Buffer.Create(location, location_size);
             var result = get_mdc_log_options_utf8(fapl_id, ref is_enabled, buffer, ref location_size, ref start_on_access);
 
             if (result >= 0)
@@ -1504,11 +1541,23 @@ namespace HDF.PInvoke
         /// function.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_object_flush_cb",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_object_flush_cb
-            (hid_t fapl_id, ref H5F.flush_cb_t func, ref IntPtr udata);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_object_flush_cb(hid_t fapl_id, ref H5F.flush_cb_t func, ref IntPtr udata)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_object_flush_cb_native(fapl_id, out var funcPointer, ref udata);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5F.flush_cb_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_object_flush_cb", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_object_flush_cb_native(hid_t fapl_id, out IntPtr func, ref IntPtr udata);
 
         /// <summary>
         /// Retrieves the maximum size for the page buffer and the minimum
@@ -1677,11 +1726,23 @@ namespace HDF.PInvoke
         /// function.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_type_conv_cb",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_type_conv_cb
-            (hid_t plist, ref H5T.conv_except_func_t func, ref IntPtr op_data);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_type_conv_cb(hid_t plist, ref H5T.conv_except_func_t func, ref IntPtr op_data)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_type_conv_cb_native(plist, out var funcPointer, ref op_data);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5T.conv_except_func_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_type_conv_cb", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_type_conv_cb_native(hid_t plist, out IntPtr func, ref IntPtr op_data);
 
         /// <summary>
         /// Retrieves the size of a user block.
@@ -1771,7 +1832,7 @@ namespace HDF.PInvoke
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
         public static ssize_t get_virtual_dsetname(hid_t dcpl_id, size_t index, StringBuilder name, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(name, size);
+            var buffer = Utf8Buffer.Create(name, size);
             var result = get_virtual_dsetname_utf8(dcpl_id, index, buffer, size);
 
             if (result.ToInt64() >= 0)
@@ -1803,7 +1864,7 @@ namespace HDF.PInvoke
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
         public static ssize_t get_virtual_filename(hid_t dcpl_id, size_t index, StringBuilder name, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(name, size);
+            var buffer = Utf8Buffer.Create(name, size);
             var result = get_virtual_filename_utf8(dcpl_id, index, buffer, size);
 
             if (result.ToInt64() >= 0)
@@ -1833,7 +1894,7 @@ namespace HDF.PInvoke
         /// <paramref name="prefix"/> will be undefined.</returns>
         public static ssize_t get_virtual_prefix(hid_t dapl, StringBuilder prefix, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(prefix, size);
+            var buffer = Utf8Buffer.Create(prefix, size);
             var result = get_virtual_prefix_utf8(dapl, buffer, size);
 
             if (result.ToInt64() >= 0)
@@ -1938,12 +1999,24 @@ namespace HDF.PInvoke
         /// <code>NULL</code>.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_vlen_mem_manager",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_vlen_mem_manager
-            (hid_t plist, ref H5MM.allocate_t alloc, ref IntPtr alloc_info,
-            ref H5MM.free_t free, ref IntPtr free_info);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_vlen_mem_manager(hid_t plist, ref H5MM.allocate_t alloc, ref IntPtr alloc_info, ref H5MM.free_t free, ref IntPtr free_info)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_vlen_mem_manager_native(plist, out var allocPointer, ref alloc_info, out var freePointer, ref free_info);
+
+            if (result >= 0)
+            {
+                alloc = allocPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5MM.allocate_t>(allocPointer);
+                free = freePointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5MM.free_t>(freePointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_vlen_mem_manager", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_vlen_mem_manager_native(hid_t plist, out IntPtr alloc, ref IntPtr alloc_info, out IntPtr free, ref IntPtr free_info);
 
         /// <summary>
         /// Registers a temporary property with a property list.

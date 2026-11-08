@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -87,7 +87,7 @@ namespace HDF.PInvoke
         public static ssize_t get(uint32_t index,
             StringBuilder pathname, IntPtr size)
         {
-            byte[] buffer = Utf8Buffer.Create(pathname, size);
+            var buffer = Utf8Buffer.Create(pathname, size);
             var result = get_utf8(index, buffer, size);
 
             if (result.ToInt64() >= 0)

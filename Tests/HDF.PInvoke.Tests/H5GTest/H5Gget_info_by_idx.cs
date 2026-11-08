@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,9 +11,8 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -29,9 +28,9 @@ namespace UnitTests
         [TestMethod]
         public void H5Gget_info_by_indexTest1()
         {
-            hid_t group = H5G.create(m_v0_test_file, "A");
+            var group = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(group >= 0);
-            H5G.info_t info = new H5G.info_t();
+            var info = new H5G.info_t();
             Assert.IsTrue(H5G.get_info_by_idx(m_v0_test_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 0,
                 ref info) >= 0);
@@ -51,7 +50,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Gget_info_by_indexTest2()
         {
-            H5G.info_t info = new H5G.info_t();
+            var info = new H5G.info_t();
             Assert.IsTrue(H5G.get_info_by_idx(m_v0_test_file, ".",
                 H5.index_t.CRT_ORDER, H5.iter_order_t.NATIVE, 0,
                 ref info) < 0);

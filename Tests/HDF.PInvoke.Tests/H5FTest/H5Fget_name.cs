@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,12 +11,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using ssize_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using ssize_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -31,13 +29,13 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_nameTest1()
         {
-            StringBuilder nameBuilder = new StringBuilder(256);
+            var nameBuilder = new StringBuilder(256);
 
             Assert.IsTrue(
                 H5F.get_name(m_v0_test_file, nameBuilder,
                 new IntPtr(nameBuilder.Capacity)).ToInt32() >= 0);
 
-            string name = nameBuilder.ToString();
+            var name = nameBuilder.ToString();
             // names should match
             Assert.AreEqual(m_v0_test_file_name, name);
 
@@ -56,7 +54,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_nameTest2()
         {
-            StringBuilder nameBuilder = new StringBuilder(256);
+            var nameBuilder = new StringBuilder(256);
 
             Assert.IsTrue(
                 H5F.get_name(Utilities.RandomInvalidHandle(), nameBuilder,

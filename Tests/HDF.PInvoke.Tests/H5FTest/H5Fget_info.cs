@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_infoTest1()
         {
-            H5F.info_t info = new H5F.info_t();
+            var info = new H5F.info_t();
             Assert.IsTrue(H5F.get_info(m_v0_class_file, ref info) >= 0);
             Assert.IsTrue(H5F.get_info(m_v2_class_file, ref info) >= 0);
         }
@@ -38,7 +37,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_infoTest2()
         {
-            H5F.info_t info = new H5F.info_t();
+            var info = new H5F.info_t();
             Assert.IsFalse(
                 H5F.get_info(Utilities.RandomInvalidHandle(), ref info) >= 0);
         }

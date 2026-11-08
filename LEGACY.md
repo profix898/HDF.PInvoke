@@ -25,7 +25,7 @@ dotnet publish -c Release -r win-x64
 
 Configure a package source containing the built package. Install the Microsoft Visual C++ v14 Redistributable for x64, as described in [README.md](README.md#supported-platforms). Deploy the entire publish directory, including both native DLLs. A successful reference to a .NET Standard assembly does not by itself deploy its native dependencies.
 
-Older Framework versions, packages.config, Mono and Unity are outside the validated configurations. NativeAOT, trimming, IL2CPP and single-file deployment are not supported configurations. The native package has no 32-bit or mobile assets.
+Older Framework versions, packages.config and Unity are outside the validated configurations. Standalone Mono validation is described below. NativeAOT, trimming, IL2CPP and single-file deployment are not supported configurations. The native package has no 32-bit or mobile assets.
 
 ## Native library selection
 
@@ -56,7 +56,7 @@ Call `H5.dont_atexit()` before any other HDF5 operation to disable native automa
 | CLR initialization can happen earlier than the first visible call | Early loading can prevent configuration or `H5.dont_atexit()` from taking effect | Defer handle and delegate initialization until actual use |
 | Native code can retain managed callback pointers | A delegate or temporary comment buffer can disappear while HDF5 still uses it | Retain registrations explicitly and distinguish borrowed memory from owned buffers |
 
-Changing DLL names with `#if` would address only part of the first problem. It would still leave the runtime in charge of resolving each import independently, without a portable way to bind those calls to the exact handle used for globals. The implementation therefore combines build-time selection with generated forwarding methods and a small set of explicit ABI bridges.
+The legacy assembly resolves callable exports and global symbols through one selected library handle. Generated forwarding methods provide the unmanaged calls, with explicit bridges for signatures requiring platform-specific layouts or ownership handling.
 
 ## Build-time separation
 
@@ -158,6 +158,14 @@ For a native-to-managed callback parameter, the native caller owns the string. G
 
 Ownership cannot be inferred safely for every possible string signature. The generator rejects string returns and `ref`/`out` strings until an explicit bridge defines who allocates and frees their buffers. Shared `StringBuilder` output helpers already use explicit byte buffers and decoding; raw byte-array APIs retain their documented byte-count and NUL-termination requirements.
 
+### Callback output pointers
+
+Mono 6.8 does not implement by-reference delegate marshalling. Seven HDF5 getters expose callback output pointers through public `ref` delegate parameters. Shared managed forwarding methods in H5E and H5P use private native imports with output IntPtr callback parameters. This also avoids modern .NET retaining an existing delegate instead of copying back the native callback output. After a successful call, the forwarder converts nonzero addresses with `Marshal.GetDelegateForFunctionPointer<T>` and returns null for a zero pointer. A native error leaves the caller's callback reference unchanged.
+
+These are explicitly selected output-only getter contracts, not a general transformation of every `ref` parameter. Existing callback values are not passed into the native getter, and returned addresses remain borrowed. Applications must still retain registered callbacks for as long as native code can invoke them. The public signatures remain unchanged. Both targets use the same forwarding methods; the legacy generator processes the private pointer-based imports normally. Regression tests cover callback invocation, context pointers, null callbacks, failure preservation and the getter returning both allocation and release callbacks.
+
+Raw byte-array string parameters must include their own terminating zero byte. Unlike the managed string overloads, the wrapper does not append a terminator to a byte array. Tests must allocate this byte explicitly; relying on padding beyond an array's end produces runtime-dependent failures and native out-of-bounds reads.
+
 ### Error callbacks containing string fields
 
 A custom parameter marshaler does not solve nested string fields in a native structure on older runtimes. [LegacyErrorWalk](Sources/HDF.PInvoke/Interop/Legacy/LegacyErrorWalk.cs) therefore handles `H5E.walk` through a native-layout `ErrorInfo` structure whose string fields are `IntPtr` values. During the native callback, it reads that structure, decodes its borrowed UTF-8 strings, constructs the public `H5E.error_t` view and invokes the user's callback.
@@ -214,4 +222,18 @@ Validation covers distinct failure classes:
 
 The [legacy test script](Build/testLegacy.ps1) first runs the generator regression suite, then runs the shared integration suite against `netstandard2.0`, adds a net472 run on Windows x64, and checks loader behavior in separate processes. `-SkipAbi` is available only for local reuse of previously validated native binaries. The native upstream suite validates HDF5 itself; it does not replace tests of managed signatures and marshalling.
 
-CI tests the legacy assembly on every supported native RID. Unix legacy tests execute on modern .NET hosts; they do not establish Mono or Unity compatibility. Clean consumers explicitly force the .NET Standard asset where NuGet would otherwise prefer the modern asset, then verify which implementation was loaded. See [ADVANCED.md](ADVANCED.md#validation-and-ci) for the shared native suite and package-validation process.
+CI tests the legacy assembly on every supported native RID. Unix CI legacy tests execute on modern .NET hosts; standalone Mono is checked separately as described below, and Unity compatibility is not established. Clean consumers explicitly force the .NET Standard asset where NuGet would otherwise prefer the modern asset, then verify which implementation was loaded. See [ADVANCED.md](ADVANCED.md#validation-and-ci) for the shared native suite and package-validation process.
+
+## Standalone Mono validation
+
+The legacy assembly is locally validated on Ubuntu 24.04 x64 under WSL using the distribution's Mono 6.8 runtime. This exercises Mono's native marshaller, including UTF-8 strings, callbacks, ABI bridges and exported globals. It does not establish compatibility with Unity's Mono fork, Editor lifecycle, IL2CPP, mobile platforms or other Mono versions. The GitHub matrix uses modern .NET hosts for Unix legacy tests; Mono validation is a separate local check.
+
+Install `mono-devel` from the Linux distribution's package repository. Build or stage the Linux x64 native libraries, and extract the `Microsoft.TestPlatform` NuGet package (validated with version 18.10.1) into a local tools directory. The runner must be its `net462` version: running tests through `dotnet test` would exercise CoreCLR rather than Mono.
+
+From Windows with Mono installed in the default WSL distribution, run:
+
+```powershell
+./Build/testMono.ps1 -Wsl -TestPlatformDirectory C:/Tools/Microsoft.TestPlatform
+```
+
+On Linux with the repository's required .NET SDK, PowerShell and Mono installed, omit `-Wsl`. The script builds the net472 integration tests against the netstandard2.0 wrapper, invokes VSTest explicitly under Mono, and writes `Build/Artifacts/tests/linux-x64-mono/mono.trx`. `-SkipBuild` reuses an already-built test assembly. Run the package consumer separately when validating NuGet deployment; this script validates the project build against staged native libraries.

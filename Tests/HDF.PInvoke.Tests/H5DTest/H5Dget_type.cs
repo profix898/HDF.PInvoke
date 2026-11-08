@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -13,13 +13,11 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -35,12 +33,12 @@ namespace UnitTests
         public void H5Dget_typeTest1()
         {
             hsize_t[] dims = { 1024, 2048 };
-            hid_t space = H5S.create_simple(3, dims, null);
+            var space = H5S.create_simple(3, dims, null);
 
-            hid_t dset = H5D.create(m_v0_test_file, "dset", H5T.STD_I16LE,
+            var dset = H5D.create(m_v0_test_file, "dset", H5T.STD_I16LE,
                 space);
             Assert.IsTrue(dset >= 0);
-            hid_t type = H5D.get_type(dset);
+            var type = H5D.get_type(dset);
             Assert.IsTrue(type >= 0);
             Assert.IsTrue(H5T.equal(type, H5T.STD_I16LE) > 0);
             Assert.IsTrue(H5T.close(type) >= 0);

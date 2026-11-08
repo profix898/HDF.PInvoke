@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,16 +10,14 @@
 
 using System;
 using System.Collections;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HDF.PInvoke;
-
-using herr_t = System.Int32;
-using hsize_t = System.UInt64;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
-
+using HDF.PInvoke;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using herr_t = System.Int32;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -34,7 +32,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aiterate_by_nameTest1()
         {
-            hid_t att = H5A.create(m_v2_test_file, "IEEE_F32BE",
+            var att = H5A.create(m_v2_test_file, "IEEE_F32BE",
                                         H5T.IEEE_F32BE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -48,7 +46,7 @@ namespace UnitTests
                m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
-            ArrayList al = new ArrayList();
+            var al = new ArrayList();
             hsize_t n = 0;
 
             // if we define the callback as lambda we can simple capture the array list
@@ -56,14 +54,14 @@ namespace UnitTests
             ) =>
             {
                 Assert.IsTrue(op_data.ToInt64() == -99);
-                int len = 0;
+                var len = 0;
 
                 while (Marshal.ReadByte(attr_name, len) != 0)
                 {
                     ++len;
                 }
 
-                byte[] buf = new byte[len];
+                var buf = new byte[len];
                 Marshal.Copy(attr_name, buf, 0, len);
                 al.Add(Encoding.UTF8.GetString(buf));
                 return 0;
@@ -116,9 +114,9 @@ namespace UnitTests
         [TestMethod]
         public void H5Aiterate_by_nameTest2()
         {
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             hsize_t n = 0;
             // the callback is defined in H5ATest.cs
             H5A.operator_t cb = DelegateMethod;

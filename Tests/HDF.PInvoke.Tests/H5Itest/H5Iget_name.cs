@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -12,12 +12,10 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using ssize_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using ssize_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -32,14 +30,14 @@ namespace UnitTests
         [TestMethod]
         public void H5Iget_nameTest1()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "AAAAAAAAAAAAAAAAAAAAA");
+            var gid = H5G.create(m_v0_test_file, "AAAAAAAAAAAAAAAAAAAAA");
             Assert.IsTrue(gid > 0);
 
-            ssize_t buf_size = H5I.get_name(gid, (StringBuilder)null,
+            var buf_size = H5I.get_name(gid, (StringBuilder)null,
                 IntPtr.Zero) + 1;
             Assert.IsTrue(buf_size.ToInt32() > 1);
-            StringBuilder nameBuilder = new StringBuilder(buf_size.ToInt32());
-            IntPtr size = H5I.get_name(gid, nameBuilder, buf_size);
+            var nameBuilder = new StringBuilder(buf_size.ToInt32());
+            var size = H5I.get_name(gid, nameBuilder, buf_size);
             Assert.IsTrue(size.ToInt32() > 0);
             Assert.IsTrue(nameBuilder.ToString() == "/AAAAAAAAAAAAAAAAAAAAA");
 
@@ -64,7 +62,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Iget_nameTest2()
         {
-            IntPtr size = H5I.get_name(Utilities.RandomInvalidHandle(), null,
+            var size = H5I.get_name(Utilities.RandomInvalidHandle(), null,
                                         IntPtr.Zero);
             Assert.IsFalse(size.ToInt32() >= 0);
         }

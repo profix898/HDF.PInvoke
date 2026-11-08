@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,8 +27,8 @@ namespace UnitTests
         [TestMethod]
         public void H5FopenTest1()
         {
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_TRUNC);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_TRUNC);
             Assert.IsTrue(file >= 0);
             Assert.IsTrue(H5F.close(file) >= 0);
 

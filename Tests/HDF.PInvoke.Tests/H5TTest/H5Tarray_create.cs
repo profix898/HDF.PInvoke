@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -29,8 +27,8 @@ namespace UnitTests
         [TestMethod]
         public void H5Tarray_createTest1()
         {
-            hsize_t[] dims = new hsize_t[] { 3, 3 };
-            hid_t dtype = H5T.array_create(H5T.IEEE_F64LE, (uint)dims.Length,
+            var dims = new hsize_t[] { 3, 3 };
+            var dtype = H5T.array_create(H5T.IEEE_F64LE, (uint)dims.Length,
                 dims);
             Assert.IsTrue(dtype >= 0);
             Assert.IsTrue(H5T.close(dtype) >= 0);
@@ -42,8 +40,8 @@ namespace UnitTests
         [TestMethod]
         public void H5Tarray_createTest2()
         {
-            hsize_t[] dims = new hsize_t[] { 3, 3 };
-            hid_t dtype = H5T.array_create(H5T.IEEE_F64LE, 0, dims);
+            var dims = new hsize_t[] { 3, 3 };
+            var dtype = H5T.array_create(H5T.IEEE_F64LE, 0, dims);
             Assert.IsFalse(dtype >= 0);
         }
 
@@ -53,8 +51,8 @@ namespace UnitTests
         [TestMethod]
         public void H5Tarray_createTest3()
         {
-            hsize_t[] dims = new hsize_t[] { 3, 3 };
-            hid_t dtype = H5T.array_create(Utilities.RandomInvalidHandle(),
+            var dims = new hsize_t[] { 3, 3 };
+            var dtype = H5T.array_create(Utilities.RandomInvalidHandle(),
                 (uint)dims.Length, dims);
             Assert.IsFalse(dtype >= 0);
         }

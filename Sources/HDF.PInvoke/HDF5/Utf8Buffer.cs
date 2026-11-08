@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 
 namespace HDF.PInvoke
@@ -14,7 +14,7 @@ namespace HDF.PInvoke
         internal static byte[] Create(StringBuilder target, IntPtr byteCount)
         {
             // Native capacities count UTF-8 bytes, not UTF-16 characters.
-            long size = byteCount.ToInt64();
+            var size = byteCount.ToInt64();
 
             if (size < 0 || size > int.MaxValue)
             {
@@ -35,7 +35,7 @@ namespace HDF.PInvoke
             }
 
             // Decode only the bytes preceding the native NUL terminator.
-            int length = Array.IndexOf(bytes, (byte)0);
+            var length = Array.IndexOf(bytes, (byte)0);
 
             if (length < 0)
             {

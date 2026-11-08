@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,11 +10,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -30,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_metadata_read_attemptsTestSWMR1()
         {
-            hid_t fapl = H5F.get_access_plist(m_v3_test_file_swmr);
+            var fapl = H5F.get_access_plist(m_v3_test_file_swmr);
             Assert.IsTrue(fapl >= 0);
 
             uint attempts = 0;
@@ -47,7 +45,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_metadata_read_attemptsTestSWMR2()
         {
-            hid_t fapl = H5F.get_access_plist(m_v3_test_file_no_swmr);
+            var fapl = H5F.get_access_plist(m_v3_test_file_no_swmr);
             Assert.IsTrue(fapl >= 0);
 
             uint attempts = 0;

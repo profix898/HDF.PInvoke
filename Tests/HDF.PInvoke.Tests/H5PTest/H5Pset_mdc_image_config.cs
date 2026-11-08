@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,12 +11,10 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -31,19 +29,19 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_mdc_image_configTest1()
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
 
             Assert.IsTrue(H5P.set_libver_bounds(fapl, H5F.libver_t.LATEST) >= 0);
 
-            H5AC.cache_image_config_t conf = new H5AC.cache_image_config_t();
+            var conf = new H5AC.cache_image_config_t();
             conf.version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION;
             conf.entry_ageout = H5AC.CACHE_IMAGE__ENTRY_AGEOUT__NONE;
 
-            IntPtr config_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(conf));
+            var config_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(conf));
             Marshal.StructureToPtr(conf, config_ptr, false);
 
-            H5AC.cache_image_config_t conf1 = new H5AC.cache_image_config_t();
+            var conf1 = new H5AC.cache_image_config_t();
 
             conf1 = (H5AC.cache_image_config_t)Marshal.PtrToStructure(
                 config_ptr, typeof(H5AC.cache_image_config_t));

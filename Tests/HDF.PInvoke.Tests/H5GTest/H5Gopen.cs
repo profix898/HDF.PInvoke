@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,9 +11,8 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -29,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void H5GopenTest1()
         {
-            hid_t group = H5G.open(m_v0_class_file, ".");
+            var group = H5G.open(m_v0_class_file, ".");
             Assert.IsTrue(group >= 0);
             Assert.IsTrue(H5G.close(group) >= 0);
 
@@ -44,7 +43,7 @@ namespace UnitTests
         [TestMethod]
         public void H5GopenTest2()
         {
-            hid_t group = H5G.open(Utilities.RandomInvalidHandle(), ".");
+            var group = H5G.open(Utilities.RandomInvalidHandle(), ".");
             Assert.IsTrue(group < 0);
 
             group = H5G.open(Utilities.RandomInvalidHandle(), "A");

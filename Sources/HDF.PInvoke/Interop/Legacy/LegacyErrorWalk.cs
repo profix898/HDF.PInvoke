@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -98,7 +98,7 @@ namespace HDF.PInvoke
                     return -1;
                 }
             };
-            int result = Cache.Function(stack, direction, bridge, data);
+            var result = Cache.Function(stack, direction, bridge, data);
             GC.KeepAlive(bridge);
 
             if (failure != null)

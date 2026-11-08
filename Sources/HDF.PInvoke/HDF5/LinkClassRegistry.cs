@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -90,8 +90,8 @@ namespace HDF.PInvoke
                 return IntPtr.Zero;
             }
 
-            byte[] bytes = Encoding.UTF8.GetBytes(comment + "\0");
-            IntPtr pointer = Marshal.AllocHGlobal(bytes.Length);
+            var bytes = Encoding.UTF8.GetBytes(comment + "\0");
+            var pointer = Marshal.AllocHGlobal(bytes.Length);
 
             try
             {
@@ -122,17 +122,17 @@ namespace HDF.PInvoke
                 del_func = source.del_func,
                 query_func = source.query_func
             };
-            bool retained = false;
+            var retained = false;
 
             try
             {
                 lock (Registrations)
                 {
-                    int status = RegisterNative(ref native);
+                    var status = RegisterNative(ref native);
 
                     if (status >= 0)
                     {
-                        int index = (int)native.id;
+                        var index = (int)native.id;
                         Marshal.FreeHGlobal(Registrations[index].comment);
                         Registrations[index] = native;
                         retained = true;
@@ -158,7 +158,7 @@ namespace HDF.PInvoke
             lock (Registrations)
             {
                 // Native shutdown has finished invoking callbacks before their managed roots are released.
-                foreach (ClassInfo registration in Registrations)
+                foreach (var registration in Registrations)
                 {
                     Marshal.FreeHGlobal(registration.comment);
                 }
@@ -174,11 +174,11 @@ namespace HDF.PInvoke
         {
             lock (Registrations)
             {
-                int status = UnregisterNative(id);
+                var status = UnregisterNative(id);
 
                 if (status >= 0)
                 {
-                    int index = (int)id;
+                    var index = (int)id;
                     Marshal.FreeHGlobal(Registrations[index].comment);
                     Registrations[index] = default;
                 }

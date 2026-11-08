@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -76,8 +76,8 @@ namespace HDF.PInvoke
                 throw new MarshalDirectiveException("Expected a UTF-8 string.");
             }
 
-            int length = Encoding.UTF8.GetByteCount(text);
-            IntPtr buffer = Marshal.AllocHGlobal(checked(length + 1));
+            var length = Encoding.UTF8.GetByteCount(text);
+            var buffer = Marshal.AllocHGlobal(checked(length + 1));
 
             try
             {
@@ -104,8 +104,8 @@ namespace HDF.PInvoke
                 return null;
             }
 
-            byte* bytes = (byte*)value;
-            int length = 0;
+            var bytes = (byte*)value;
+            var length = 0;
 
             while (bytes[length] != 0)
             {

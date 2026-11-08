@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -32,23 +30,23 @@ namespace UnitTests
         [TestMethod]
         public void H5Rget_obj_typeTest1()
         {
-            byte[] path =
+            var path =
                                         Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
             Assert.IsTrue(
-                H5G.close(H5G.create(m_v0_test_file, path, m_lcpl_utf8)) >= 0);
+                H5G.close(H5G.create(m_v0_test_file, name, m_lcpl_utf8)) >= 0);
 
-            byte[] refer = new byte[H5R.OBJ_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.OBJ_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v0_test_file, name,
                 H5R.type_t.OBJECT, -1) >= 0);
 
-            H5O.type_t obj_type = H5O.type_t.UNKNOWN;
+            var obj_type = H5O.type_t.UNKNOWN;
             Assert.IsTrue(
                 H5R.get_obj_type(m_v0_test_file, H5R.type_t.OBJECT,
                 hnd.AddrOfPinnedObject(), ref obj_type) >= 0);
@@ -64,23 +62,23 @@ namespace UnitTests
         [TestMethod]
         public void H5Rget_obj_typeTest2()
         {
-            byte[] path =
+            var path =
                                         Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
             Assert.IsTrue(
-                H5G.close(H5G.create(m_v2_test_file, path, m_lcpl_utf8)) >= 0);
+                H5G.close(H5G.create(m_v2_test_file, name, m_lcpl_utf8)) >= 0);
 
-            byte[] refer = new byte[H5R.OBJ_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.OBJ_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v2_test_file, name,
                 H5R.type_t.OBJECT, -1) >= 0);
 
-            H5O.type_t obj_type = H5O.type_t.UNKNOWN;
+            var obj_type = H5O.type_t.UNKNOWN;
             Assert.IsTrue(
                 H5R.get_obj_type(m_v2_test_file, H5R.type_t.OBJECT,
                 hnd.AddrOfPinnedObject(), ref obj_type) >= 0);
@@ -96,16 +94,16 @@ namespace UnitTests
         [TestMethod]
         public void H5Rget_obj_typeTest3()
         {
-            byte[] path =
+            var path =
                                            Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hsize_t[] dims = new hsize_t[] { 10, 20 };
-            hid_t space = H5S.create_simple(2, dims, null);
+            var dims = new hsize_t[] { 10, 20 };
+            var space = H5S.create_simple(2, dims, null);
             Assert.IsTrue(space >= 0);
-            hid_t dset = H5D.create(m_v0_test_file, name, H5T.STD_I32LE, space,
+            var dset = H5D.create(m_v0_test_file, name, H5T.STD_I32LE, space,
                 m_lcpl_utf8);
             Assert.IsTrue(dset >= 0);
             hsize_t[] start = { 5, 10 };
@@ -115,14 +113,14 @@ namespace UnitTests
                 H5S.select_hyperslab(space, H5S.seloper_t.SET, start, null,
                 count, block) >= 0);
 
-            byte[] refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v0_test_file, name,
                 H5R.type_t.DATASET_REGION, space) >= 0);
 
-            H5O.type_t obj_type = H5O.type_t.UNKNOWN;
+            var obj_type = H5O.type_t.UNKNOWN;
             Assert.IsTrue(
                 H5R.get_obj_type(m_v0_test_file, H5R.type_t.DATASET_REGION,
                 hnd.AddrOfPinnedObject(), ref obj_type) >= 0);
@@ -141,16 +139,16 @@ namespace UnitTests
         [TestMethod]
         public void H5Rget_obj_typeTest4()
         {
-            byte[] path =
+            var path =
                                            Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hsize_t[] dims = new hsize_t[] { 10, 20 };
-            hid_t space = H5S.create_simple(2, dims, null);
+            var dims = new hsize_t[] { 10, 20 };
+            var space = H5S.create_simple(2, dims, null);
             Assert.IsTrue(space >= 0);
-            hid_t dset = H5D.create(m_v2_test_file, name, H5T.STD_I32LE, space,
+            var dset = H5D.create(m_v2_test_file, name, H5T.STD_I32LE, space,
                 m_lcpl_utf8);
             Assert.IsTrue(dset >= 0);
             hsize_t[] start = { 5, 10 };
@@ -160,14 +158,14 @@ namespace UnitTests
                 H5S.select_hyperslab(space, H5S.seloper_t.SET, start, null,
                 count, block) >= 0);
 
-            byte[] refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v2_test_file, name,
                 H5R.type_t.DATASET_REGION, space) >= 0);
 
-            H5O.type_t obj_type = H5O.type_t.UNKNOWN;
+            var obj_type = H5O.type_t.UNKNOWN;
             Assert.IsTrue(
                 H5R.get_obj_type(m_v2_test_file, H5R.type_t.DATASET_REGION,
                 hnd.AddrOfPinnedObject(), ref obj_type) >= 0);

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using ssize_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using ssize_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -29,9 +27,9 @@ namespace UnitTests
         [TestMethod]
         public void H5Eget_numTest1()
         {
-            hid_t est = H5E.get_current_stack();
+            var est = H5E.get_current_stack();
             Assert.IsTrue(est >= 0);
-            ssize_t size = H5E.get_num(est);
+            var size = H5E.get_num(est);
             Assert.IsTrue(size.ToInt32() >= 0);
             Assert.IsTrue(H5E.close_stack(est) >= 0);
         }

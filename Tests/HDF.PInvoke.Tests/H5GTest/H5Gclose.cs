@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5GcloseTest1()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A");
+            var gid = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(gid >= 0);
             Assert.IsTrue(H5G.close(gid) >= 0);
 
@@ -42,7 +41,7 @@ namespace UnitTests
         [TestMethod]
         public void H5GcloseTest2()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A");
+            var gid = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(gid >= 0);
             Assert.IsTrue(H5G.close(gid) >= 0);
             Assert.IsTrue(H5G.close(gid) < 0);
@@ -59,7 +58,7 @@ namespace UnitTests
         [TestMethod]
         public void H5GcloseTest3()
         {
-            hid_t gid = Utilities.RandomInvalidHandle();
+            var gid = Utilities.RandomInvalidHandle();
             Assert.IsTrue(H5G.close(gid) < 0);
         }
     }

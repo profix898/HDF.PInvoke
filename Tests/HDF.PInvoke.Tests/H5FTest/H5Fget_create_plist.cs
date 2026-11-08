@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_create_plistTest1()
         {
-            hid_t fcpl = H5F.get_create_plist(m_v0_class_file);
+            var fcpl = H5F.get_create_plist(m_v0_class_file);
             Assert.IsTrue(fcpl >= 0);
             Assert.IsTrue(H5P.close(fcpl) >= 0);
             fcpl = H5F.get_create_plist(m_v2_class_file);

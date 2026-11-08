@@ -38,7 +38,7 @@ finally
 
 `ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`. CI tests a net472 consumer on the installed .NET Framework 4.8 runtime. See [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/LEGACY.md) for legacy deployment and runtime compatibility. Unity, Mono and AOT runtimes are outside the validated configurations.
+For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`. CI tests a net472 consumer on the installed .NET Framework 4.8 runtime. See [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/LEGACY.md) for legacy deployment and runtime compatibility. Standalone Mono 6.8 on Linux x64 is locally validated; see the legacy guide for the test procedure and scope. Unity and AOT runtimes are outside the validated configurations.
 
 ## Supported platforms
 

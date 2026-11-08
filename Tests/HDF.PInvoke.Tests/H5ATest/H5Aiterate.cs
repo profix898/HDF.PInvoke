@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -32,7 +30,7 @@ namespace UnitTests
         [TestMethod]
         public void H5AiterateTest1()
         {
-            hid_t att = H5A.create(m_v2_test_file, "IEEE_F32BE",
+            var att = H5A.create(m_v2_test_file, "IEEE_F32BE",
                                         H5T.IEEE_F32BE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -47,9 +45,9 @@ namespace UnitTests
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             hsize_t n = 0;
             // the callback is defined in H5ATest.cs
             H5A.operator_t cb = DelegateMethod;
@@ -89,9 +87,9 @@ namespace UnitTests
         [TestMethod]
         public void H5AiterateTest2()
         {
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             hsize_t n = 0;
             // the callback is defined in H5ATest.cs
             H5A.operator_t cb = DelegateMethod;
@@ -110,7 +108,7 @@ namespace UnitTests
         [TestMethod]
         public void H5AiterateTest3()
         {
-            hid_t att = H5A.create(m_v2_test_file, "IEEE_F32BE",
+            var att = H5A.create(m_v2_test_file, "IEEE_F32BE",
                                         H5T.IEEE_F32BE, m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -125,9 +123,9 @@ namespace UnitTests
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
 
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             hsize_t n = 0;
             // the callback is defined in H5ATest.cs
             H5A.operator_t cb = DelegateMethod;
@@ -167,9 +165,9 @@ namespace UnitTests
         [TestMethod]
         public void H5AiterateTest4()
         {
-            ArrayList al = new ArrayList();
-            GCHandle hnd = GCHandle.Alloc(al);
-            IntPtr op_data = (IntPtr)hnd;
+            var al = new ArrayList();
+            var hnd = GCHandle.Alloc(al);
+            var op_data = (IntPtr)hnd;
             hsize_t n = 0;
             // the callback is defined in H5ATest.cs
             H5A.operator_t cb = DelegateMethod;

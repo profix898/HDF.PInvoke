@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -48,23 +47,23 @@ namespace UnitTests
             Assert.IsTrue(
                                         H5G.create(m_v0_test_file, "A/B/C/D", m_lcpl_utf8) >= 0);
 
-            for (int i = 0; i < m_utf8strings.Length; ++i)
+            for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
                                                     H5L.create_hard(m_v0_test_file,
-                                                    Encoding.ASCII.GetBytes("A/B/C/D"), m_v0_test_file,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i])) >= 0);
+                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v0_test_file,
+                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
             }
 
             Assert.IsTrue(
                 H5G.create(m_v2_test_file, "A/B/C/D", m_lcpl_utf8) >= 0);
 
-            for (int i = 0; i < m_utf8strings.Length; ++i)
+            for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
                                                     H5L.create_hard(m_v2_test_file,
-                                                    Encoding.ASCII.GetBytes("A/B/C/D"), m_v2_test_file,
-                                                    Encoding.UTF8.GetBytes(m_utf8strings[i])) >= 0);
+                                                    Encoding.ASCII.GetBytes("A/B/C/D" + "\0"), m_v2_test_file,
+                                                    Encoding.UTF8.GetBytes(m_utf8strings[i] + "\0")) >= 0);
             }
         }
     }

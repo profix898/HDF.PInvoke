@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -37,7 +37,7 @@ public sealed class LegacyBindingGenerator : IIncrementalGenerator
         var inputs = context.AdditionalTextsProvider.Combine(context.AnalyzerConfigOptionsProvider)
             .Select((input, cancellation) =>
             {
-                input.Right.GetOptions(input.Left).TryGetValue("build_metadata.AdditionalFiles.HdfBindingPath", out string? relativePath);
+                input.Right.GetOptions(input.Left).TryGetValue("build_metadata.AdditionalFiles.HdfBindingPath", out var relativePath);
                 return (File: input.Left, RelativePath: relativePath);
             })
             .Where(input => !string.IsNullOrEmpty(input.RelativePath))
@@ -88,7 +88,7 @@ public sealed class LegacyBindingGenerator : IIncrementalGenerator
 
         try
         {
-            string source = BindingSource.Generate(text, out int count, parseOptions: options, cancellationToken: cancellation, path: path);
+            var source = BindingSource.Generate(text, out var count, parseOptions: options, cancellationToken: cancellation, path: path);
             return new GeneratedBinding(HintName(relativePath), source, count);
         }
         catch (BindingGenerationException error)
@@ -108,7 +108,7 @@ public sealed class LegacyBindingGenerator : IIncrementalGenerator
     {
         using (var hash = SHA256.Create())
         {
-            string digest = BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(relativePath))).Replace("-", "");
+            var digest = BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(relativePath))).Replace("-", "");
             return Path.GetFileName(relativePath) + "." + digest + ".g.cs";
         }
     }

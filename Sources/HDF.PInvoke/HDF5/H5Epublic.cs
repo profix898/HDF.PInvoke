@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -12,14 +12,11 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using size_t = System.IntPtr;
-
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace HDF.PInvoke
 {
@@ -244,11 +241,23 @@ namespace HDF.PInvoke
         /// <param name="client_data">Data currently set to be passed to the
         /// error function.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_auto2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_auto
-            (hid_t estack_id, ref auto_t func, ref IntPtr client_data);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_auto(hid_t estack_id, ref auto_t func, ref IntPtr client_data)
+        {
+            // Callback outputs are borrowed; convert them only after native success.
+            var result = get_auto_native(estack_id, out var funcPointer, ref client_data);
+
+            if (result >= 0)
+            {
+                func = funcPointer == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<auto_t>(funcPointer);
+            }
+
+            return result;
+        }
+
+        /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_auto2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t get_auto_native(hid_t estack_id, out IntPtr func, ref IntPtr client_data);
 
         /// <summary>
         /// Retrieves error class name.
@@ -264,7 +273,7 @@ namespace HDF.PInvoke
         public static ssize_t get_class_name(
             hid_t class_id, StringBuilder name, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(name, size);
+            var buffer = Utf8Buffer.Create(name, size);
             var result = get_class_name_utf8(class_id, buffer, size);
 
             if (result.ToInt64() >= 0)
@@ -307,7 +316,7 @@ namespace HDF.PInvoke
         public static ssize_t get_msg(
             hid_t msg_id, ref type_t msg_type, StringBuilder msg, size_t size)
         {
-            byte[] buffer = Utf8Buffer.Create(msg, size);
+            var buffer = Utf8Buffer.Create(msg, size);
             var result = get_msg_utf8(msg_id, ref msg_type, buffer, size);
 
             if (result.ToInt64() >= 0)

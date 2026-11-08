@@ -1,4 +1,4 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -86,15 +86,15 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 {
                     var fields = structure.Members.OfType<FieldDeclarationSyntax>().ToArray();
                     // Copy field documentation while substituting only the platform-dependent C long type.
-                    string nativeFields = string.Join("\n", fields.Select(WindowsField));
+                    var nativeFields = string.Join("\n", fields.Select(WindowsField));
                     // Fixed buffers require an element copy; scalar fields can use an object initializer.
                     var plainFields = fields.Where(f => !f.Modifiers.Any(SyntaxKind.FixedKeyword));
-                    string toNative = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
+                    var toNative = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
                         .Select(n => $"{n} = " + (n == "epoch_length" ? "checked((int)value.epoch_length.Value)" : $"value.{n}")));
-                    string toManaged = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
+                    var toManaged = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
                         .Select(n => $"{n} = " + (n == "epoch_length" ? "new CLong(value.epoch_length)" : "value." + n)));
                     // Include the terminator slot declared by the native fixed-size filename buffer.
-                    string copyBuffer = "for (int i = 0; i <= MAX_TRACE_FILE_NAME_LEN; i++) result.trace_file_name[i] = value.trace_file_name[i]; return result;";
+                    var copyBuffer = "for (int i = 0; i <= MAX_TRACE_FILE_NAME_LEN; i++) result.trace_file_name[i] = value.trace_file_name[i]; return result;";
                     // Windows C long is 32-bit even in a 64-bit process.
                     members.Add(SyntaxFactory.ParseMemberDeclaration($$"""
                         /// <summary>Matches the Windows cache configuration ABI with a 32-bit C long field.</summary>
@@ -151,7 +151,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             }
 
             var arguments = import.ArgumentList.Arguments;
-            string library = arguments[0].Expression.ToString();
+            var library = arguments[0].Expression.ToString();
 
             if (library is not ("Constants.DLLFileName" or "Constants.HLDLLFileName"))
             {
@@ -162,7 +162,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
 
             foreach (var argument in arguments.Skip(1))
             {
-                string? name = argument.NameEquals?.Name.Identifier.ValueText;
+                var name = argument.NameEquals?.Name.Identifier.ValueText;
 
                 if (name == null || named.ContainsKey(name))
                 {
@@ -172,14 +172,14 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 named.Add(name, argument.Expression.ToString());
             }
 
-            if (!named.TryGetValue("EntryPoint", out string? entryPoint))
+            if (!named.TryGetValue("EntryPoint", out var entryPoint))
             {
                 throw new BindingGenerationException("Missing explicit entry point.", method.GetLocation());
             }
 
             named.Remove("EntryPoint");
 
-            if (!named.TryGetValue("CallingConvention", out string? convention))
+            if (!named.TryGetValue("CallingConvention", out var convention))
             {
                 throw new BindingGenerationException("Missing calling convention.", method.GetLocation());
             }
@@ -194,13 +194,13 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 throw new BindingGenerationException("Unsupported DllImport option.", method.GetLocation());
             }
 
-            string pointerOptions = string.Join("", named.Select(p => $", {p.Key} = {p.Value}"));
-            string suffix = "__Legacy" + Count++;
-            string returnAttributes = string.Join("\n", method.AttributeLists.Where(a => a.Target?.Identifier.ValueText == "return"));
+            var pointerOptions = string.Join("", named.Select(p => $", {p.Key} = {p.Value}"));
+            var suffix = "__Legacy" + Count++;
+            var returnAttributes = string.Join("\n", method.AttributeLists.Where(a => a.Target?.Identifier.ValueText == "return"));
             // Delegate parameter attributes retain all native marshalling semantics.
             var parameters = method.ParameterList.WithParameters(SyntaxFactory.SeparatedList(
                 method.ParameterList.Parameters.Select(p => p.WithDefault(null))));
-            string declaration = $"/// <summary>Calls the native export {entryPoint.Trim('"')} with the shared declaration's ABI.</summary>\n[UnmanagedFunctionPointer({convention}{pointerOptions})] {returnAttributes} private delegate {method.ReturnType} {suffix}Delegate{parameters};";
+            var declaration = $"/// <summary>Calls the native export {entryPoint.Trim('"')} with the shared declaration's ABI.</summary>\n[UnmanagedFunctionPointer({convention}{pointerOptions})] {returnAttributes} private delegate {method.ReturnType} {suffix}Delegate{parameters};";
 
             if (entryPoint != "\"H5Ewalk2\"")
             {
@@ -214,7 +214,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             }
 
             // Default values belong on the public API; ref/out/in modifiers must also survive forwarding.
-            string actuals = string.Join(", ", method.ParameterList.Parameters.Select(p =>
+            var actuals = string.Join(", ", method.ParameterList.Parameters.Select(p =>
                 string.Join(" ", p.Modifiers.Where(m => m.IsKind(SyntaxKind.RefKeyword) || m.IsKind(SyntaxKind.OutKeyword) || m.IsKind(SyntaxKind.InKeyword)).Select(m => m.Text).Append(p.Identifier.Text))));
             var lists = method.AttributeLists.Select(list => list.WithAttributes(SyntaxFactory.SeparatedList(list.Attributes.Where(a => a != import))))
                 .Where(list => list.Attributes.Count != 0);
@@ -229,16 +229,16 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
 
             if (config != null)
             {
-                string windowsDeclaration = declaration.Replace(suffix + "Delegate", suffix + "WindowsDelegate")
+                var windowsDeclaration = declaration.Replace(suffix + "Delegate", suffix + "WindowsDelegate")
                                                     .Replace("H5AC.cache_config_t", "H5AC.WindowsCacheConfig");
                 members.Add(SyntaxFactory.ParseMemberDeclaration(windowsDeclaration)!);
                 members.Add(CreateCache(suffix + "WindowsCache", suffix + "WindowsDelegate", library, entryPoint));
-                string name = config.Identifier.Text;
-                string windowsArgs = actuals.Replace("ref " + name, "ref native");
+                var name = config.Identifier.Text;
+                var windowsArgs = actuals.Replace("ref " + name, "ref native");
                 // A getter consumes only version and must not overwrite caller state when native code fails.
-                string conversion = entryPoint == "\"H5Fget_mdc_config\"" ? $"new H5AC.WindowsCacheConfig {{ version = {name}.version }}" : $"H5AC.WindowsCacheConfig.FromManaged({name})";
-                string copyBack = entryPoint == "\"H5Fget_mdc_config\"" ? $"if (result >= 0) {name} = native.ToManaged();" : string.Empty;
-                string code = $"{{ if (!LegacyNativeLibrary.IsWindows) return {suffix}Cache.Function({actuals}); var native = {conversion}; var result = {suffix}WindowsCache.Function({windowsArgs}); {copyBack} return result; }}";
+                var conversion = entryPoint == "\"H5Fget_mdc_config\"" ? $"new H5AC.WindowsCacheConfig {{ version = {name}.version }}" : $"H5AC.WindowsCacheConfig.FromManaged({name})";
+                var copyBack = entryPoint == "\"H5Fget_mdc_config\"" ? $"if (result >= 0) {name} = native.ToManaged();" : string.Empty;
+                var code = $"{{ if (!LegacyNativeLibrary.IsWindows) return {suffix}Cache.Function({actuals}); var native = {conversion}; var result = {suffix}WindowsCache.Function({windowsArgs}); {copyBack} return result; }}";
                 implementation = implementation.WithExpressionBody(null).WithSemicolonToken(default)
                     .WithBody((BlockSyntax)SyntaxFactory.ParseStatement(code));
             }

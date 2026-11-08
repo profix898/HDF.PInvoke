@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,13 +10,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -31,7 +29,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_append_flushTestSWMR1()
         {
-            hid_t dapl = H5P.create(H5P.DATASET_ACCESS);
+            var dapl = H5P.create(H5P.DATASET_ACCESS);
             Assert.IsTrue(dapl >= 0);
 
             hsize_t[] boundary = { 1, 1 };
@@ -50,7 +48,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_append_flushTestSWMR2()
         {
-            hid_t dapl = H5P.create(H5P.DATASET_ACCESS);
+            var dapl = H5P.create(H5P.DATASET_ACCESS);
             Assert.IsTrue(dapl >= 0);
 
             hsize_t[] boundary = { 1, 1 };
@@ -64,7 +62,7 @@ namespace UnitTests
 
             H5D.append_cb_t check_cb = null;
 
-            IntPtr check_ptr = new IntPtr(4711);
+            var check_ptr = new IntPtr(4711);
 
             Assert.IsTrue(
                 H5P.get_append_flush(dapl, 2, check_boundary, ref check_cb,

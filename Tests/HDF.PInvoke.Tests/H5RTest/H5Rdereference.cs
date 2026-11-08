@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,14 +11,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using haddr_t = System.UInt64;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -33,21 +31,21 @@ namespace UnitTests
         [TestMethod]
         public void H5RdereferenceTest1()
         {
-            byte[] path =
+            var path =
                                         Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hid_t gid = H5G.create(m_v0_test_file, path, m_lcpl_utf8);
+            var gid = H5G.create(m_v0_test_file, name, m_lcpl_utf8);
             Assert.IsTrue(gid >= 0);
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsTrue(H5O.get_info(gid, ref info) >= 0);
-            haddr_t address = info.addr;
+            var address = info.addr;
             Assert.IsTrue(H5G.close(gid) >= 0);
 
-            byte[] refer = new byte[H5R.OBJ_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.OBJ_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v0_test_file, name,
@@ -70,21 +68,21 @@ namespace UnitTests
         [TestMethod]
         public void H5RdereferenceTest2()
         {
-            byte[] path =
+            var path =
                                         Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hid_t gid = H5G.create(m_v2_test_file, path, m_lcpl_utf8);
+            var gid = H5G.create(m_v2_test_file, name, m_lcpl_utf8);
             Assert.IsTrue(gid >= 0);
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsTrue(H5O.get_info(gid, ref info) >= 0);
-            haddr_t address = info.addr;
+            var address = info.addr;
             Assert.IsTrue(H5G.close(gid) >= 0);
 
-            byte[] refer = new byte[H5R.OBJ_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.OBJ_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v2_test_file, name,
@@ -107,21 +105,21 @@ namespace UnitTests
         [TestMethod]
         public void H5RdereferenceTest3()
         {
-            byte[] path =
+            var path =
                                            Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hsize_t[] dims = new hsize_t[] { 10, 20 };
-            hid_t space = H5S.create_simple(2, dims, null);
+            var dims = new hsize_t[] { 10, 20 };
+            var space = H5S.create_simple(2, dims, null);
             Assert.IsTrue(space >= 0);
-            hid_t dset = H5D.create(m_v0_test_file, name, H5T.STD_I32LE, space,
+            var dset = H5D.create(m_v0_test_file, name, H5T.STD_I32LE, space,
                 m_lcpl_utf8);
 
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsTrue(H5O.get_info(dset, ref info) >= 0);
-            haddr_t address = info.addr;
+            var address = info.addr;
             Assert.IsTrue(H5D.close(dset) >= 0);
 
             Assert.IsTrue(dset >= 0);
@@ -132,8 +130,8 @@ namespace UnitTests
                 H5S.select_hyperslab(space, H5S.seloper_t.SET, start, null,
                 count, block) >= 0);
 
-            byte[] refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v0_test_file, name,
@@ -158,21 +156,21 @@ namespace UnitTests
         [TestMethod]
         public void H5RdereferenceTest4()
         {
-            byte[] path =
+            var path =
                                            Encoding.UTF8.GetBytes(String.Join("/", m_utf8strings));
             // make room for the trailling \0
-            byte[] name = new byte[path.Length + 1];
+            var name = new byte[path.Length + 1];
             Array.Copy(path, name, path.Length);
 
-            hsize_t[] dims = new hsize_t[] { 10, 20 };
-            hid_t space = H5S.create_simple(2, dims, null);
+            var dims = new hsize_t[] { 10, 20 };
+            var space = H5S.create_simple(2, dims, null);
             Assert.IsTrue(space >= 0);
-            hid_t dset = H5D.create(m_v2_test_file, name, H5T.STD_I32LE, space,
+            var dset = H5D.create(m_v2_test_file, name, H5T.STD_I32LE, space,
                 m_lcpl_utf8);
 
-            H5O.info_t info = new H5O.info_t();
+            var info = new H5O.info_t();
             Assert.IsTrue(H5O.get_info(dset, ref info) >= 0);
-            haddr_t address = info.addr;
+            var address = info.addr;
             Assert.IsTrue(H5D.close(dset) >= 0);
 
             Assert.IsTrue(dset >= 0);
@@ -183,8 +181,8 @@ namespace UnitTests
                 H5S.select_hyperslab(space, H5S.seloper_t.SET, start, null,
                 count, block) >= 0);
 
-            byte[] refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
-            GCHandle hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
+            var refer = new byte[H5R.DSET_REG_REF_BUF_SIZE];
+            var hnd = GCHandle.Alloc(refer, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5R.create(hnd.AddrOfPinnedObject(), m_v2_test_file, name,

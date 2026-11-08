@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using size_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using size_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -39,7 +37,7 @@ namespace UnitTests
                 H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
                 "ABC", m_lcpl) >= 0);
 
-            H5L.info_t info = new H5L.info_t();
+            var info = new H5L.info_t();
             Assert.IsTrue(H5L.get_info_by_idx(m_v0_test_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1, ref info) >= 0);
             Assert.IsTrue(info.type == H5L.type_t.EXTERNAL);

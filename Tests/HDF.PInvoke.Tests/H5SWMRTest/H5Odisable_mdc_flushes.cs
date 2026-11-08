@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,14 +10,12 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -32,7 +30,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR1()
         {
-            hid_t grp = H5G.create(m_v3_test_file_swmr, "/A/B/C", m_lcpl);
+            var grp = H5G.create(m_v3_test_file_swmr, "/A/B/C", m_lcpl);
             Assert.IsTrue(grp >= 0);
             Assert.IsTrue(H5O.disable_mdc_flushes(grp) >= 0);
             Assert.IsTrue(H5G.flush(grp) >= 0);
@@ -45,7 +43,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR2()
         {
-            hid_t grp = H5G.create(m_v3_test_file_no_swmr, "/A/B/C", m_lcpl);
+            var grp = H5G.create(m_v3_test_file_no_swmr, "/A/B/C", m_lcpl);
             Assert.IsTrue(grp >= 0);
             Assert.IsTrue(H5O.disable_mdc_flushes(grp) >= 0);
             Assert.IsTrue(H5G.flush(grp) >= 0);
@@ -58,7 +56,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Odisable_mdc_flushesTestSWMR3()
         {
-            hid_t grp = H5G.create(m_v3_test_file_swmr, "/A/B/C", m_lcpl);
+            var grp = H5G.create(m_v3_test_file_swmr, "/A/B/C", m_lcpl);
             Assert.IsTrue(grp >= 0);
 
             hbool_t flag = 11;

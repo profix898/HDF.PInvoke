@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,13 +10,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -31,7 +29,7 @@ namespace UnitTests
         [TestMethod]
         public void H5DrefreshTestSWMR1()
         {
-            hid_t dst = H5D.open(m_v3_class_file, "int6x6");
+            var dst = H5D.open(m_v3_class_file, "int6x6");
             Assert.IsTrue(dst >= 0);
             Assert.IsTrue(H5D.refresh(dst) >= 0);
             Assert.IsTrue(H5D.close(dst) >= 0);

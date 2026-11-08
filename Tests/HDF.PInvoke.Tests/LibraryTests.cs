@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using HDF.PInvoke;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,12 +17,12 @@ namespace UnitTests
         [TestMethod]
         public void NativeAllocationCanBeZeroInitialized()
         {
-            IntPtr pointer = H5.allocate_memory((IntPtr)256, 1);
+            var pointer = H5.allocate_memory((IntPtr)256, 1);
             Assert.AreNotEqual(IntPtr.Zero, pointer);
 
             try
             {
-                for (int i = 0; i < 256; i++)
+                for (var i = 0; i < 256; i++)
                 {
                     Assert.AreEqual((byte)0, Marshal.ReadByte(pointer, i));
                 }
@@ -39,22 +39,22 @@ namespace UnitTests
         [TestMethod]
         public void NativeResizePreservesExistingBytes()
         {
-            IntPtr pointer = H5.allocate_memory((IntPtr)256, 0);
+            var pointer = H5.allocate_memory((IntPtr)256, 0);
             Assert.AreNotEqual(IntPtr.Zero, pointer);
 
             try
             {
-                for (int i = 0; i < 256; i++)
+                for (var i = 0; i < 256; i++)
                 {
                     Marshal.WriteByte(pointer, i, (byte)i);
                 }
 
                 // Preserve the original pointer if native reallocation fails.
-                IntPtr resized = H5.resize_memory(pointer, (IntPtr)1024);
+                var resized = H5.resize_memory(pointer, (IntPtr)1024);
                 Assert.AreNotEqual(IntPtr.Zero, resized);
                 pointer = resized;
 
-                for (int i = 0; i < 256; i++)
+                for (var i = 0; i < 256; i++)
                 {
                     Assert.AreEqual((byte)i, Marshal.ReadByte(pointer, i));
                 }
@@ -75,7 +75,7 @@ namespace UnitTests
             Assert.AreEqual(IntPtr.Zero, H5.resize_memory(IntPtr.Zero, IntPtr.Zero));
             Assert.IsTrue(H5.free_memory(IntPtr.Zero) >= 0);
 
-            IntPtr pointer = H5.resize_memory(IntPtr.Zero, (IntPtr)64);
+            var pointer = H5.resize_memory(IntPtr.Zero, (IntPtr)64);
             Assert.AreNotEqual(IntPtr.Zero, pointer);
             pointer = H5.resize_memory(pointer, IntPtr.Zero);
             Assert.AreEqual(IntPtr.Zero, pointer);

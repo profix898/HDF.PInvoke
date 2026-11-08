@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -36,7 +36,7 @@ namespace UnitTests
         public static hid_t H5TempFile(H5F.libver_t version =
             H5F.libver_t.LATEST)
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
 
             if (fapl < 0)
             {
@@ -54,8 +54,8 @@ namespace UnitTests
                 throw new ApplicationException("H5P.set_fapl_core failed.");
             }
 
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
 
             if (file < 0)
             {
@@ -78,7 +78,7 @@ namespace UnitTests
             H5F.libver_t version = H5F.libver_t.LATEST,
             bool backing_store = false)
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
 
             if (fapl < 0)
             {
@@ -98,7 +98,7 @@ namespace UnitTests
             }
 
             fileName = Path.GetTempFileName();
-            hid_t file = H5F.create(fileName, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
+            var file = H5F.create(fileName, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
 
             if (file < 0)
             {
@@ -119,7 +119,7 @@ namespace UnitTests
         /// </summary>
         public static hid_t H5TempFileNoSWMR(ref string fileName)
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
 
             if (fapl < 0)
             {
@@ -137,7 +137,7 @@ namespace UnitTests
             }
 
             fileName = Path.GetTempFileName();
-            hid_t file = H5F.create(fileName, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
+            var file = H5F.create(fileName, H5F.ACC_TRUNC, H5P.DEFAULT, fapl);
 
             if (file < 0)
             {
@@ -158,7 +158,7 @@ namespace UnitTests
         /// </summary>
         public static hid_t H5TempFileSWMR(ref string fileName)
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
 
             if (fapl < 0)
             {
@@ -176,7 +176,7 @@ namespace UnitTests
             }
 
             fileName = Path.GetTempFileName();
-            hid_t file = H5F.create(fileName, H5F.ACC_TRUNC | H5F.ACC_SWMR_WRITE,
+            var file = H5F.create(fileName, H5F.ACC_TRUNC | H5F.ACC_SWMR_WRITE,
                 H5P.DEFAULT, fapl);
 
             if (file < 0)
@@ -197,7 +197,7 @@ namespace UnitTests
         /// </summary>
         public static hid_t RandomInvalidHandle()
         {
-            Random r = new Random();
+            var r = new Random();
             return (hid_t)r.Next(Int32.MinValue, -44);
         }
     }

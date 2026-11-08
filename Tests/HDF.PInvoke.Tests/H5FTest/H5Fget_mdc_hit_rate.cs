@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_mdc_hit_rateTest1()
         {
-            double rate = 0.0;
+            var rate = 0.0;
             Assert.IsTrue(H5F.get_mdc_hit_rate(m_v0_class_file, ref rate) >= 0);
             Assert.IsTrue(H5F.get_mdc_hit_rate(m_v2_class_file, ref rate) >= 0);
             Assert.IsTrue(H5F.get_mdc_hit_rate(m_v0_test_file, ref rate) >= 0);
@@ -40,7 +39,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_mdc_hit_rateTest2()
         {
-            double rate = 0.0;
+            var rate = 0.0;
             Assert.IsFalse(
                 H5F.get_mdc_hit_rate(Utilities.RandomInvalidHandle(),
                 ref rate) >= 0);

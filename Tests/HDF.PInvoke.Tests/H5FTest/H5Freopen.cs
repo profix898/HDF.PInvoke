@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,10 +27,10 @@ namespace UnitTests
         [TestMethod]
         public void H5FreopenTest1()
         {
-            hid_t file = H5F.reopen(m_v0_class_file);
+            var file = H5F.reopen(m_v0_class_file);
             Assert.IsTrue(file >= 0);
 
-            hid_t file1 = H5F.reopen(m_v2_class_file);
+            var file1 = H5F.reopen(m_v2_class_file);
             Assert.IsTrue(file1 >= 0);
 
             Assert.IsTrue(H5F.close(file) >= 0);

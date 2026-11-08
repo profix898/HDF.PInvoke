@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.IO;
-using System.Text;
 using System.Runtime.InteropServices;
+using System.Text;
 using HDF.PInvoke;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,10 +19,10 @@ namespace UnitTests
         [TestMethod]
         public void Utf8FileAndDatasetRoundTrip()
         {
-            string path = Path.Combine(Path.GetTempPath(), "hdf5-日本語-" + Guid.NewGuid() + ".h5");
+            var path = Path.Combine(Path.GetTempPath(), "hdf5-日本語-" + Guid.NewGuid() + ".h5");
             long file = -1, space = -1, dataset = -1;
             var data = new[] { 10, 20, 30 };
-            GCHandle pinned = GCHandle.Alloc(data, GCHandleType.Pinned);
+            var pinned = GCHandle.Alloc(data, GCHandleType.Pinned);
 
             try
             {
@@ -91,7 +91,7 @@ namespace UnitTests
         [TestMethod]
         public void ErrorMessagesAreLiteralUtf8()
         {
-            long stack = H5E.create_stack();
+            var stack = H5E.create_stack();
             Assert.IsTrue(stack >= 0);
 
             try

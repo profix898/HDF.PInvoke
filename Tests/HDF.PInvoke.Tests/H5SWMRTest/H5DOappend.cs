@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,13 +10,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -44,32 +42,32 @@ namespace UnitTests
             hsize_t[] dims = { 6, 0 };
             hsize_t[] maxdims = { 6, H5S.UNLIMITED };
             hsize_t[] chunk_dims = { 2, 5 };
-            int[] cbuf = new int[6];
+            var cbuf = new int[6];
 
-            hid_t dsp = H5S.create_simple(2, dims, maxdims);
+            var dsp = H5S.create_simple(2, dims, maxdims);
             Assert.IsTrue(dsp >= 0);
 
-            hid_t dcpl = H5P.create(H5P.DATASET_CREATE);
+            var dcpl = H5P.create(H5P.DATASET_CREATE);
             Assert.IsTrue(dcpl >= 0);
             Assert.IsTrue(H5P.set_chunk(dcpl, 2, chunk_dims) >= 0);
 
             hsize_t[] boundary = { 0, 1 };
 
-            hid_t dapl = H5P.create(H5P.DATASET_ACCESS);
+            var dapl = H5P.create(H5P.DATASET_ACCESS);
             Assert.IsTrue(dapl >= 0);
             H5D.append_cb_t cb = DOappend_func;
             Assert.IsTrue(
                 H5P.set_append_flush(dapl, 2, boundary, cb, new IntPtr(99)) >= 0);
 
-            hid_t dst = H5D.create(m_v3_test_file_swmr, "dset",
+            var dst = H5D.create(m_v3_test_file_swmr, "dset",
                 H5T.NATIVE_INT, dsp, H5P.DEFAULT, dcpl, dapl);
             Assert.IsTrue(dst >= 0);
 
-            GCHandle hnd = GCHandle.Alloc(cbuf, GCHandleType.Pinned);
+            var hnd = GCHandle.Alloc(cbuf, GCHandleType.Pinned);
 
-            for (int i = 0; i < 3; ++i)
+            for (var i = 0; i < 3; ++i)
             {
-                for (int j = 0; j < 6; ++j)
+                for (var j = 0; j < 6; ++j)
                 {
                     cbuf[j] = ((i * 6) + (j + 1)) * -1;
                 }
@@ -98,18 +96,18 @@ namespace UnitTests
             hsize_t[] chunk_dims = { 10 };
             uint[] cbuf = { 123, 456, 789 };
 
-            hid_t dsp = H5S.create_simple(1, dims, maxdims);
+            var dsp = H5S.create_simple(1, dims, maxdims);
             Assert.IsTrue(dsp >= 0);
 
-            hid_t dcpl = H5P.create(H5P.DATASET_CREATE);
+            var dcpl = H5P.create(H5P.DATASET_CREATE);
             Assert.IsTrue(dcpl >= 0);
             Assert.IsTrue(H5P.set_chunk(dcpl, 1, chunk_dims) >= 0);
 
-            hid_t dst = H5D.create(m_v3_test_file_no_swmr, "dset1",
+            var dst = H5D.create(m_v3_test_file_no_swmr, "dset1",
                 H5T.NATIVE_UINT, dsp, H5P.DEFAULT, dcpl, H5P.DEFAULT);
             Assert.IsTrue(dst >= 0);
 
-            GCHandle hnd = GCHandle.Alloc(cbuf, GCHandleType.Pinned);
+            var hnd = GCHandle.Alloc(cbuf, GCHandleType.Pinned);
 
             Assert.IsTrue(
                 H5DO.append(dst, H5P.DEFAULT, 0, new IntPtr(3),

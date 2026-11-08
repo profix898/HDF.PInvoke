@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -41,16 +40,16 @@ namespace UnitTests
         [TestMethod]
         public void H5Lcreate_softTest2()
         {
-            string sym_path = String.Join("/", m_utf8strings);
+            var sym_path = String.Join("/", m_utf8strings);
 
             Assert.IsTrue(
-                H5L.create_soft(Encoding.ASCII.GetBytes("/A/B/C/D"),
-                m_v0_test_file, Encoding.UTF8.GetBytes(sym_path),
+                H5L.create_soft(Encoding.ASCII.GetBytes("/A/B/C/D" + "\0"),
+                m_v0_test_file, Encoding.UTF8.GetBytes(sym_path + "\0"),
                 m_lcpl_utf8) >= 0);
 
             Assert.IsTrue(
-                H5L.create_soft(Encoding.ASCII.GetBytes("/A/B/C/D"),
-                m_v2_test_file, Encoding.UTF8.GetBytes(sym_path),
+                H5L.create_soft(Encoding.ASCII.GetBytes("/A/B/C/D" + "\0"),
+                m_v2_test_file, Encoding.UTF8.GetBytes(sym_path + "\0"),
                 m_lcpl_utf8) >= 0);
         }
     }

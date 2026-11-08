@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -30,7 +29,7 @@ namespace UnitTests
             // use test-local files, because we don't know what's out there
             // at the class level, create two attributes in each file
 
-            hid_t att = H5A.create(m_v0_test_file, "DNA", H5T.IEEE_F32BE,
+            var att = H5A.create(m_v0_test_file, "DNA", H5T.IEEE_F32BE,
                 m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);

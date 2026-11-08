@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using hid_t = System.Int64;
 using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -32,9 +30,9 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_nameTest1()
         {
-            size_t buf_size = IntPtr.Zero;
-            ssize_t size = IntPtr.Zero;
-            hid_t att = H5A.create(m_v2_test_file, "H5Aget_name",
+            var buf_size = IntPtr.Zero;
+            var size = IntPtr.Zero;
+            var att = H5A.create(m_v2_test_file, "H5Aget_name",
                 H5T.IEEE_F64LE, m_space_scalar);
             Assert.IsTrue(att >= 0);
 
@@ -42,10 +40,10 @@ namespace UnitTests
             size = H5A.get_name(att, buf_size, (StringBuilder)null);
             Assert.IsTrue(size.ToInt32() == 11);
             buf_size = new IntPtr(size.ToInt32() + 1);
-            StringBuilder nameBuilder = new StringBuilder(buf_size.ToInt32());
+            var nameBuilder = new StringBuilder(buf_size.ToInt32());
             size = H5A.get_name(att, buf_size, nameBuilder);
             Assert.IsTrue(size.ToInt32() == 11);
-            string name = nameBuilder.ToString();
+            var name = nameBuilder.ToString();
             // names should match
             Assert.AreEqual("H5Aget_name", name);
 
@@ -81,20 +79,20 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_nameTest3()
         {
-            byte[] name = Encoding.UTF8.GetBytes(
+            var name = Encoding.UTF8.GetBytes(
                                         String.Join(":", m_utf8strings));
-            byte[] name_buf = new byte[name.Length + 1];
+            var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
-            hid_t att = H5A.create(m_v0_test_file, name_buf, H5T.IEEE_F64BE,
+            var att = H5A.create(m_v0_test_file, name_buf, H5T.IEEE_F64BE,
                 m_space_scalar, m_acpl);
             Assert.IsTrue(att >= 0);
 
-            ssize_t buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
+            var buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
             Assert.IsTrue(buf_size.ToInt32() > 1);
-            byte[] buf = new byte[buf_size.ToInt32()];
+            var buf = new byte[buf_size.ToInt32()];
             Assert.IsTrue(H5A.get_name(att, buf_size, buf).ToInt32() >= 0);
 
-            for (int i = 0; i < buf.Length; ++i)
+            for (var i = 0; i < buf.Length; ++i)
             {
                 Assert.IsTrue(name_buf[i] == buf[i]);
             }
@@ -108,20 +106,20 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_nameTest4()
         {
-            byte[] name = Encoding.UTF8.GetBytes(
+            var name = Encoding.UTF8.GetBytes(
                                         String.Join(":", m_utf8strings));
-            byte[] name_buf = new byte[name.Length + 1];
+            var name_buf = new byte[name.Length + 1];
             Array.Copy(name, name_buf, name.Length);
-            hid_t att = H5A.create(m_v2_test_file, name_buf, H5T.IEEE_F64BE,
+            var att = H5A.create(m_v2_test_file, name_buf, H5T.IEEE_F64BE,
                 m_space_scalar, m_acpl);
             Assert.IsTrue(att >= 0);
 
-            ssize_t buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
+            var buf_size = H5A.get_name(att, IntPtr.Zero, (byte[])null) + 1;
             Assert.IsTrue(buf_size.ToInt32() > 1);
-            byte[] buf = new byte[buf_size.ToInt32()];
+            var buf = new byte[buf_size.ToInt32()];
             Assert.IsTrue(H5A.get_name(att, buf_size, buf).ToInt32() >= 0);
 
-            for (int i = 0; i < buf.Length; ++i)
+            for (var i = 0; i < buf.Length; ++i)
             {
                 Assert.IsTrue(name_buf[i] == buf[i]);
             }

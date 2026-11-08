@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using HDF.PInvoke;
@@ -28,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void ErrorDetectionSettingRoundTrips()
         {
-            long properties = H5P.create(H5P.DATASET_XFER);
+            var properties = H5P.create(H5P.DATASET_XFER);
             Assert.IsTrue(properties >= 0);
 
             try
@@ -70,7 +70,7 @@ namespace UnitTests
         [TestMethod]
         public void ConversionDataIsReturnedAsNativeOwnedPointer()
         {
-            var converter = H5T.find(H5T.NATIVE_INT, H5T.NATIVE_DOUBLE, out IntPtr pointer);
+            var converter = H5T.find(H5T.NATIVE_INT, H5T.NATIVE_DOUBLE, out var pointer);
             Assert.IsNotNull(converter);
             Assert.AreNotEqual(IntPtr.Zero, pointer);
             var data = Marshal.PtrToStructure<H5T.cdata_t>(pointer);
@@ -85,7 +85,7 @@ namespace UnitTests
         [TestMethod]
         public void PageBufferCountersFillBothElementsAndRejectShortArrays()
         {
-            string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".h5");
+            var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".h5");
             long creation = H5P.create(H5P.FILE_CREATE), access = H5P.create(H5P.FILE_ACCESS), file = -1;
 
             try
@@ -94,9 +94,9 @@ namespace UnitTests
                 Assert.IsTrue(H5P.set_page_buffer_size(access, (IntPtr)16384, 0, 0) >= 0);
                 file = H5F.create(path, H5F.ACC_TRUNC, creation, access);
                 Assert.IsTrue(file >= 0);
-                uint[][] counts = new uint[5][];
+                var counts = new uint[5][];
 
-                for (int i = 0; i < counts.Length; i++)
+                for (var i = 0; i < counts.Length; i++)
                 {
                     counts[i] = new[] { uint.MaxValue, uint.MaxValue };
                 }
@@ -105,13 +105,13 @@ namespace UnitTests
 
                 foreach (var pair in counts)
                 {
-                    foreach (uint count in pair)
+                    foreach (var count in pair)
                     {
                         Assert.AreNotEqual(uint.MaxValue, count);
                     }
                 }
 
-                for (int i = 0; i < counts.Length; i++)
+                for (var i = 0; i < counts.Length; i++)
                 {
                     var saved = counts[i];
                     counts[i] = new uint[1];
@@ -140,14 +140,14 @@ namespace UnitTests
         [TestMethod]
         public void AppendCallbackReadsAllDimensions()
         {
-            ulong[] observed = new ulong[2];
+            var observed = new ulong[2];
             H5D.append_cb_t callback = (id, dimensions, state) =>
             {
                 observed[0] = ((ulong*)dimensions)[0];
                 observed[1] = ((ulong*)dimensions)[1];
                 return 0;
             };
-            ulong* dimensions = stackalloc ulong[] { 4, 7 };
+            var dimensions = stackalloc ulong[] { 4, 7 };
             // Call the unmanaged thunk, so the test exercises reverse P/Invoke marshalling.
             var invoke = (delegate* unmanaged[Cdecl]<long, ulong*, IntPtr, int>)Marshal.GetFunctionPointerForDelegate(callback);
             Assert.AreEqual(0, invoke(0, dimensions, IntPtr.Zero));
@@ -161,17 +161,17 @@ namespace UnitTests
         [TestMethod]
         public void FilterCallbackReadsAllClientData()
         {
-            uint[] observed = new uint[3];
+            var observed = new uint[3];
             H5Z.func_t callback = (uint flags, IntPtr count, IntPtr values, IntPtr bytes, ref IntPtr capacity, ref IntPtr buffer) =>
             {
-                for (int i = 0; i < (int)count; i++)
+                for (var i = 0; i < (int)count; i++)
                 {
                     observed[i] = ((uint*)values)[i];
                 }
 
                 return bytes;
             };
-            uint* values = stackalloc uint[] { 10, 20, 30 };
+            var values = stackalloc uint[] { 10, 20, 30 };
             var invoke = (delegate* unmanaged[Cdecl]<uint, IntPtr, uint*, IntPtr, IntPtr*, IntPtr*, IntPtr>)Marshal.GetFunctionPointerForDelegate(callback);
             IntPtr capacity = (IntPtr)4, buffer = IntPtr.Zero;
             Assert.AreEqual((IntPtr)4, invoke(0, (IntPtr)3, values, (IntPtr)4, &capacity, &buffer));
@@ -192,8 +192,8 @@ namespace UnitTests
                 flags = 23;
                 return 0;
             };
-            byte[] utf8 = System.Text.Encoding.UTF8.GetBytes("/grüppe/数据\0");
-            IntPtr text = Marshal.AllocCoTaskMem(utf8.Length);
+            var utf8 = System.Text.Encoding.UTF8.GetBytes("/grüppe/数据\0");
+            var text = Marshal.AllocCoTaskMem(utf8.Length);
             Marshal.Copy(utf8, 0, text, utf8.Length);
 
             try

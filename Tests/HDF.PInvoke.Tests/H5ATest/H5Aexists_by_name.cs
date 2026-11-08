@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using htri_t = System.Int32;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using htri_t = System.Int32;
 
 namespace UnitTests
 {
@@ -29,7 +27,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Aexists_by_nameTest1()
         {
-            htri_t check = H5A.exists_by_name(m_v0_class_file, ".", ".");
+            var check = H5A.exists_by_name(m_v0_class_file, ".", ".");
             Assert.IsTrue(check >= 0);
             check = H5A.exists_by_name(m_v0_class_file, ".", "NAC");
             Assert.IsTrue(check >= 0);

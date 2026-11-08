@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Eauto_is_v2Test1()
         {
-            hid_t est = H5E.create_stack();
+            var est = H5E.create_stack();
             Assert.IsTrue(est >= 0);
             uint version = 0;
             Assert.IsTrue(H5E.auto_is_v2(est, ref version) >= 0);

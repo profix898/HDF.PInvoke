@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,12 +10,10 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -31,11 +29,11 @@ namespace UnitTests
         [TestMethod]
         public void H5Fset_mdc_log_optionsTestSWMR1()
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
 
             hbool_t is_enabled = 1;
-            string location = "mdc.log";
+            var location = "mdc.log";
             hbool_t start_on_access = 0;
 
             Assert.IsTrue(

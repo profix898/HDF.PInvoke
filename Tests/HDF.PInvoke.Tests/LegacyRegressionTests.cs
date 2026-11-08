@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,8 +21,8 @@ namespace UnitTests
         public void BindingBackendMatchesTheSelectedTarget()
         {
             var assembly = typeof(H5).Assembly;
-            string framework = assembly.GetCustomAttribute<System.Runtime.Versioning.TargetFrameworkAttribute>().FrameworkName;
-            bool legacy = framework == ".NETStandard,Version=v2.0";
+            var framework = assembly.GetCustomAttribute<System.Runtime.Versioning.TargetFrameworkAttribute>().FrameworkName;
+            var legacy = framework == ".NETStandard,Version=v2.0";
 #if HDF_LEGACY
             Assert.IsTrue(legacy, "This run must exercise the .NET Standard assembly.");
 #else
@@ -30,7 +30,7 @@ namespace UnitTests
 #endif
             Assert.AreEqual(legacy, assembly.GetType("HDF.PInvoke.LegacyNativeLibrary") != null);
             var methods = assembly.GetTypes().SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static));
-            int imports = methods.Count(m => m.GetCustomAttributesData().Any(a => legacy
+            var imports = methods.Count(m => m.GetCustomAttributesData().Any(a => legacy
                 ? a.AttributeType.FullName == "HDF.PInvoke.LegacyImportAttribute"
                 : a.AttributeType == typeof(DllImportAttribute)));
             Assert.AreEqual(568, imports);
@@ -77,8 +77,8 @@ namespace UnitTests
         [TestMethod]
         public void MetadataCacheFieldsSurviveNativeRoundTrip()
         {
-            string path = Path.GetTempFileName();
-            long file = H5F.create(path, H5F.ACC_TRUNC);
+            var path = Path.GetTempFileName();
+            var file = H5F.create(path, H5F.ACC_TRUNC);
             Assert.IsTrue(file >= 0);
 
             try
@@ -109,8 +109,8 @@ namespace UnitTests
         [TestMethod]
         public void ObjectInfoFileNumberIsStableAcrossCalls()
         {
-            string path = Path.GetTempFileName();
-            long file = H5F.create(path, H5F.ACC_TRUNC);
+            var path = Path.GetTempFileName();
+            var file = H5F.create(path, H5F.ACC_TRUNC);
             Assert.IsTrue(file >= 0);
 
             try
@@ -143,9 +143,9 @@ namespace UnitTests
             {
                 Assert.IsTrue(H5E.push(H5E.DEFAULT, "日期.c", "prüfen", 9, H5E.ERR_CLS, H5E.NONE_MAJOR, H5E.NONE_MINOR, message) >= 0);
 
-                for (int i = 0; i < 3; i++)
+                for (var i = 0; i < 3; i++)
                 {
-                    int calls = 0;
+                    var calls = 0;
                     H5E.walk_t callback = (uint n, ref H5E.error_t error, IntPtr data) =>
                     {
                         Assert.AreEqual(message, error.desc);

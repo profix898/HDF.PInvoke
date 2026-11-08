@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,8 +27,8 @@ namespace UnitTests
         [TestMethod]
         public void H5FcreateTest1()
         {
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_EXCL);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_EXCL);
             // this is expected, because Path.GetTempFileName() creates
             // an empty file
             Assert.IsFalse(file >= 0);

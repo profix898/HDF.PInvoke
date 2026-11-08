@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -13,13 +13,11 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -34,11 +32,11 @@ namespace UnitTests
         [TestMethod]
         public void H5Dget_access_plistTest1()
         {
-            hid_t dset = H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
+            var dset = H5D.create(m_v0_test_file, "dset", H5T.IEEE_F64BE,
                                         m_space_null);
             Assert.IsTrue(dset >= 0);
 
-            hid_t dapl = H5D.get_access_plist(dset);
+            var dapl = H5D.get_access_plist(dset);
             Assert.IsTrue(dapl >= 0);
 
             Assert.IsTrue(H5P.close(dapl) >= 0);

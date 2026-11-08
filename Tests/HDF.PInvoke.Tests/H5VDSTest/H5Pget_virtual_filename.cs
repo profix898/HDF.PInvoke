@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,14 +11,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -33,26 +31,26 @@ namespace UnitTests
         [TestMethod]
         public void H5Pget_virtual_filenameTestVDS1()
         {
-            hid_t vds = H5D.open(m_vds_class_file, "VDS");
+            var vds = H5D.open(m_vds_class_file, "VDS");
             Assert.IsTrue(vds >= 0);
 
-            hid_t dcpl = H5D.get_create_plist(vds);
+            var dcpl = H5D.get_create_plist(vds);
             Assert.IsTrue(dcpl >= 0);
 
-            IntPtr count = IntPtr.Zero;
+            var count = IntPtr.Zero;
             Assert.IsTrue(H5P.get_virtual_count(dcpl, ref count) >= 0);
             Assert.IsTrue(3 == count.ToInt32());
 
             string[] names = { m_a_class_file_name, m_b_class_file_name,
                                  m_c_class_file_name };
 
-            for (int i = 0; i < count.ToInt32(); ++i)
+            for (var i = 0; i < count.ToInt32(); ++i)
             {
-                size_t index = new ssize_t(i);
-                ssize_t len = H5P.get_virtual_filename(dcpl, index, null,
+                var index = new ssize_t(i);
+                var len = H5P.get_virtual_filename(dcpl, index, null,
                     IntPtr.Zero);
                 Assert.IsTrue(len.ToInt32() > 0);
-                StringBuilder name = new StringBuilder(len.ToInt32() + 1);
+                var name = new StringBuilder(len.ToInt32() + 1);
                 len = H5P.get_virtual_filename(dcpl, index, name, len + 1);
                 Assert.IsTrue(len.ToInt32() > 0);
                 Assert.IsTrue(name.ToString() == names[i]);

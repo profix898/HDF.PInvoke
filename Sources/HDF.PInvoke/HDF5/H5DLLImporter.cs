@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 #if NETSTANDARD2_0
 using NativeLibrary = HDF.PInvoke.LegacyNativeLibrary;

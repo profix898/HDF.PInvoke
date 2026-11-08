@@ -1,4 +1,4 @@
-#if HDF_LEGACY
+﻿#if HDF_LEGACY
 using System;
 using System.Runtime.InteropServices;
 using System.Text;

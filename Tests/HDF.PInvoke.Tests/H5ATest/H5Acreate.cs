@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5AcreateTest1()
         {
-            hid_t att = H5A.create(m_v0_class_file, "NA", H5T.IEEE_F32BE,
+            var att = H5A.create(m_v0_class_file, "NA", H5T.IEEE_F32BE,
                                         m_space_null);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);
@@ -71,12 +70,12 @@ namespace UnitTests
         [TestMethod]
         public void H5AcreateTest3()
         {
-            hid_t otype = H5T.create(H5T.class_t.OPAQUE,
+            var otype = H5T.create(H5T.class_t.OPAQUE,
                                         new IntPtr(1024 * 1024));
             Assert.IsTrue(otype >= 0);
 
             // the 1.8 version of the file format supports large attributes
-            hid_t att = H5A.create(m_v2_test_file, "large attribute", otype,
+            var att = H5A.create(m_v2_test_file, "large attribute", otype,
                 m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.close(att) >= 0);

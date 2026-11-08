@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,11 +10,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -30,7 +28,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_metadata_read_retry_infoTestSWMR1()
         {
-            H5F.retry_info_t info = new H5F.retry_info_t();
+            var info = new H5F.retry_info_t();
 
             info.retries0 = new IntPtr(10);
             info.retries6 = new IntPtr(60);

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -13,11 +13,9 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -164,16 +162,16 @@ namespace UnitTests
             IntPtr op_data
             )
         {
-            GCHandle hnd = (GCHandle)op_data;
-            ArrayList al = (hnd.Target as ArrayList);
-            int len = 0;
+            var hnd = (GCHandle)op_data;
+            var al = (hnd.Target as ArrayList);
+            var len = 0;
 
             while (Marshal.ReadByte(name, len) != 0)
             {
                 ++len;
             }
 
-            byte[] name_buf = new byte[len];
+            var name_buf = new byte[len];
             Marshal.Copy(name, name_buf, 0, len);
             al.Add(Encoding.UTF8.GetString(name_buf));
             return 0;

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,14 +11,12 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using hssize_t = System.Int64;
-
-using hid_t = System.Int64;
 
 namespace HDF.PInvoke
 {
@@ -174,7 +172,7 @@ namespace HDF.PInvoke
         /// <remarks>Also releases managed roots for user-defined link registrations after native shutdown succeeds. Coordinate shutdown with every user of HDF5 in the process.</remarks>
         public static herr_t close()
         {
-            int status = CloseNative();
+            var status = CloseNative();
 
             if (status >= 0)
             {

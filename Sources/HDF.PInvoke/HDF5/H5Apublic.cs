@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -12,18 +12,14 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-
+using H5O_msg_crt_idx_t = System.UInt32;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using htri_t = System.Int32;
 using size_t = System.IntPtr;
-
-using H5O_msg_crt_idx_t = System.UInt32;
-
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace HDF.PInvoke
 {
@@ -527,7 +523,7 @@ namespace HDF.PInvoke
         public static ssize_t get_name(
             hid_t attr_id, size_t size, StringBuilder name)
         {
-            byte[] buffer = Utf8Buffer.Create(name, size);
+            var buffer = Utf8Buffer.Create(name, size);
             var result = get_name_utf8(attr_id, size, buffer);
 
             if (result.ToInt64() >= 0)
@@ -590,7 +586,7 @@ namespace HDF.PInvoke
             H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
             StringBuilder name, size_t size, hid_t lapl_id = H5P.DEFAULT)
         {
-            byte[] buffer = Utf8Buffer.Create(name, size);
+            var buffer = Utf8Buffer.Create(name, size);
             var result = get_name_by_idx_utf8(loc_id, obj_name, idx_type, order, n, buffer, size, lapl_id);
 
             if (result.ToInt64() >= 0)

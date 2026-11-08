@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,11 +10,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -30,13 +28,13 @@ namespace UnitTests
         [TestMethod]
         public void H5Pget_layoutTestVDS1()
         {
-            hid_t vds = H5D.open(m_vds_class_file, "VDS");
+            var vds = H5D.open(m_vds_class_file, "VDS");
             Assert.IsTrue(vds >= 0);
 
-            hid_t dcpl = H5D.get_create_plist(vds);
+            var dcpl = H5D.get_create_plist(vds);
             Assert.IsTrue(dcpl >= 0);
 
-            H5D.layout_t layout = H5P.get_layout(dcpl);
+            var layout = H5P.get_layout(dcpl);
             Assert.IsTrue(layout == H5D.layout_t.VIRTUAL);
 
             Assert.IsTrue(H5P.close(dcpl) >= 0);

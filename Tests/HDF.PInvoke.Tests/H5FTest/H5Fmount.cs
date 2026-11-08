@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,7 +27,7 @@ namespace UnitTests
         [TestMethod]
         public void H5FmountTest1()
         {
-            hid_t mount_point = H5G.create(m_v0_class_file, "A");
+            var mount_point = H5G.create(m_v0_class_file, "A");
             Assert.IsTrue(mount_point >= 0);
             Assert.IsTrue(H5G.close(mount_point) >= 0);
             Assert.IsTrue(H5F.mount(m_v0_class_file, "A", m_v0_test_file) >= 0);
@@ -54,7 +53,7 @@ namespace UnitTests
         [TestMethod]
         public void H5FmountTest2()
         {
-            hid_t mount_point = H5G.create(m_v0_class_file, "AA");
+            var mount_point = H5G.create(m_v0_class_file, "AA");
             Assert.IsTrue(mount_point >= 0);
             Assert.IsFalse(H5F.mount(mount_point, "AA",
                 Utilities.RandomInvalidHandle()) >= 0);

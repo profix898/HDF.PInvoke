@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -61,8 +60,8 @@ namespace UnitTests
         [TestMethod]
         public void H5LmoveTest2()
         {
-            int size = Encoding.UTF8.GetBytes(m_utf8strings[0]).Length;
-            byte[] target = new byte[size + 1];
+            var size = Encoding.UTF8.GetBytes(m_utf8strings[0]).Length;
+            var target = new byte[size + 1];
             Array.Copy(Encoding.UTF8.GetBytes(m_utf8strings[0]), target, size);
 
             Assert.IsTrue(
@@ -72,7 +71,7 @@ namespace UnitTests
                 "shortcut") >= 0);
             Assert.IsTrue(
                 H5L.move(m_v0_test_file,
-                Encoding.ASCII.GetBytes("shortcut"), m_v0_test_file,
+                Encoding.ASCII.GetBytes("shortcut\0"), m_v0_test_file,
                 target, m_lcpl_utf8) >= 0);
 
             Assert.IsTrue(H5L.exists(m_v0_test_file, target) > 0);

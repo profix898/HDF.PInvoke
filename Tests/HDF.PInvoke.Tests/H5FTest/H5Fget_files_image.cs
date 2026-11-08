@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,14 +11,12 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -33,15 +31,15 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_files_imageTest1()
         {
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_TRUNC);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_TRUNC);
             Assert.IsTrue(file >= 0);
 
-            IntPtr buf_len = new IntPtr();
-            ssize_t size = H5F.get_file_image(file, IntPtr.Zero, buf_len);
+            var buf_len = new IntPtr();
+            var size = H5F.get_file_image(file, IntPtr.Zero, buf_len);
             Assert.IsTrue(size.ToInt32() > 0);
 
-            IntPtr buf = H5.allocate_memory(new IntPtr(size.ToInt32()), 1);
+            var buf = H5.allocate_memory(new IntPtr(size.ToInt32()), 1);
             Assert.IsTrue(buf != IntPtr.Zero);
 
             Assert.IsTrue(H5F.get_file_image(file, IntPtr.Zero,
@@ -59,15 +57,15 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_files_imageTest2()
         {
-            string fname = Path.GetTempFileName();
-            hid_t file = H5F.create(fname, H5F.ACC_TRUNC);
+            var fname = Path.GetTempFileName();
+            var file = H5F.create(fname, H5F.ACC_TRUNC);
             Assert.IsTrue(file >= 0);
 
-            IntPtr buf_len = new IntPtr();
-            ssize_t size = H5F.get_file_image(file, IntPtr.Zero, buf_len);
+            var buf_len = new IntPtr();
+            var size = H5F.get_file_image(file, IntPtr.Zero, buf_len);
             Assert.IsTrue(size.ToInt32() > 0);
 
-            IntPtr buf = Marshal.AllocHGlobal((int)size);
+            var buf = Marshal.AllocHGlobal((int)size);
             Assert.IsTrue(buf != IntPtr.Zero);
 
             Assert.IsTrue(H5F.get_file_image(file, IntPtr.Zero,

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using ssize_t = System.IntPtr;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using ssize_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -29,7 +27,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_obj_idsTest1()
         {
-            IntPtr buf = H5.allocate_memory(new IntPtr(10 * sizeof(hid_t)), 0);
+            var buf = H5.allocate_memory(new IntPtr(10 * sizeof(hid_t)), 0);
 
             Assert.IsTrue(
                 H5F.get_obj_ids(m_v0_class_file, H5F.OBJ_ALL, new IntPtr(10),
@@ -47,7 +45,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Fget_obj_idsTest2()
         {
-            IntPtr buf = H5.allocate_memory(new IntPtr(10 * sizeof(hid_t)), 0);
+            var buf = H5.allocate_memory(new IntPtr(10 * sizeof(hid_t)), 0);
             Assert.IsFalse(
                 H5F.get_obj_ids(Utilities.RandomInvalidHandle(),
                 H5F.OBJ_ALL, new IntPtr(10), buf).ToInt32() > 0);

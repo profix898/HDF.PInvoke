@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,10 +26,10 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_typeTest1()
         {
-            hid_t att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
+            var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
                                         m_space_scalar);
             Assert.IsTrue(att >= 0);
-            hid_t type = H5A.get_type(att);
+            var type = H5A.get_type(att);
             Assert.IsTrue(type >= 0);
             Assert.IsTrue(H5T.equal(type, H5T.IEEE_F64LE) > 0);
             Assert.IsTrue(H5T.close(type) >= 0);

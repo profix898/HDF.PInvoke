@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,10 +27,10 @@ namespace UnitTests
         [TestMethod]
         public void H5Iget_file_idTest1()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A");
+            var gid = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(gid > 0);
 
-            hid_t file = H5I.get_file_id(gid);
+            var file = H5I.get_file_id(gid);
             Assert.IsTrue(file >= 0);
             Assert.IsTrue(file == m_v0_test_file);
 

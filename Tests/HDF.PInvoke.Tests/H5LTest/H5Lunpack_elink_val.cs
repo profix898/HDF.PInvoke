@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -11,13 +11,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using size_t = System.IntPtr;
-
 using hid_t = System.Int64;
+using size_t = System.IntPtr;
 
 namespace UnitTests
 {
@@ -38,22 +36,22 @@ namespace UnitTests
                 H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
                 "A/B/C", m_lcpl) >= 0);
 
-            H5L.info_t info = new H5L.info_t();
+            var info = new H5L.info_t();
             Assert.IsTrue(
                 H5L.get_info(m_v0_test_file, "A/B/C", ref info) >= 0);
 
             Assert.IsTrue(info.type == H5L.type_t.EXTERNAL);
-            IntPtr size = new IntPtr(info.u.val_size.ToInt32());
+            var size = new IntPtr(info.u.val_size.ToInt32());
             Assert.IsTrue(size.ToInt32() > 0);
 
-            IntPtr buf = Marshal.AllocHGlobal(size.ToInt32());
+            var buf = Marshal.AllocHGlobal(size.ToInt32());
             Assert.IsTrue(buf != IntPtr.Zero);
             Assert.IsTrue(
                 H5L.get_val(m_v0_test_file, "A/B/C", buf, size) >= 0);
 
             uint flags = 0;
-            IntPtr filename = new IntPtr();
-            IntPtr obj_path = new IntPtr();
+            var filename = new IntPtr();
+            var obj_path = new IntPtr();
             Assert.IsTrue(
                 H5L.unpack_elink_val(buf, size, ref flags, ref filename,
                 ref obj_path) >= 0);
@@ -105,29 +103,29 @@ namespace UnitTests
         {
             // v0 file format
 
-            byte[] bytes = Encoding.UTF8.GetBytes(m_utf8strings[0]);
+            var bytes = Encoding.UTF8.GetBytes(m_utf8strings[0]);
 
             Assert.IsTrue(
                 H5L.create_external(m_v0_class_file_name,
-                Encoding.ASCII.GetBytes("/"), m_v0_test_file,
+                Encoding.ASCII.GetBytes("/" + "\0"), m_v0_test_file,
                 bytes, m_lcpl_utf8) >= 0);
 
-            H5L.info_t info = new H5L.info_t();
+            var info = new H5L.info_t();
             Assert.IsTrue(
                 H5L.get_info(m_v0_test_file, bytes, ref info) >= 0);
 
             Assert.IsTrue(info.type == H5L.type_t.EXTERNAL);
-            IntPtr size = new IntPtr(info.u.val_size.ToInt32());
+            var size = new IntPtr(info.u.val_size.ToInt32());
             Assert.IsTrue(size.ToInt32() > 0);
 
-            IntPtr buf = Marshal.AllocHGlobal(size.ToInt32());
+            var buf = Marshal.AllocHGlobal(size.ToInt32());
             Assert.IsTrue(buf != IntPtr.Zero);
             Assert.IsTrue(
                 H5L.get_val(m_v0_test_file, bytes, buf, size) >= 0);
 
             uint flags = 0;
-            IntPtr filename = new IntPtr();
-            IntPtr obj_path = new IntPtr();
+            var filename = new IntPtr();
+            var obj_path = new IntPtr();
             Assert.IsTrue(
                 H5L.unpack_elink_val(buf, size, ref flags, ref filename,
                 ref obj_path) >= 0);
@@ -142,7 +140,7 @@ namespace UnitTests
 
             Assert.IsTrue(
                 H5L.create_external(m_v2_class_file_name,
-                Encoding.ASCII.GetBytes("/"), m_v2_test_file,
+                Encoding.ASCII.GetBytes("/" + "\0"), m_v2_test_file,
                 bytes, m_lcpl_utf8) >= 0);
 
             info = new H5L.info_t();
@@ -180,7 +178,7 @@ namespace UnitTests
         {
             // v0 file format
 
-            byte[] bytes = Encoding.UTF8.GetBytes((m_utf8strings[0] + "_unpack"));
+            var bytes = Encoding.UTF8.GetBytes((m_utf8strings[0] + "_unpack"));
 
             Assert.IsTrue(
                 H5G.close(H5G.create(m_v0_class_file, bytes, m_lcpl_utf8)) >= 0);
@@ -189,22 +187,22 @@ namespace UnitTests
                 H5L.create_external(m_v0_class_file_name,
                 bytes, m_v0_test_file, bytes, m_lcpl_utf8) >= 0);
 
-            H5L.info_t info = new H5L.info_t();
+            var info = new H5L.info_t();
             Assert.IsTrue(
                 H5L.get_info(m_v0_test_file, bytes, ref info) >= 0);
 
             Assert.IsTrue(info.type == H5L.type_t.EXTERNAL);
-            IntPtr size = new IntPtr(info.u.val_size.ToInt32());
+            var size = new IntPtr(info.u.val_size.ToInt32());
             Assert.IsTrue(size.ToInt32() > 0);
 
-            IntPtr buf = Marshal.AllocHGlobal(size.ToInt32());
+            var buf = Marshal.AllocHGlobal(size.ToInt32());
             Assert.IsTrue(buf != IntPtr.Zero);
             Assert.IsTrue(
                 H5L.get_val(m_v0_test_file, bytes, buf, size) >= 0);
 
             uint flags = 0;
-            IntPtr filename = new IntPtr();
-            IntPtr obj_path = new IntPtr();
+            var filename = new IntPtr();
+            var obj_path = new IntPtr();
             Assert.IsTrue(
                 H5L.unpack_elink_val(buf, size, ref flags, ref filename,
                 ref obj_path) >= 0);
@@ -216,9 +214,9 @@ namespace UnitTests
             // <file name>\0<object path>\0
             // the whole thing is of info.u.val_size
 
-            int count = size.ToInt32() -
+            var count = size.ToInt32() -
                 (int)(obj_path.ToInt64() + 1 - filename.ToInt64()) - 1;
-            byte[] obj_path_buf = new byte[count];
+            var obj_path_buf = new byte[count];
             Marshal.Copy(obj_path, obj_path_buf, 0, count);
 
             Assert.IsTrue(

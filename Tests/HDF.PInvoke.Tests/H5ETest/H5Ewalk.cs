@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,11 +9,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -34,7 +32,7 @@ namespace UnitTests
                 H5E.set_auto(H5E.DEFAULT, auto_cb, IntPtr.Zero) >= 0);
 
             H5E.walk_t walk_cb = WalkDelegateMethod;
-            IntPtr client_data = IntPtr.Zero;
+            var client_data = IntPtr.Zero;
             Assert.IsTrue(
                 H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
                 walk_cb, IntPtr.Zero) >= 0);
@@ -51,7 +49,7 @@ namespace UnitTests
                 H5E.set_auto(H5E.DEFAULT, auto_cb, IntPtr.Zero) >= 0);
 
             H5E.walk_t walk_cb = WalkDelegateMethod;
-            IntPtr client_data = IntPtr.Zero;
+            var client_data = IntPtr.Zero;
 
             Assert.IsTrue(
                 H5E.push(H5E.DEFAULT, "hello.c", "sqrt", 77, H5E.ERR_CLS,

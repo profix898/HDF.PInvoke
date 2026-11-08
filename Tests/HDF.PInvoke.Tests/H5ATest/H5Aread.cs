@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,12 +10,10 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using htri_t = System.Int32;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using htri_t = System.Int32;
 
 namespace UnitTests
 {
@@ -31,8 +29,8 @@ namespace UnitTests
         public void H5AreadTest1()
         {
             double[] x = { Math.PI };
-            IntPtr buf = Marshal.AllocHGlobal(8);
-            hid_t att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
+            var buf = Marshal.AllocHGlobal(8);
+            var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
                 m_space_scalar);
             Assert.IsTrue(att >= 0);
             Assert.IsTrue(H5A.read(att, H5T.IEEE_F64BE, buf) >= 0);

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,13 +10,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using herr_t = System.Int32;
-using hsize_t = System.UInt64;
-
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -31,7 +29,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_object_flush_cbTestSWMR1()
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
 
             H5F.flush_cb_t cb = flush_func;
@@ -48,7 +46,7 @@ namespace UnitTests
         [TestMethod]
         public void H5Pset_object_flush_cbTestSWMR2()
         {
-            hid_t fapl = H5P.create(H5P.FILE_ACCESS);
+            var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
 
             H5F.flush_cb_t cb = flush_func;
@@ -58,7 +56,7 @@ namespace UnitTests
 
             H5F.flush_cb_t check_cb = null;
 
-            IntPtr check_ptr = new IntPtr(4711);
+            var check_ptr = new IntPtr(4711);
 
             Assert.IsTrue(
                 H5P.get_object_flush_cb(fapl, ref check_cb,

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -29,10 +27,10 @@ namespace UnitTests
         [TestMethod]
         public void H5Aget_storage_sizeTest1()
         {
-            hid_t att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
+            var att = H5A.create(m_v2_test_file, "A", H5T.IEEE_F64LE,
                                         m_space_scalar);
             Assert.IsTrue(att >= 0);
-            hsize_t size = H5A.get_storage_size(att);
+            var size = H5A.get_storage_size(att);
             Assert.IsTrue(size == 8);
             Assert.IsTrue(H5A.close(att) >= 0);
 

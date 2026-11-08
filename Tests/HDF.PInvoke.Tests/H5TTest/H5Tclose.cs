@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -29,7 +27,7 @@ namespace UnitTests
         [TestMethod]
         public void H5TcloseTest1()
         {
-            hid_t dtype = H5T.copy(H5T.IEEE_F64LE);
+            var dtype = H5T.copy(H5T.IEEE_F64LE);
             Assert.IsTrue(dtype >= 0);
             Assert.IsTrue(H5T.close(dtype) >= 0);
         }

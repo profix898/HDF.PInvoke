@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,12 +10,10 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using uint32_t = System.UInt32;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using uint32_t = System.UInt32;
 
 namespace UnitTests
 {
@@ -34,8 +32,8 @@ namespace UnitTests
             uint32_t listsize = 0;
             Assert.IsTrue(H5PL.size(ref listsize) >= 0);
             Assert.IsTrue(listsize >= 0);
-            StringBuilder sb = new StringBuilder();
-            IntPtr size = new IntPtr(4);
+            var sb = new StringBuilder();
+            var size = new IntPtr(4);
             Assert.IsFalse(H5PL.get(0, sb, size) == IntPtr.Zero);
         }
 
@@ -48,8 +46,8 @@ namespace UnitTests
             uint32_t listsize = 0;
             Assert.IsTrue(H5PL.size(ref listsize) >= 0);
             Assert.IsTrue(listsize >= 0);
-            StringBuilder sb = new StringBuilder();
-            IntPtr size = new IntPtr(4);
+            var sb = new StringBuilder();
+            var size = new IntPtr(4);
             Assert.IsFalse(H5PL.get(0, sb, size) == IntPtr.Zero);
         }
     }

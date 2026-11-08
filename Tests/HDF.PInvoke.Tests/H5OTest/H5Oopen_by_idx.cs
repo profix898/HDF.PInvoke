@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,12 +9,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
-using hsize_t = System.UInt64;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
+using hsize_t = System.UInt64;
 
 namespace UnitTests
 {
@@ -38,7 +36,7 @@ namespace UnitTests
             Assert.IsTrue(
                 H5G.close(H5G.create(m_v0_test_file, "AAAA")) >= 0);
 
-            hid_t obj = H5O.open_by_idx(m_v0_test_file, ".", H5.index_t.NAME,
+            var obj = H5O.open_by_idx(m_v0_test_file, ".", H5.index_t.NAME,
                 H5.iter_order_t.NATIVE, 0);
             Assert.IsTrue(obj >= 0);
             Assert.IsTrue(H5O.close(obj) >= 0);

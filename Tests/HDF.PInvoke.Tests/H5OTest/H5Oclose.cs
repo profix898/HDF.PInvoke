@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -27,7 +26,7 @@ namespace UnitTests
         [TestMethod]
         public void H5OcloseTest1()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A");
+            var gid = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(gid >= 0);
             Assert.IsTrue(H5O.close(gid) >= 0);
 
@@ -42,7 +41,7 @@ namespace UnitTests
         [TestMethod]
         public void H5OcloseTest2()
         {
-            hid_t gid = H5G.create(m_v0_test_file, "A");
+            var gid = H5G.create(m_v0_test_file, "A");
             Assert.IsTrue(gid >= 0);
             Assert.IsTrue(H5O.close(gid) >= 0);
             Assert.IsTrue(H5O.close(gid) < 0);
@@ -59,7 +58,7 @@ namespace UnitTests
         [TestMethod]
         public void H5OcloseTest3()
         {
-            hid_t gid = Utilities.RandomInvalidHandle();
+            var gid = Utilities.RandomInvalidHandle();
             Assert.IsTrue(H5O.close(gid) < 0);
         }
 
@@ -69,7 +68,7 @@ namespace UnitTests
         [TestMethod]
         public void H5OcloseTest4()
         {
-            hid_t space = H5S.create(H5S.class_t.SCALAR);
+            var space = H5S.create(H5S.class_t.SCALAR);
             Assert.IsTrue(space >= 0);
             Assert.IsTrue(H5O.close(space) < 0);
             Assert.IsTrue(H5S.close(space) >= 0);

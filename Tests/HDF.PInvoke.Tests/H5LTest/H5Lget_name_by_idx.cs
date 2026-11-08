@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,15 +10,12 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using hid_t = System.Int64;
 using hsize_t = System.UInt64;
-
 using size_t = System.IntPtr;
 using ssize_t = System.IntPtr;
-
-using hid_t = System.Int64;
 
 namespace UnitTests
 {
@@ -43,12 +40,12 @@ namespace UnitTests
                 H5L.create_external(m_v0_class_file_name, "/", m_v0_test_file,
                 "ABC", m_lcpl) >= 0);
 
-            size_t buf_size = IntPtr.Zero;
-            ssize_t size = H5L.get_name_by_idx(m_v0_test_file, ".",
+            var buf_size = IntPtr.Zero;
+            var size = H5L.get_name_by_idx(m_v0_test_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1, null, buf_size);
             Assert.IsTrue(size.ToInt32() == 2);
             buf_size = new IntPtr(size.ToInt32() + 1);
-            StringBuilder nameBuilder = new StringBuilder(buf_size.ToInt32());
+            var nameBuilder = new StringBuilder(buf_size.ToInt32());
             size = H5L.get_name_by_idx(m_v0_test_file, ".",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1, nameBuilder,
                 buf_size);
@@ -82,25 +79,25 @@ namespace UnitTests
         [TestMethod]
         public void H5Lget_name_by_idxTest2()
         {
-            hid_t lcpl = H5P.copy(m_lcpl);
+            var lcpl = H5P.copy(m_lcpl);
             Assert.IsTrue(lcpl >= 0);
             Assert.IsTrue(H5P.set_char_encoding(lcpl, H5T.cset_t.UTF8) >= 0);
 
-            for (int i = 0; i < m_utf8strings.Length; ++i)
+            for (var i = 0; i < m_utf8strings.Length; ++i)
             {
                 Assert.IsTrue(
                                                     H5L.create_external(m_v0_class_file_name, "/",
                                                     m_v0_class_file, m_utf8strings[i], lcpl) >= 0);
             }
 
-            for (int i = 0; i < m_utf8strings.Length; ++i)
+            for (var i = 0; i < m_utf8strings.Length; ++i)
             {
-                size_t buf_size = IntPtr.Zero;
-                ssize_t size = H5L.get_name_by_idx(m_v0_test_file, ".",
+                var buf_size = IntPtr.Zero;
+                var size = H5L.get_name_by_idx(m_v0_test_file, ".",
                     H5.index_t.NAME, H5.iter_order_t.NATIVE, (hsize_t)i, null,
                     buf_size);
                 buf_size = new IntPtr(size.ToInt32() + 1);
-                StringBuilder nameBuilder = new StringBuilder(buf_size.ToInt32());
+                var nameBuilder = new StringBuilder(buf_size.ToInt32());
                 size = H5L.get_name_by_idx(m_v0_test_file, ".",
                     H5.index_t.NAME, H5.iter_order_t.NATIVE, (hsize_t)i, nameBuilder,
                     buf_size);

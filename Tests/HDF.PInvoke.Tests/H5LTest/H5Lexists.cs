@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -57,10 +56,10 @@ namespace UnitTests
         [TestMethod]
         public void H5LexistsTest3()
         {
-            for (int i = 0; i < m_utf8strings.Length; ++i)
+            for (var i = 0; i < m_utf8strings.Length; ++i)
             {
-                int size = Encoding.UTF8.GetBytes(m_utf8strings[i]).Length;
-                byte[] buf = new byte[size + 1];
+                var size = Encoding.UTF8.GetBytes(m_utf8strings[i]).Length;
+                var buf = new byte[size + 1];
                 Array.Copy(Encoding.UTF8.GetBytes(m_utf8strings[i]), buf, size);
                 Assert.IsTrue(
                     H5G.close(H5G.create(m_v0_test_file, buf, m_lcpl_utf8))

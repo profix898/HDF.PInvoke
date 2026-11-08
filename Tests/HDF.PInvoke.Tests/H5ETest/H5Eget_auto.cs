@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -9,9 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -28,7 +27,7 @@ namespace UnitTests
         public void H5Eget_autoTest1()
         {
             H5E.auto_t cb = null;
-            IntPtr client_data = IntPtr.Zero;
+            var client_data = IntPtr.Zero;
             Assert.IsTrue(
                 H5E.get_auto(H5E.DEFAULT, ref cb, ref client_data) >= 0);
         }

@@ -1,4 +1,4 @@
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 /// <summary>
 /// Reports an unsupported declaration or syntax error at its original source location.

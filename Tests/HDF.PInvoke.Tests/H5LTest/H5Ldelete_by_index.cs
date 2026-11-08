@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Copyright by The HDF Group.                                               *
  * Copyright by the Board of Trustees of the University of Illinois.         *
  * All rights reserved.                                                      *
@@ -10,9 +10,8 @@
 
 using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HDF.PInvoke;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using hid_t = System.Int64;
 
 namespace UnitTests
@@ -36,8 +35,8 @@ namespace UnitTests
                 H5G.close(H5G.create(m_v0_test_file, "A/B/C/D2", m_lcpl)) >= 0);
             Assert.IsTrue(
                 H5L.create_hard(m_v0_test_file,
-                Encoding.ASCII.GetBytes("A/B/C/D1"), m_v0_test_file,
-                Encoding.ASCII.GetBytes("shortcut")) >= 0);
+                Encoding.ASCII.GetBytes("A/B/C/D1" + "\0"), m_v0_test_file,
+                Encoding.ASCII.GetBytes("shortcut" + "\0")) >= 0);
 
             Assert.IsTrue(H5L.delete_by_idx(m_v0_test_file, "A/B/C",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1) >= 0);
@@ -53,8 +52,8 @@ namespace UnitTests
                 H5G.close(H5G.create(m_v2_test_file, "A/B/C/D2", m_lcpl)) >= 0);
             Assert.IsTrue(
                 H5L.create_hard(m_v2_test_file,
-                Encoding.ASCII.GetBytes("A/B/C/D1"), m_v2_test_file,
-                Encoding.ASCII.GetBytes("shortcut")) >= 0);
+                Encoding.ASCII.GetBytes("A/B/C/D1" + "\0"), m_v2_test_file,
+                Encoding.ASCII.GetBytes("shortcut" + "\0")) >= 0);
 
             Assert.IsTrue(H5L.delete_by_idx(m_v2_test_file, "A/B/C",
                 H5.index_t.NAME, H5.iter_order_t.NATIVE, 1) >= 0);

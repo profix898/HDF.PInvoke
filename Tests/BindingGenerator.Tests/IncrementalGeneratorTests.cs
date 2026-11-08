@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -78,7 +78,7 @@ public sealed class IncrementalGeneratorTests
     [DataRow("public static extern int Call<T>();")]
     public void ReportsUnsupportedMethodShapes(string declaration)
     {
-        string source = Import.Replace("public static extern int Call();", declaration);
+        var source = Import.Replace("public static extern int Call();", declaration);
         var result = Create(new Input("/repo/HDF5/Bad.cs", source)).RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual("HDFGEN001", result.Diagnostics.Single().Id);
         Assert.IsNull(result.Results[0].Exception);
@@ -193,7 +193,7 @@ public sealed class IncrementalGeneratorTests
         /// <summary>Selects only fixture paths beneath the shared HDF5 source directory.</summary>
         public override AnalyzerConfigOptions GetOptions(AdditionalText textFile)
         {
-            int start = textFile.Path.IndexOf("/HDF5/", StringComparison.Ordinal);
+            var start = textFile.Path.IndexOf("/HDF5/", StringComparison.Ordinal);
             return new Options(start < 0 ? null : textFile.Path.Substring(start + 1));
         }
     }
