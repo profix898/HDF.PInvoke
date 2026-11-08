@@ -33,7 +33,7 @@ namespace UnitTests
             var imports = methods.Count(m => m.GetCustomAttributesData().Any(a => legacy
                 ? a.AttributeType.FullName == "HDF.PInvoke.LegacyImportAttribute"
                 : a.AttributeType == typeof(DllImportAttribute)));
-            Assert.AreEqual(799, imports);
+            Assert.AreEqual(849, imports);
 
             if (legacy)
             {

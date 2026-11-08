@@ -15,20 +15,20 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 | H5FD | 1 | 0 | 1 |
 | H5F | 52 | 48 | 4 |
 | H5G | 31 | 16 | 15 |
-| H5IM | 12 | 0 | 12 |
+| H5IM | 12 | 12 | 0 |
 | H5I | 21 | 21 | 0 |
-| H5LD | 3 | 0 | 3 |
+| H5LD | 3 | 3 | 0 |
 | H5L | 32 | 32 | 0 |
 | H5LT | 53 | 53 | 0 |
 | H5M | 20 | 0 | 20 |
 | H5O | 47 | 40 | 7 |
 | H5PL | 9 | 9 | 0 |
 | H5P | 225 | 207 | 18 |
-| H5PT | 16 | 0 | 16 |
+| H5PT | 16 | 16 | 0 |
 | H5 | 14 | 12 | 2 |
 | H5R | 24 | 22 | 2 |
 | H5S | 43 | 43 | 0 |
-| H5TB | 19 | 0 | 19 |
+| H5TB | 19 | 19 | 0 |
 | H5T | 73 | 69 | 4 |
 | H5VL | 12 | 12 | 0 |
 | H5Z | 2 | 2 | 0 |
@@ -333,18 +333,18 @@ Native header: `H5IMpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5IMget_image_info` | Gap |
-| `H5IMget_npalettes` | Gap |
-| `H5IMget_palette` | Gap |
-| `H5IMget_palette_info` | Gap |
-| `H5IMis_image` | Gap |
-| `H5IMis_palette` | Gap |
-| `H5IMlink_palette` | Gap |
-| `H5IMmake_image_24bit` | Gap |
-| `H5IMmake_image_8bit` | Gap |
-| `H5IMmake_palette` | Gap |
-| `H5IMread_image` | Gap |
-| `H5IMunlink_palette` | Gap |
+| `H5IMget_image_info` | Bound |
+| `H5IMget_npalettes` | Bound |
+| `H5IMget_palette` | Bound |
+| `H5IMget_palette_info` | Bound |
+| `H5IMis_image` | Bound |
+| `H5IMis_palette` | Bound |
+| `H5IMlink_palette` | Bound |
+| `H5IMmake_image_24bit` | Bound |
+| `H5IMmake_image_8bit` | Bound |
+| `H5IMmake_palette` | Bound |
+| `H5IMread_image` | Bound |
+| `H5IMunlink_palette` | Bound |
 
 ## H5I
 
@@ -380,9 +380,9 @@ Native header: `H5LDpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5LDget_dset_dims` | Gap |
-| `H5LDget_dset_elmts` | Gap |
-| `H5LDget_dset_type_size` | Gap |
+| `H5LDget_dset_dims` | Bound |
+| `H5LDget_dset_elmts` | Bound |
+| `H5LDget_dset_type_size` | Bound |
 
 ## H5L
 
@@ -818,22 +818,22 @@ Native header: `H5PTpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5PTappend` | Gap |
-| `H5PTclose` | Gap |
-| `H5PTcreate` | Gap |
-| `H5PTcreate_fl` | Gap |
-| `H5PTcreate_index` | Gap |
-| `H5PTfree_vlen_buff` | Gap |
-| `H5PTget_dataset` | Gap |
-| `H5PTget_index` | Gap |
-| `H5PTget_next` | Gap |
-| `H5PTget_num_packets` | Gap |
-| `H5PTget_type` | Gap |
-| `H5PTis_valid` | Gap |
-| `H5PTis_varlen` | Gap |
-| `H5PTopen` | Gap |
-| `H5PTread_packets` | Gap |
-| `H5PTset_index` | Gap |
+| `H5PTappend` | Bound |
+| `H5PTclose` | Bound |
+| `H5PTcreate` | Bound |
+| `H5PTcreate_fl` | Bound |
+| `H5PTcreate_index` | Bound |
+| `H5PTfree_vlen_buff` | Bound |
+| `H5PTget_dataset` | Bound |
+| `H5PTget_index` | Bound |
+| `H5PTget_next` | Bound |
+| `H5PTget_num_packets` | Bound |
+| `H5PTget_type` | Bound |
+| `H5PTis_valid` | Bound |
+| `H5PTis_varlen` | Bound |
+| `H5PTopen` | Bound |
+| `H5PTread_packets` | Bound |
+| `H5PTset_index` | Bound |
 
 ## H5
 
@@ -943,25 +943,25 @@ Native header: `H5TBpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5TBadd_records_from` | Gap |
-| `H5TBAget_fill` | Gap |
-| `H5TBAget_title` | Gap |
-| `H5TBappend_records` | Gap |
-| `H5TBcombine_tables` | Gap |
-| `H5TBdelete_field` | Gap |
-| `H5TBdelete_record` | Gap |
-| `H5TBget_field_info` | Gap |
-| `H5TBget_table_info` | Gap |
-| `H5TBinsert_field` | Gap |
-| `H5TBinsert_record` | Gap |
-| `H5TBmake_table` | Gap |
-| `H5TBread_fields_index` | Gap |
-| `H5TBread_fields_name` | Gap |
-| `H5TBread_records` | Gap |
-| `H5TBread_table` | Gap |
-| `H5TBwrite_fields_index` | Gap |
-| `H5TBwrite_fields_name` | Gap |
-| `H5TBwrite_records` | Gap |
+| `H5TBadd_records_from` | Bound |
+| `H5TBAget_fill` | Bound |
+| `H5TBAget_title` | Bound |
+| `H5TBappend_records` | Bound |
+| `H5TBcombine_tables` | Bound |
+| `H5TBdelete_field` | Bound |
+| `H5TBdelete_record` | Bound |
+| `H5TBget_field_info` | Bound |
+| `H5TBget_table_info` | Bound |
+| `H5TBinsert_field` | Bound |
+| `H5TBinsert_record` | Bound |
+| `H5TBmake_table` | Bound |
+| `H5TBread_fields_index` | Bound |
+| `H5TBread_fields_name` | Bound |
+| `H5TBread_records` | Bound |
+| `H5TBread_table` | Bound |
+| `H5TBwrite_fields_index` | Bound |
+| `H5TBwrite_fields_name` | Bound |
+| `H5TBwrite_records` | Bound |
 
 ## H5T
 
