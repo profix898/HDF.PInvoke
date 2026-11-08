@@ -24,7 +24,7 @@ public sealed class IncrementalGeneratorTests
         var result = Create(new Input("/repo/HDF5/H5.cs", Import)).RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual(0, result.Diagnostics.Length);
         Assert.AreEqual(1, result.GeneratedTrees.Length);
-        StringAssert.Contains(result.GeneratedTrees[0].ToString(), "__Legacy0Cache.Function()");
+        StringAssert.Contains(result.GeneratedTrees[0].ToString(), "_0Cache.Function()");
         Assert.IsNull(result.Results[0].Exception);
     }
 
@@ -103,7 +103,7 @@ public sealed class IncrementalGeneratorTests
         Assert.AreEqual("HDFGEN003", driver.GetRunResult().Diagnostics.Single().Id);
         driver = driver.WithUpdatedParseOptions(new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: new[] { "CUSTOM" })).RunGenerators(Compilation);
         Assert.AreEqual(0, driver.GetRunResult().Diagnostics.Length);
-        StringAssert.Contains(driver.GetRunResult().GeneratedTrees.Single().ToString(), "__Legacy0Cache");
+        StringAssert.Contains(driver.GetRunResult().GeneratedTrees.Single().ToString(), "_0Cache");
     }
 
     /// <summary>Does not regenerate unchanged files when the compilation or another source changes.</summary>

@@ -28,7 +28,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 file operations and file-access constants.
     /// </summary>
-    public unsafe sealed class H5F
+    public unsafe sealed partial class H5F
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

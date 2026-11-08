@@ -26,7 +26,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 dataset creation, storage, and I/O operations.
     /// </summary>
-    public unsafe sealed class H5D
+    public unsafe sealed partial class H5D
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

@@ -10,10 +10,14 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
     /// <summary>Propagates compiler cancellation through declaration traversal.</summary>
     private readonly CancellationToken cancellationToken;
 
+    /// <summary>Disambiguates generated members in partial classes spread across input files.</summary>
+    private readonly string sourceIdentity;
+
     /// <summary>Creates a binding rewriter for the current compiler operation.</summary>
-    internal LegacyBindings(CancellationToken cancellationToken = default)
+    internal LegacyBindings(CancellationToken cancellationToken = default, string sourceIdentity = "")
     {
         this.cancellationToken = cancellationToken;
+        this.sourceIdentity = sourceIdentity;
     }
 
     /// <summary>Checks cancellation before traversing each declaration node.</summary>
@@ -195,7 +199,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             }
 
             var pointerOptions = string.Join("", named.Select(p => $", {p.Key} = {p.Value}"));
-            var suffix = "__Legacy" + Count++;
+            var suffix = "__Legacy" + sourceIdentity + Count++;
             var returnAttributes = string.Join("\n", method.AttributeLists.Where(a => a.Target?.Identifier.ValueText == "return"));
             // Delegate parameter attributes retain all native marshalling semantics.
             var parameters = method.ParameterList.WithParameters(SyntaxFactory.SeparatedList(

@@ -136,9 +136,9 @@ static class Program
                 }
             }
 
-            if (imports != 568)
+            if (imports != 588)
             {
-                throw new Exception($"Expected 568 shared imports; found {imports}");
+                throw new Exception($"Expected 588 shared imports; found {imports}");
             }
 
             if (missing != 0)

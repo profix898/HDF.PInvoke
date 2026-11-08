@@ -8,6 +8,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 public sealed class TransformationTests
 {
+    /// <summary>Disambiguates private caches in partial declarations without depending on checkout paths.</summary>
+    [TestMethod]
+    public void PartialClassCachesHaveStableDistinctNames()
+    {
+        const string first = "partial class H5 { [DllImport(Constants.DLLFileName, EntryPoint = \"first\", CallingConvention = CallingConvention.Cdecl)] public static extern int First(); }";
+        var second = first.Replace("first", "second").Replace("First", "Second");
+        var a = BindingSource.Generate(first, out _, path: "/one/First.cs");
+        var b = BindingSource.Generate(second, out _, path: "/two/Second.cs");
+        var namesA = CSharpSyntaxTree.ParseText(a).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Select(n => n.Identifier.ValueText).Where(n => n.StartsWith("__Legacy")).ToArray();
+        var namesB = CSharpSyntaxTree.ParseText(b).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Select(n => n.Identifier.ValueText).Where(n => n.StartsWith("__Legacy")).ToArray();
+        Assert.AreEqual(1, namesA.Length);
+        Assert.AreEqual(1, namesB.Length);
+        Assert.AreNotEqual(namesA[0], namesB[0]);
+        Assert.AreEqual(a, BindingSource.Generate(first, out _, path: "/different/First.cs"));
+    }
+
     /// <summary>
     /// Preserves the established signature, ownership, metadata, and ABI conversion contracts.
     /// </summary>
@@ -17,7 +33,7 @@ public sealed class TransformationTests
         var declaration = "[DllImport(Constants.DLLFileName, EntryPoint = \"example\", CallingConvention = CallingConvention.Cdecl)] public static extern int Call([MarshalAs(UnmanagedType.LPUTF8Str)] string text, ref int value);";
         var output = BindingSource.Generate("class H5 { " + declaration + " }", out var count);
         Require(count == 1 && !output.Contains("DllImport("), "Replace imports exactly once");
-        Require(output.Contains("static __Legacy0Cache()") && output.Contains("ref value"), "Preserve lazy initialization and ref parameters");
+        Require(output.Contains("Cache()") && output.Contains("ref value"), "Preserve lazy initialization and ref parameters");
         Require(output.Contains("typeof(UTF8Marshaler)") && !output.Contains("MarshalCookie"), "Own forward-call string allocations");
 
         Require(output.Contains("LazyInitializer.EnsureInitialized"), "Keep failed lookups retryable");
@@ -49,7 +65,7 @@ public sealed class TransformationTests
 
         var bridge = "class H5E { [DllImport(Constants.DLLFileName, EntryPoint = \"H5Ewalk2\", CallingConvention = CallingConvention.Cdecl)] public static extern int Walk(int value); }";
         output = BindingSource.Generate(bridge, out _);
-        Require(output.Contains("LegacyErrorWalk.Invoke") && !output.Contains("__Legacy0Delegate"), "Avoid unused bridge delegates");
+        Require(output.Contains("LegacyErrorWalk.Invoke") && !output.Contains("Delegate("), "Avoid unused bridge delegates");
 
         // Read the generated declaration to check parameter attributes independently of text formatting.
         var method = CSharpSyntaxTree.ParseText(BindingSource.Generate("class H5 { " + declaration + " }", out _)).GetRoot()

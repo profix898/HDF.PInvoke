@@ -100,9 +100,12 @@ namespace HDF.PInvoke
             ARRAY = 10,
 
             /// <summary>
-            /// sentinel: this must be last.
+            /// Complex values composed of two floating-point components.
             /// </summary>
-            NCLASSES
+            COMPLEX = 11,
+
+            /// <summary>Number of native datatype classes.</summary>
+            NCLASSES = 12
         }
 
         /// <summary>
