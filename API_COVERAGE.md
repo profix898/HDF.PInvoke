@@ -9,7 +9,7 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 | H5A | 43 | 26 | 17 |
 | H5DO | 3 | 3 | 0 |
 | H5D | 47 | 34 | 13 |
-| H5DS | 11 | 0 | 11 |
+| H5DS | 11 | 11 | 0 |
 | H5E | 31 | 23 | 8 |
 | H5ES | 12 | 0 | 12 |
 | H5FD | 1 | 0 | 1 |
@@ -19,7 +19,7 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 | H5I | 21 | 21 | 0 |
 | H5LD | 3 | 0 | 3 |
 | H5L | 32 | 26 | 6 |
-| H5LT | 53 | 0 | 53 |
+| H5LT | 53 | 53 | 0 |
 | H5M | 20 | 0 | 20 |
 | H5O | 47 | 33 | 14 |
 | H5PL | 9 | 9 | 0 |
@@ -153,17 +153,17 @@ Native header: `H5DSpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5DSattach_scale` | Gap |
-| `H5DSdetach_scale` | Gap |
-| `H5DSget_label` | Gap |
-| `H5DSget_num_scales` | Gap |
-| `H5DSget_scale_name` | Gap |
-| `H5DSis_attached` | Gap |
-| `H5DSis_scale` | Gap |
-| `H5DSiterate_scales` | Gap |
-| `H5DSset_label` | Gap |
-| `H5DSset_scale` | Gap |
-| `H5DSwith_new_ref` | Gap |
+| `H5DSattach_scale` | Bound |
+| `H5DSdetach_scale` | Bound |
+| `H5DSget_label` | Bound |
+| `H5DSget_num_scales` | Bound |
+| `H5DSget_scale_name` | Bound |
+| `H5DSis_attached` | Bound |
+| `H5DSis_scale` | Bound |
+| `H5DSiterate_scales` | Bound |
+| `H5DSset_label` | Bound |
+| `H5DSset_scale` | Bound |
+| `H5DSwith_new_ref` | Bound |
 
 ## H5E
 
@@ -429,59 +429,59 @@ Native header: `H5LTpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5LTdtype_to_text` | Gap |
-| `H5LTfind_attribute` | Gap |
-| `H5LTfind_dataset` | Gap |
-| `H5LTget_attribute` | Gap |
-| `H5LTget_attribute_char` | Gap |
-| `H5LTget_attribute_double` | Gap |
-| `H5LTget_attribute_float` | Gap |
-| `H5LTget_attribute_info` | Gap |
-| `H5LTget_attribute_int` | Gap |
-| `H5LTget_attribute_long` | Gap |
-| `H5LTget_attribute_long_long` | Gap |
-| `H5LTget_attribute_ndims` | Gap |
-| `H5LTget_attribute_short` | Gap |
-| `H5LTget_attribute_string` | Gap |
-| `H5LTget_attribute_uchar` | Gap |
-| `H5LTget_attribute_uint` | Gap |
-| `H5LTget_attribute_ullong` | Gap |
-| `H5LTget_attribute_ulong` | Gap |
-| `H5LTget_attribute_ushort` | Gap |
-| `H5LTget_dataset_info` | Gap |
-| `H5LTget_dataset_ndims` | Gap |
-| `H5LTmake_dataset` | Gap |
-| `H5LTmake_dataset_char` | Gap |
-| `H5LTmake_dataset_double` | Gap |
-| `H5LTmake_dataset_float` | Gap |
-| `H5LTmake_dataset_int` | Gap |
-| `H5LTmake_dataset_long` | Gap |
-| `H5LTmake_dataset_short` | Gap |
-| `H5LTmake_dataset_string` | Gap |
-| `H5LTopen_file_image` | Gap |
-| `H5LTpath_valid` | Gap |
-| `H5LTread_dataset` | Gap |
-| `H5LTread_dataset_char` | Gap |
-| `H5LTread_dataset_double` | Gap |
-| `H5LTread_dataset_float` | Gap |
-| `H5LTread_dataset_int` | Gap |
-| `H5LTread_dataset_long` | Gap |
-| `H5LTread_dataset_short` | Gap |
-| `H5LTread_dataset_string` | Gap |
-| `H5LTset_attribute_char` | Gap |
-| `H5LTset_attribute_double` | Gap |
-| `H5LTset_attribute_float` | Gap |
-| `H5LTset_attribute_int` | Gap |
-| `H5LTset_attribute_long` | Gap |
-| `H5LTset_attribute_long_long` | Gap |
-| `H5LTset_attribute_short` | Gap |
-| `H5LTset_attribute_string` | Gap |
-| `H5LTset_attribute_uchar` | Gap |
-| `H5LTset_attribute_uint` | Gap |
-| `H5LTset_attribute_ullong` | Gap |
-| `H5LTset_attribute_ulong` | Gap |
-| `H5LTset_attribute_ushort` | Gap |
-| `H5LTtext_to_dtype` | Gap |
+| `H5LTdtype_to_text` | Bound |
+| `H5LTfind_attribute` | Bound |
+| `H5LTfind_dataset` | Bound |
+| `H5LTget_attribute` | Bound |
+| `H5LTget_attribute_char` | Bound |
+| `H5LTget_attribute_double` | Bound |
+| `H5LTget_attribute_float` | Bound |
+| `H5LTget_attribute_info` | Bound |
+| `H5LTget_attribute_int` | Bound |
+| `H5LTget_attribute_long` | Bound |
+| `H5LTget_attribute_long_long` | Bound |
+| `H5LTget_attribute_ndims` | Bound |
+| `H5LTget_attribute_short` | Bound |
+| `H5LTget_attribute_string` | Bound |
+| `H5LTget_attribute_uchar` | Bound |
+| `H5LTget_attribute_uint` | Bound |
+| `H5LTget_attribute_ullong` | Bound |
+| `H5LTget_attribute_ulong` | Bound |
+| `H5LTget_attribute_ushort` | Bound |
+| `H5LTget_dataset_info` | Bound |
+| `H5LTget_dataset_ndims` | Bound |
+| `H5LTmake_dataset` | Bound |
+| `H5LTmake_dataset_char` | Bound |
+| `H5LTmake_dataset_double` | Bound |
+| `H5LTmake_dataset_float` | Bound |
+| `H5LTmake_dataset_int` | Bound |
+| `H5LTmake_dataset_long` | Bound |
+| `H5LTmake_dataset_short` | Bound |
+| `H5LTmake_dataset_string` | Bound |
+| `H5LTopen_file_image` | Bound |
+| `H5LTpath_valid` | Bound |
+| `H5LTread_dataset` | Bound |
+| `H5LTread_dataset_char` | Bound |
+| `H5LTread_dataset_double` | Bound |
+| `H5LTread_dataset_float` | Bound |
+| `H5LTread_dataset_int` | Bound |
+| `H5LTread_dataset_long` | Bound |
+| `H5LTread_dataset_short` | Bound |
+| `H5LTread_dataset_string` | Bound |
+| `H5LTset_attribute_char` | Bound |
+| `H5LTset_attribute_double` | Bound |
+| `H5LTset_attribute_float` | Bound |
+| `H5LTset_attribute_int` | Bound |
+| `H5LTset_attribute_long` | Bound |
+| `H5LTset_attribute_long_long` | Bound |
+| `H5LTset_attribute_short` | Bound |
+| `H5LTset_attribute_string` | Bound |
+| `H5LTset_attribute_uchar` | Bound |
+| `H5LTset_attribute_uint` | Bound |
+| `H5LTset_attribute_ullong` | Bound |
+| `H5LTset_attribute_ulong` | Bound |
+| `H5LTset_attribute_ushort` | Bound |
+| `H5LTtext_to_dtype` | Bound |
 
 ## H5M
 
