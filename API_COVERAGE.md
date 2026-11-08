@@ -23,14 +23,14 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 | H5M | 20 | 0 | 20 |
 | H5O | 47 | 33 | 14 |
 | H5PL | 9 | 9 | 0 |
-| H5P | 225 | 203 | 22 |
+| H5P | 225 | 207 | 18 |
 | H5PT | 16 | 0 | 16 |
 | H5 | 14 | 12 | 2 |
 | H5R | 24 | 19 | 5 |
 | H5S | 43 | 43 | 0 |
 | H5TB | 19 | 0 | 19 |
 | H5T | 73 | 66 | 7 |
-| H5VL | 12 | 0 | 12 |
+| H5VL | 12 | 12 | 0 |
 | H5Z | 2 | 2 | 0 |
 
 ## H5A
@@ -263,7 +263,7 @@ Native header: `H5Fpublic.h`.
 | `H5Fget_mdc_logging_status` | Bound |
 | `H5Fget_mdc_size` | Bound |
 | `H5Fget_metadata_read_retry_info` | Bound |
-| `H5Fget_mpi_atomicity` | Gap |
+| `H5Fget_mpi_atomicity` | Unavailable in packaged serial build |
 | `H5Fget_name` | Bound |
 | `H5Fget_obj_count` | Bound |
 | `H5Fget_obj_ids` | Bound |
@@ -283,7 +283,7 @@ Native header: `H5Fpublic.h`.
 | `H5Fset_latest_format` | Gap |
 | `H5Fset_libver_bounds` | Bound |
 | `H5Fset_mdc_config` | Bound |
-| `H5Fset_mpi_atomicity` | Gap |
+| `H5Fset_mpi_atomicity` | Unavailable in packaged serial build |
 | `H5Fstart_mdc_logging` | Bound |
 | `H5Fstart_swmr_write` | Bound |
 | `H5Fstop_mdc_logging` | Bound |
@@ -489,26 +489,26 @@ Native header: `H5Mpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5Mclose` | Gap |
-| `H5Mclose_async` | Gap |
-| `H5Mcreate` | Gap |
-| `H5Mcreate_anon` | Gap |
-| `H5Mcreate_async` | Gap |
-| `H5Mdelete` | Gap |
-| `H5Mexists` | Gap |
-| `H5Mget` | Gap |
-| `H5Mget_access_plist` | Gap |
-| `H5Mget_async` | Gap |
-| `H5Mget_count` | Gap |
-| `H5Mget_create_plist` | Gap |
-| `H5Mget_key_type` | Gap |
-| `H5Mget_val_type` | Gap |
-| `H5Miterate` | Gap |
-| `H5Miterate_by_name` | Gap |
-| `H5Mopen` | Gap |
-| `H5Mopen_async` | Gap |
-| `H5Mput` | Gap |
-| `H5Mput_async` | Gap |
+| `H5Mclose` | Unavailable in packaged serial build |
+| `H5Mclose_async` | Unavailable in packaged serial build |
+| `H5Mcreate` | Unavailable in packaged serial build |
+| `H5Mcreate_anon` | Unavailable in packaged serial build |
+| `H5Mcreate_async` | Unavailable in packaged serial build |
+| `H5Mdelete` | Unavailable in packaged serial build |
+| `H5Mexists` | Unavailable in packaged serial build |
+| `H5Mget` | Unavailable in packaged serial build |
+| `H5Mget_access_plist` | Unavailable in packaged serial build |
+| `H5Mget_async` | Unavailable in packaged serial build |
+| `H5Mget_count` | Unavailable in packaged serial build |
+| `H5Mget_create_plist` | Unavailable in packaged serial build |
+| `H5Mget_key_type` | Unavailable in packaged serial build |
+| `H5Mget_val_type` | Unavailable in packaged serial build |
+| `H5Miterate` | Unavailable in packaged serial build |
+| `H5Miterate_by_name` | Unavailable in packaged serial build |
+| `H5Mopen` | Unavailable in packaged serial build |
+| `H5Mopen_async` | Unavailable in packaged serial build |
+| `H5Mput` | Unavailable in packaged serial build |
+| `H5Mput_async` | Unavailable in packaged serial build |
 
 ## H5O
 
@@ -604,7 +604,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget` | Bound |
 | `H5Pget_actual_selection_io_mode` | Bound |
 | `H5Pget_alignment` | Bound |
-| `H5Pget_all_coll_metadata_ops` | Gap |
+| `H5Pget_all_coll_metadata_ops` | Unavailable in packaged serial build |
 | `H5Pget_alloc_time` | Bound |
 | `H5Pget_append_flush` | Bound |
 | `H5Pget_attr_creation_order` | Bound |
@@ -619,7 +619,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_class` | Bound |
 | `H5Pget_class_name` | Bound |
 | `H5Pget_class_parent` | Bound |
-| `H5Pget_coll_metadata_write` | Gap |
+| `H5Pget_coll_metadata_write` | Unavailable in packaged serial build |
 | `H5Pget_copy_object` | Bound |
 | `H5Pget_core_write_tracking` | Bound |
 | `H5Pget_create_intermediate_group` | Bound |
@@ -661,7 +661,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_link_creation_order` | Bound |
 | `H5Pget_link_phase_change` | Bound |
 | `H5Pget_local_heap_size_hint` | Bound |
-| `H5Pget_map_iterate_hints` | Gap |
+| `H5Pget_map_iterate_hints` | Unavailable in packaged serial build |
 | `H5Pget_mcdt_search_cb` | Bound |
 | `H5Pget_mdc_config` | Bound |
 | `H5Pget_mdc_image_config` | Bound |
@@ -669,10 +669,10 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_meta_block_size` | Bound |
 | `H5Pget_metadata_read_attempts` | Bound |
 | `H5Pget_modify_write_buf` | Bound |
-| `H5Pget_mpi_params` | Gap |
-| `H5Pget_mpio_actual_chunk_opt_mode` | Gap |
-| `H5Pget_mpio_actual_io_mode` | Gap |
-| `H5Pget_mpio_no_collective_cause` | Gap |
+| `H5Pget_mpi_params` | Unavailable in packaged serial build |
+| `H5Pget_mpio_actual_chunk_opt_mode` | Unavailable in packaged serial build |
+| `H5Pget_mpio_actual_io_mode` | Unavailable in packaged serial build |
+| `H5Pget_mpio_no_collective_cause` | Unavailable in packaged serial build |
 | `H5Pget_multi_type` | Bound |
 | `H5Pget_nfilters` | Bound |
 | `H5Pget_nlinks` | Bound |
@@ -705,9 +705,9 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_virtual_view` | Bound |
 | `H5Pget_virtual_vspace` | Bound |
 | `H5Pget_vlen_mem_manager` | Bound |
-| `H5Pget_vol_cap_flags` | Gap |
-| `H5Pget_vol_id` | Gap |
-| `H5Pget_vol_info` | Gap |
+| `H5Pget_vol_cap_flags` | Bound |
+| `H5Pget_vol_id` | Bound |
+| `H5Pget_vol_info` | Bound |
 | `H5Pinsert1` | Gap |
 | `H5Pinsert2` | Bound |
 | `H5Pisa_class` | Bound |
@@ -719,7 +719,7 @@ Native header: `H5Ppublic.h`.
 | `H5Premove_filter` | Bound |
 | `H5Pset` | Bound |
 | `H5Pset_alignment` | Bound |
-| `H5Pset_all_coll_metadata_ops` | Gap |
+| `H5Pset_all_coll_metadata_ops` | Unavailable in packaged serial build |
 | `H5Pset_alloc_time` | Bound |
 | `H5Pset_append_flush` | Bound |
 | `H5Pset_attr_creation_order` | Bound |
@@ -731,7 +731,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_chunk` | Bound |
 | `H5Pset_chunk_cache` | Bound |
 | `H5Pset_chunk_opts` | Bound |
-| `H5Pset_coll_metadata_write` | Gap |
+| `H5Pset_coll_metadata_write` | Unavailable in packaged serial build |
 | `H5Pset_copy_object` | Bound |
 | `H5Pset_core_write_tracking` | Bound |
 | `H5Pset_create_intermediate_group` | Bound |
@@ -773,7 +773,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_link_creation_order` | Bound |
 | `H5Pset_link_phase_change` | Bound |
 | `H5Pset_local_heap_size_hint` | Bound |
-| `H5Pset_map_iterate_hints` | Gap |
+| `H5Pset_map_iterate_hints` | Unavailable in packaged serial build |
 | `H5Pset_mcdt_search_cb` | Bound |
 | `H5Pset_mdc_config` | Bound |
 | `H5Pset_mdc_image_config` | Bound |
@@ -781,7 +781,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_meta_block_size` | Bound |
 | `H5Pset_metadata_read_attempts` | Bound |
 | `H5Pset_modify_write_buf` | Bound |
-| `H5Pset_mpi_params` | Gap |
+| `H5Pset_mpi_params` | Unavailable in packaged serial build |
 | `H5Pset_multi_type` | Bound |
 | `H5Pset_nbit` | Bound |
 | `H5Pset_nlinks` | Bound |
@@ -809,7 +809,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_virtual_spatial_tree` | Bound |
 | `H5Pset_virtual_view` | Bound |
 | `H5Pset_vlen_mem_manager` | Bound |
-| `H5Pset_vol` | Gap |
+| `H5Pset_vol` | Bound |
 | `H5Punregister` | Bound |
 
 ## H5PT
@@ -1049,18 +1049,18 @@ Native header: `H5VLpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5VLclose` | Gap |
-| `H5VLget_connector_id` | Gap |
-| `H5VLget_connector_id_by_name` | Gap |
-| `H5VLget_connector_id_by_value` | Gap |
-| `H5VLget_connector_name` | Gap |
-| `H5VLis_connector_registered_by_name` | Gap |
-| `H5VLis_connector_registered_by_value` | Gap |
-| `H5VLobject_is_native` | Gap |
-| `H5VLquery_optional` | Gap |
-| `H5VLregister_connector_by_name` | Gap |
-| `H5VLregister_connector_by_value` | Gap |
-| `H5VLunregister_connector` | Gap |
+| `H5VLclose` | Bound |
+| `H5VLget_connector_id` | Bound |
+| `H5VLget_connector_id_by_name` | Bound |
+| `H5VLget_connector_id_by_value` | Bound |
+| `H5VLget_connector_name` | Bound |
+| `H5VLis_connector_registered_by_name` | Bound |
+| `H5VLis_connector_registered_by_value` | Bound |
+| `H5VLobject_is_native` | Bound |
+| `H5VLquery_optional` | Bound |
+| `H5VLregister_connector_by_name` | Bound |
+| `H5VLregister_connector_by_value` | Bound |
+| `H5VLunregister_connector` | Bound |
 
 ## H5Z
 
@@ -1070,3 +1070,163 @@ Native header: `H5Zpublic.h`.
 |---|---|
 | `H5Zfilter_avail` | Bound |
 | `H5Zget_filter_info` | Bound |
+
+## H5P predefined identifiers
+
+These identifiers remain owned by HDF5. Optional native datatypes may have negative values when the native compiler lacks support. Map property classes exist even though map operations are not compiled into this package.
+
+| Native global | C# coverage |
+|---|---|
+| `H5P_CLS_ATTRIBUTE_ACCESS_ID_g` | Bound |
+| `H5P_CLS_ATTRIBUTE_CREATE_ID_g` | Bound |
+| `H5P_CLS_DATASET_ACCESS_ID_g` | Bound |
+| `H5P_CLS_DATASET_CREATE_ID_g` | Bound |
+| `H5P_CLS_DATASET_XFER_ID_g` | Bound |
+| `H5P_CLS_DATATYPE_ACCESS_ID_g` | Bound |
+| `H5P_CLS_DATATYPE_CREATE_ID_g` | Bound |
+| `H5P_CLS_FILE_ACCESS_ID_g` | Bound |
+| `H5P_CLS_FILE_CREATE_ID_g` | Bound |
+| `H5P_CLS_FILE_MOUNT_ID_g` | Bound |
+| `H5P_CLS_GROUP_ACCESS_ID_g` | Bound |
+| `H5P_CLS_GROUP_CREATE_ID_g` | Bound |
+| `H5P_CLS_LINK_ACCESS_ID_g` | Bound |
+| `H5P_CLS_LINK_CREATE_ID_g` | Bound |
+| `H5P_CLS_MAP_ACCESS_ID_g` | Bound |
+| `H5P_CLS_MAP_CREATE_ID_g` | Bound |
+| `H5P_CLS_OBJECT_COPY_ID_g` | Bound |
+| `H5P_CLS_OBJECT_CREATE_ID_g` | Bound |
+| `H5P_CLS_REFERENCE_ACCESS_ID_g` | Bound |
+| `H5P_CLS_ROOT_ID_g` | Bound |
+| `H5P_CLS_STRING_CREATE_ID_g` | Bound |
+| `H5P_CLS_VOL_INITIALIZE_ID_g` | Bound |
+| `H5P_LST_ATTRIBUTE_ACCESS_ID_g` | Bound |
+| `H5P_LST_ATTRIBUTE_CREATE_ID_g` | Bound |
+| `H5P_LST_DATASET_ACCESS_ID_g` | Bound |
+| `H5P_LST_DATASET_CREATE_ID_g` | Bound |
+| `H5P_LST_DATASET_XFER_ID_g` | Bound |
+| `H5P_LST_DATATYPE_ACCESS_ID_g` | Bound |
+| `H5P_LST_DATATYPE_CREATE_ID_g` | Bound |
+| `H5P_LST_FILE_ACCESS_ID_g` | Bound |
+| `H5P_LST_FILE_CREATE_ID_g` | Bound |
+| `H5P_LST_FILE_MOUNT_ID_g` | Bound |
+| `H5P_LST_GROUP_ACCESS_ID_g` | Bound |
+| `H5P_LST_GROUP_CREATE_ID_g` | Bound |
+| `H5P_LST_LINK_ACCESS_ID_g` | Bound |
+| `H5P_LST_LINK_CREATE_ID_g` | Bound |
+| `H5P_LST_MAP_ACCESS_ID_g` | Bound |
+| `H5P_LST_MAP_CREATE_ID_g` | Bound |
+| `H5P_LST_OBJECT_COPY_ID_g` | Bound |
+| `H5P_LST_REFERENCE_ACCESS_ID_g` | Bound |
+| `H5P_LST_VOL_INITIALIZE_ID_g` | Bound |
+
+## H5T predefined identifiers
+
+These identifiers remain owned by HDF5. Optional native datatypes may have negative values when the native compiler lacks support. Map property classes exist even though map operations are not compiled into this package.
+
+| Native global | C# coverage |
+|---|---|
+| `H5T_C_S1_g` | Bound |
+| `H5T_COMPLEX_IEEE_F16BE_g` | Bound |
+| `H5T_COMPLEX_IEEE_F16LE_g` | Bound |
+| `H5T_COMPLEX_IEEE_F32BE_g` | Bound |
+| `H5T_COMPLEX_IEEE_F32LE_g` | Bound |
+| `H5T_COMPLEX_IEEE_F64BE_g` | Bound |
+| `H5T_COMPLEX_IEEE_F64LE_g` | Bound |
+| `H5T_FLOAT_BFLOAT16BE_g` | Bound |
+| `H5T_FLOAT_BFLOAT16LE_g` | Bound |
+| `H5T_FLOAT_F4E2M1_g` | Bound |
+| `H5T_FLOAT_F6E2M3_g` | Bound |
+| `H5T_FLOAT_F6E3M2_g` | Bound |
+| `H5T_FLOAT_F8E4M3_g` | Bound |
+| `H5T_FLOAT_F8E5M2_g` | Bound |
+| `H5T_FORTRAN_S1_g` | Bound |
+| `H5T_IEEE_F16BE_g` | Bound |
+| `H5T_IEEE_F16LE_g` | Bound |
+| `H5T_IEEE_F32BE_g` | Bound |
+| `H5T_IEEE_F32LE_g` | Bound |
+| `H5T_IEEE_F64BE_g` | Bound |
+| `H5T_IEEE_F64LE_g` | Bound |
+| `H5T_NATIVE_B16_g` | Bound |
+| `H5T_NATIVE_B32_g` | Bound |
+| `H5T_NATIVE_B64_g` | Bound |
+| `H5T_NATIVE_B8_g` | Bound |
+| `H5T_NATIVE_DOUBLE_COMPLEX_g` | Bound |
+| `H5T_NATIVE_DOUBLE_g` | Bound |
+| `H5T_NATIVE_FLOAT_COMPLEX_g` | Bound |
+| `H5T_NATIVE_FLOAT_g` | Bound |
+| `H5T_NATIVE_FLOAT16_g` | Bound |
+| `H5T_NATIVE_HADDR_g` | Bound |
+| `H5T_NATIVE_HBOOL_g` | Bound |
+| `H5T_NATIVE_HERR_g` | Bound |
+| `H5T_NATIVE_HSIZE_g` | Bound |
+| `H5T_NATIVE_HSSIZE_g` | Bound |
+| `H5T_NATIVE_INT_FAST16_g` | Bound |
+| `H5T_NATIVE_INT_FAST32_g` | Bound |
+| `H5T_NATIVE_INT_FAST64_g` | Bound |
+| `H5T_NATIVE_INT_FAST8_g` | Bound |
+| `H5T_NATIVE_INT_g` | Bound |
+| `H5T_NATIVE_INT_LEAST16_g` | Bound |
+| `H5T_NATIVE_INT_LEAST32_g` | Bound |
+| `H5T_NATIVE_INT_LEAST64_g` | Bound |
+| `H5T_NATIVE_INT_LEAST8_g` | Bound |
+| `H5T_NATIVE_INT16_g` | Bound |
+| `H5T_NATIVE_INT32_g` | Bound |
+| `H5T_NATIVE_INT64_g` | Bound |
+| `H5T_NATIVE_INT8_g` | Bound |
+| `H5T_NATIVE_LDOUBLE_COMPLEX_g` | Bound |
+| `H5T_NATIVE_LDOUBLE_g` | Bound |
+| `H5T_NATIVE_LLONG_g` | Bound |
+| `H5T_NATIVE_LONG_g` | Bound |
+| `H5T_NATIVE_OPAQUE_g` | Bound |
+| `H5T_NATIVE_SCHAR_g` | Bound |
+| `H5T_NATIVE_SHORT_g` | Bound |
+| `H5T_NATIVE_UCHAR_g` | Bound |
+| `H5T_NATIVE_UINT_FAST16_g` | Bound |
+| `H5T_NATIVE_UINT_FAST32_g` | Bound |
+| `H5T_NATIVE_UINT_FAST64_g` | Bound |
+| `H5T_NATIVE_UINT_FAST8_g` | Bound |
+| `H5T_NATIVE_UINT_g` | Bound |
+| `H5T_NATIVE_UINT_LEAST16_g` | Bound |
+| `H5T_NATIVE_UINT_LEAST32_g` | Bound |
+| `H5T_NATIVE_UINT_LEAST64_g` | Bound |
+| `H5T_NATIVE_UINT_LEAST8_g` | Bound |
+| `H5T_NATIVE_UINT16_g` | Bound |
+| `H5T_NATIVE_UINT32_g` | Bound |
+| `H5T_NATIVE_UINT64_g` | Bound |
+| `H5T_NATIVE_UINT8_g` | Bound |
+| `H5T_NATIVE_ULLONG_g` | Bound |
+| `H5T_NATIVE_ULONG_g` | Bound |
+| `H5T_NATIVE_USHORT_g` | Bound |
+| `H5T_STD_B16BE_g` | Bound |
+| `H5T_STD_B16LE_g` | Bound |
+| `H5T_STD_B32BE_g` | Bound |
+| `H5T_STD_B32LE_g` | Bound |
+| `H5T_STD_B64BE_g` | Bound |
+| `H5T_STD_B64LE_g` | Bound |
+| `H5T_STD_B8BE_g` | Bound |
+| `H5T_STD_B8LE_g` | Bound |
+| `H5T_STD_I16BE_g` | Bound |
+| `H5T_STD_I16LE_g` | Bound |
+| `H5T_STD_I32BE_g` | Bound |
+| `H5T_STD_I32LE_g` | Bound |
+| `H5T_STD_I64BE_g` | Bound |
+| `H5T_STD_I64LE_g` | Bound |
+| `H5T_STD_I8BE_g` | Bound |
+| `H5T_STD_I8LE_g` | Bound |
+| `H5T_STD_REF_DSETREG_g` | Bound |
+| `H5T_STD_REF_g` | Bound |
+| `H5T_STD_REF_OBJ_g` | Bound |
+| `H5T_STD_U16BE_g` | Bound |
+| `H5T_STD_U16LE_g` | Bound |
+| `H5T_STD_U32BE_g` | Bound |
+| `H5T_STD_U32LE_g` | Bound |
+| `H5T_STD_U64BE_g` | Bound |
+| `H5T_STD_U64LE_g` | Bound |
+| `H5T_STD_U8BE_g` | Bound |
+| `H5T_STD_U8LE_g` | Bound |
+| `H5T_UNIX_D32BE_g` | Bound |
+| `H5T_UNIX_D32LE_g` | Bound |
+| `H5T_UNIX_D64BE_g` | Bound |
+| `H5T_UNIX_D64LE_g` | Bound |
+| `H5T_VAX_F32_g` | Bound |
+| `H5T_VAX_F64_g` | Bound |

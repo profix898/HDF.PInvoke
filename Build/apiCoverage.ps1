@@ -35,7 +35,19 @@ foreach ($group in $groups) {
     $lines.AddRange([string[]]@('', "## $($group.Name)", '', "Native header: ``$($group.Header)``.", '', '| Native function | C# coverage |', '|---|---|'))
     foreach ($name in $group.Names) {
         $status = if ($covered.ContainsKey($name)) { 'Bound' } else { 'Gap' }
+        if ($status -eq 'Gap' -and ($name.StartsWith('H5M') -or $name -match 'map_iterate_hints|mpi|coll_metadata')) {
+            $status = 'Unavailable in packaged serial build'
+        }
         $lines.Add("| ``$name`` | $status |")
+    }
+}
+foreach ($group in 'H5P', 'H5T') {
+    $header = [IO.File]::ReadAllText("$root/Native/hdf5/src/${group}public.h")
+    $globals = @([regex]::Matches($header, 'H5_DLLVAR\s+hid_t\s+(H5\w+_g)\s*;') | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+    $lines.AddRange([string[]]@('', "## $group predefined identifiers", '', 'These identifiers remain owned by HDF5. Optional native datatypes may have negative values when the native compiler lacks support. Map property classes exist even though map operations are not compiled into this package.', '', '| Native global | C# coverage |', '|---|---|'))
+    foreach ($global in $globals) {
+        $status = if ($bindingText.Contains('"' + $global + '"')) { 'Bound' } else { 'Gap' }
+        $lines.Add("| ``$global`` | $status |")
     }
 }
 [IO.File]::WriteAllText([IO.Path]::GetFullPath($Output), ($lines -join "`n") + "`n")
