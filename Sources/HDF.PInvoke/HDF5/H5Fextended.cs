@@ -6,6 +6,20 @@ namespace HDF.PInvoke
     /// <summary>Provides additional HDF5 2.2 H5F operations.</summary>
     public unsafe sealed partial class H5F
     {
+        /// <summary>Gets the file number, widening the native Windows unsigned long to 64 bits.</summary>
+        public static int get_fileno(long file, out ulong number)
+        {
+            // Zero the high half before Windows writes its four-byte unsigned long result.
+            ulong value = 0;
+            var result = get_fileno_native(file, (IntPtr)(&value));
+            number = result >= 0 ? value : 0;
+            return result;
+        }
+
+        /// <summary>Imports the platform-dependent unsigned-long output into caller-owned storage.</summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_fileno", CallingConvention = CallingConvention.Cdecl)]
+        private static extern int get_fileno_native(long file, IntPtr number);
+
         /// <summary>Tests whether a UTF-8 filename is accessible through the configured file driver.</summary>
         /// <remarks>Returns positive if accessible, zero if not, or negative on error.</remarks>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Fis_accessible", CallingConvention = CallingConvention.Cdecl)]

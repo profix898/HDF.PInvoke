@@ -23,7 +23,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 dataspace and selection operations.
     /// </summary>
-    public unsafe sealed class H5S
+    public unsafe sealed partial class H5S
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

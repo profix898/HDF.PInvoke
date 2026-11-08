@@ -25,7 +25,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides HDF5 identifier registration, lookup, and reference-count operations.
     /// </summary>
-    public unsafe sealed class H5I
+    public unsafe sealed partial class H5I
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

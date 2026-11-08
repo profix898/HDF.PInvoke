@@ -8,26 +8,26 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 |---|---:|---:|---:|
 | H5A | 43 | 26 | 17 |
 | H5DO | 3 | 3 | 0 |
-| H5D | 47 | 33 | 14 |
+| H5D | 47 | 34 | 13 |
 | H5DS | 11 | 0 | 11 |
-| H5E | 31 | 19 | 12 |
+| H5E | 31 | 23 | 8 |
 | H5ES | 12 | 0 | 12 |
 | H5FD | 1 | 0 | 1 |
-| H5F | 52 | 42 | 10 |
+| H5F | 52 | 43 | 9 |
 | H5G | 31 | 10 | 21 |
 | H5IM | 12 | 0 | 12 |
-| H5I | 21 | 19 | 2 |
+| H5I | 21 | 21 | 0 |
 | H5LD | 3 | 0 | 3 |
 | H5L | 32 | 26 | 6 |
 | H5LT | 53 | 0 | 53 |
 | H5M | 20 | 0 | 20 |
 | H5O | 47 | 33 | 14 |
 | H5PL | 9 | 9 | 0 |
-| H5P | 225 | 191 | 34 |
+| H5P | 225 | 203 | 22 |
 | H5PT | 16 | 0 | 16 |
-| H5 | 14 | 10 | 4 |
+| H5 | 14 | 12 | 2 |
 | H5R | 24 | 19 | 5 |
-| H5S | 43 | 30 | 13 |
+| H5S | 43 | 43 | 0 |
 | H5TB | 19 | 0 | 19 |
 | H5T | 73 | 66 | 7 |
 | H5VL | 12 | 0 | 12 |
@@ -99,7 +99,7 @@ Native header: `H5Dpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5Dchunk_iter` | Gap |
+| `H5Dchunk_iter` | Bound |
 | `H5Dclose` | Bound |
 | `H5Dclose_async` | Gap |
 | `H5Dcreate_anon` | Bound |
@@ -171,7 +171,7 @@ Native header: `H5Epublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5Eappend_stack` | Gap |
+| `H5Eappend_stack` | Bound |
 | `H5Eauto_is_v2` | Bound |
 | `H5Eclear1` | Gap |
 | `H5Eclear2` | Bound |
@@ -187,15 +187,15 @@ Native header: `H5Epublic.h`.
 | `H5Eget_minor` | Gap |
 | `H5Eget_msg` | Bound |
 | `H5Eget_num` | Bound |
-| `H5Eis_paused` | Gap |
-| `H5Epause_stack` | Gap |
+| `H5Eis_paused` | Bound |
+| `H5Epause_stack` | Bound |
 | `H5Epop` | Bound |
 | `H5Eprint1` | Gap |
 | `H5Eprint2` | Bound |
 | `H5Epush1` | Gap |
 | `H5Epush2` | Bound |
 | `H5Eregister_class` | Bound |
-| `H5Eresume_stack` | Gap |
+| `H5Eresume_stack` | Bound |
 | `H5Eset_auto1` | Gap |
 | `H5Eset_auto2` | Bound |
 | `H5Eset_current_stack` | Bound |
@@ -250,7 +250,7 @@ Native header: `H5Fpublic.h`.
 | `H5Fget_dset_no_attrs_hint` | Bound |
 | `H5Fget_eoa` | Bound |
 | `H5Fget_file_image` | Bound |
-| `H5Fget_fileno` | Gap |
+| `H5Fget_fileno` | Bound |
 | `H5Fget_filesize` | Bound |
 | `H5Fget_free_sections` | Bound |
 | `H5Fget_freespace` | Bound |
@@ -364,12 +364,12 @@ Native header: `H5Ipublic.h`.
 | `H5Iinc_ref` | Bound |
 | `H5Iinc_type_ref` | Bound |
 | `H5Iis_valid` | Bound |
-| `H5Iiterate` | Gap |
+| `H5Iiterate` | Bound |
 | `H5Inmembers` | Bound |
 | `H5Iobject_verify` | Bound |
 | `H5Iregister` | Bound |
 | `H5Iregister_type1` | Bound |
-| `H5Iregister_type2` | Gap |
+| `H5Iregister_type2` | Bound |
 | `H5Iremove_verify` | Bound |
 | `H5Isearch` | Bound |
 | `H5Itype_exists` | Bound |
@@ -594,9 +594,9 @@ Native header: `H5Ppublic.h`.
 | `H5Pcopy_prop` | Bound |
 | `H5Pcreate` | Bound |
 | `H5Pcreate_class` | Bound |
-| `H5Pdecode` | Gap |
+| `H5Pdecode` | Bound |
 | `H5Pencode1` | Gap |
-| `H5Pencode2` | Gap |
+| `H5Pencode2` | Bound |
 | `H5Pequal` | Bound |
 | `H5Pexist` | Bound |
 | `H5Pfill_value_defined` | Bound |
@@ -625,7 +625,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_create_intermediate_group` | Bound |
 | `H5Pget_data_transform` | Bound |
 | `H5Pget_driver` | Bound |
-| `H5Pget_driver_config_str` | Gap |
+| `H5Pget_driver_config_str` | Bound |
 | `H5Pget_driver_info` | Bound |
 | `H5Pget_dset_no_attrs_hint` | Bound |
 | `H5Pget_edc_check` | Bound |
@@ -673,7 +673,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_mpio_actual_chunk_opt_mode` | Gap |
 | `H5Pget_mpio_actual_io_mode` | Gap |
 | `H5Pget_mpio_no_collective_cause` | Gap |
-| `H5Pget_multi_type` | Gap |
+| `H5Pget_multi_type` | Bound |
 | `H5Pget_nfilters` | Bound |
 | `H5Pget_nlinks` | Bound |
 | `H5Pget_no_selection_io_cause` | Bound |
@@ -682,7 +682,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_object_flush_cb` | Bound |
 | `H5Pget_page_buffer_size` | Bound |
 | `H5Pget_preserve` | Gap |
-| `H5Pget_relax_file_integrity_checks` | Gap |
+| `H5Pget_relax_file_integrity_checks` | Bound |
 | `H5Pget_selection_io` | Bound |
 | `H5Pget_shared_mesg_index` | Bound |
 | `H5Pget_shared_mesg_nindexes` | Bound |
@@ -700,7 +700,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pget_virtual_filename` | Bound |
 | `H5Pget_virtual_prefix` | Bound |
 | `H5Pget_virtual_printf_gap` | Bound |
-| `H5Pget_virtual_spatial_tree` | Gap |
+| `H5Pget_virtual_spatial_tree` | Bound |
 | `H5Pget_virtual_srcspace` | Bound |
 | `H5Pget_virtual_view` | Bound |
 | `H5Pget_virtual_vspace` | Bound |
@@ -736,11 +736,11 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_core_write_tracking` | Bound |
 | `H5Pset_create_intermediate_group` | Bound |
 | `H5Pset_data_transform` | Bound |
-| `H5Pset_dataset_io_hyperslab_selection` | Gap |
+| `H5Pset_dataset_io_hyperslab_selection` | Bound |
 | `H5Pset_deflate` | Bound |
 | `H5Pset_driver` | Bound |
-| `H5Pset_driver_by_name` | Gap |
-| `H5Pset_driver_by_value` | Gap |
+| `H5Pset_driver_by_name` | Bound |
+| `H5Pset_driver_by_value` | Bound |
 | `H5Pset_dset_no_attrs_hint` | Bound |
 | `H5Pset_edc_check` | Bound |
 | `H5Pset_efile_prefix` | Bound |
@@ -782,14 +782,14 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_metadata_read_attempts` | Bound |
 | `H5Pset_modify_write_buf` | Bound |
 | `H5Pset_mpi_params` | Gap |
-| `H5Pset_multi_type` | Gap |
+| `H5Pset_multi_type` | Bound |
 | `H5Pset_nbit` | Bound |
 | `H5Pset_nlinks` | Bound |
 | `H5Pset_obj_track_times` | Bound |
 | `H5Pset_object_flush_cb` | Bound |
 | `H5Pset_page_buffer_size` | Bound |
 | `H5Pset_preserve` | Gap |
-| `H5Pset_relax_file_integrity_checks` | Gap |
+| `H5Pset_relax_file_integrity_checks` | Bound |
 | `H5Pset_scaleoffset` | Bound |
 | `H5Pset_selection_io` | Bound |
 | `H5Pset_shared_mesg_index` | Bound |
@@ -806,7 +806,7 @@ Native header: `H5Ppublic.h`.
 | `H5Pset_virtual` | Bound |
 | `H5Pset_virtual_prefix` | Bound |
 | `H5Pset_virtual_printf_gap` | Bound |
-| `H5Pset_virtual_spatial_tree` | Gap |
+| `H5Pset_virtual_spatial_tree` | Bound |
 | `H5Pset_virtual_view` | Bound |
 | `H5Pset_vlen_mem_manager` | Bound |
 | `H5Pset_vol` | Gap |
@@ -848,9 +848,9 @@ Native header: `H5public.h`.
 | `H5dont_atexit` | Bound |
 | `H5free_memory` | Bound |
 | `H5garbage_collect` | Bound |
-| `H5get_free_list_sizes` | Gap |
+| `H5get_free_list_sizes` | Bound |
 | `H5get_libversion` | Bound |
-| `H5is_library_terminating` | Gap |
+| `H5is_library_terminating` | Bound |
 | `H5is_library_threadsafe` | Bound |
 | `H5open` | Bound |
 | `H5resize_memory` | Bound |
@@ -894,14 +894,14 @@ Native header: `H5Spublic.h`.
 | Native function | C# coverage |
 |---|---|
 | `H5Sclose` | Bound |
-| `H5Scombine_hyperslab` | Gap |
-| `H5Scombine_select` | Gap |
+| `H5Scombine_hyperslab` | Bound |
+| `H5Scombine_select` | Bound |
 | `H5Scopy` | Bound |
 | `H5Screate` | Bound |
 | `H5Screate_simple` | Bound |
 | `H5Sdecode` | Bound |
 | `H5Sencode1` | Bound |
-| `H5Sencode2` | Gap |
+| `H5Sencode2` | Bound |
 | `H5Sextent_copy` | Bound |
 | `H5Sextent_equal` | Bound |
 | `H5Sget_regular_hyperslab` | Bound |
@@ -918,21 +918,21 @@ Native header: `H5Spublic.h`.
 | `H5Sget_simple_extent_type` | Bound |
 | `H5Sis_regular_hyperslab` | Bound |
 | `H5Sis_simple` | Bound |
-| `H5Smodify_select` | Gap |
+| `H5Smodify_select` | Bound |
 | `H5Soffset_simple` | Bound |
-| `H5Ssel_iter_close` | Gap |
-| `H5Ssel_iter_create` | Gap |
-| `H5Ssel_iter_get_seq_list` | Gap |
-| `H5Ssel_iter_reset` | Gap |
-| `H5Sselect_adjust` | Gap |
+| `H5Ssel_iter_close` | Bound |
+| `H5Ssel_iter_create` | Bound |
+| `H5Ssel_iter_get_seq_list` | Bound |
+| `H5Ssel_iter_reset` | Bound |
+| `H5Sselect_adjust` | Bound |
 | `H5Sselect_all` | Bound |
-| `H5Sselect_copy` | Gap |
+| `H5Sselect_copy` | Bound |
 | `H5Sselect_elements` | Bound |
 | `H5Sselect_hyperslab` | Bound |
-| `H5Sselect_intersect_block` | Gap |
+| `H5Sselect_intersect_block` | Bound |
 | `H5Sselect_none` | Bound |
-| `H5Sselect_project_intersection` | Gap |
-| `H5Sselect_shape_same` | Gap |
+| `H5Sselect_project_intersection` | Bound |
+| `H5Sselect_shape_same` | Bound |
 | `H5Sselect_valid` | Bound |
 | `H5Sset_extent_none` | Bound |
 | `H5Sset_extent_simple` | Bound |

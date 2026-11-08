@@ -23,7 +23,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides HDF5 library initialization, version, memory, and diagnostic functions.
     /// </summary>
-    public unsafe sealed class H5
+    public unsafe sealed partial class H5
     {
         /// <summary>
         /// The sentinel representing an undefined native size.

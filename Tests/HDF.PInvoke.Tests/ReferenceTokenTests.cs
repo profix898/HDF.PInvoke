@@ -96,6 +96,8 @@ namespace UnitTests
                 Assert.IsTrue(H5O.get_info_by_idx3(file, ".", H5.index_t.NAME, H5.iter_order_t.INC, 0, out var indexed) >= 0);
                 Assert.AreEqual(H5O.type_t.GROUP, direct.type);
                 Assert.AreEqual(direct.fileno, named.fileno);
+                Assert.IsTrue(H5F.get_fileno(file, out var fileNumber) >= 0);
+                Assert.AreEqual(direct.fileno, fileNumber);
                 Assert.IsTrue(H5O.token_cmp(file, ref direct.token, ref indexed.token, out var comparison) >= 0);
                 Assert.AreEqual(0, comparison);
                 Assert.IsTrue(H5O.token_to_str(file, ref direct.token, out var text) >= 0);

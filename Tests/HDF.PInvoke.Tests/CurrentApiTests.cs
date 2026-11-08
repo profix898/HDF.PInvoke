@@ -55,6 +55,16 @@ namespace UnitTests
                     CollectionAssert.AreEqual(a, x);
                 }
                 Assert.IsTrue(H5P.get_actual_selection_io_mode(transfer, out _) >= 0);
+                var chunks = 0;
+                H5D.chunk_iter_t chunkCallback = (offset, filters, address, size, state) =>
+                {
+                    if (Marshal.ReadInt64(offset) != 0 || size != 16 || state != new IntPtr(42)) return -1;
+                    chunks++;
+                    return 0;
+                };
+                Assert.IsTrue(H5D.chunk_iter(first, H5P.DEFAULT, chunkCallback, new IntPtr(42)) >= 0);
+                Assert.AreEqual(1, chunks);
+                GC.KeepAlive(chunkCallback);
                 Assert.IsTrue(H5P.get_no_selection_io_cause(transfer, out _) >= 0);
                 Assert.ThrowsExactly<ArgumentException>(() => H5D.read_multi(ids, new long[1], spaces, spaces, transfer, new IntPtr[2]));
                 Assert.ThrowsExactly<ArgumentNullException>(() => H5D.write_multi(null, types, spaces, spaces, transfer, new IntPtr[2]));
