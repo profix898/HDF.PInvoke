@@ -64,6 +64,14 @@ namespace HDF.PInvoke
             return new info2_t { fileno = value.fileno, token = value.token, type = value.type, rc = value.rc, atime = value.atime, mtime = value.mtime, ctime = value.ctime, btime = value.btime, num_attrs = value.num_attrs };
         }
 
+        /// <summary>Copies a completed asynchronous H5O_info2_t output into the portable managed representation.</summary>
+        /// <remarks>The pointer must address at least 72 bytes of valid native information on supported 64-bit platforms. Wait for operation completion before calling this method.</remarks>
+        public static info2_t read_info2(IntPtr pointer)
+        {
+            if (pointer == IntPtr.Zero) throw new ArgumentNullException(nameof(pointer));
+            return ReadInfo2(pointer);
+        }
+
         /// <summary>Receives borrowed current object information; return zero to continue, positive to stop, or negative on error. Do not throw through native code.</summary>
         public delegate int iterate2_t(long root, string name, ref info2_t information, IntPtr state);
 

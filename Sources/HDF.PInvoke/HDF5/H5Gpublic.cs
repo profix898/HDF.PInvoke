@@ -21,7 +21,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 group operations.
     /// </summary>
-    public unsafe sealed class H5G
+    public unsafe sealed partial class H5G
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

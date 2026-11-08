@@ -6,30 +6,30 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 
 | Group | Native functions | Bound | Gaps |
 |---|---:|---:|---:|
-| H5A | 43 | 26 | 17 |
+| H5A | 43 | 38 | 5 |
 | H5DO | 3 | 3 | 0 |
-| H5D | 47 | 34 | 13 |
+| H5D | 47 | 43 | 4 |
 | H5DS | 11 | 11 | 0 |
 | H5E | 31 | 23 | 8 |
-| H5ES | 12 | 0 | 12 |
+| H5ES | 12 | 12 | 0 |
 | H5FD | 1 | 0 | 1 |
-| H5F | 52 | 43 | 9 |
-| H5G | 31 | 10 | 21 |
+| H5F | 52 | 48 | 4 |
+| H5G | 31 | 16 | 15 |
 | H5IM | 12 | 0 | 12 |
 | H5I | 21 | 21 | 0 |
 | H5LD | 3 | 0 | 3 |
-| H5L | 32 | 26 | 6 |
+| H5L | 32 | 32 | 0 |
 | H5LT | 53 | 53 | 0 |
 | H5M | 20 | 0 | 20 |
-| H5O | 47 | 33 | 14 |
+| H5O | 47 | 40 | 7 |
 | H5PL | 9 | 9 | 0 |
 | H5P | 225 | 207 | 18 |
 | H5PT | 16 | 0 | 16 |
 | H5 | 14 | 12 | 2 |
-| H5R | 24 | 19 | 5 |
+| H5R | 24 | 22 | 2 |
 | H5S | 43 | 43 | 0 |
 | H5TB | 19 | 0 | 19 |
-| H5T | 73 | 66 | 7 |
+| H5T | 73 | 69 | 4 |
 | H5VL | 12 | 12 | 0 |
 | H5Z | 2 | 2 | 0 |
 
@@ -40,19 +40,19 @@ Native header: `H5Apublic.h`.
 | Native function | C# coverage |
 |---|---|
 | `H5Aclose` | Bound |
-| `H5Aclose_async` | Gap |
-| `H5Acreate_async` | Gap |
+| `H5Aclose_async` | Bound |
+| `H5Acreate_async` | Bound |
 | `H5Acreate_by_name` | Bound |
-| `H5Acreate_by_name_async` | Gap |
+| `H5Acreate_by_name_async` | Bound |
 | `H5Acreate1` | Gap |
 | `H5Acreate2` | Bound |
 | `H5Adelete` | Bound |
 | `H5Adelete_by_idx` | Bound |
 | `H5Adelete_by_name` | Bound |
 | `H5Aexists` | Bound |
-| `H5Aexists_async` | Gap |
+| `H5Aexists_async` | Bound |
 | `H5Aexists_by_name` | Bound |
-| `H5Aexists_by_name_async` | Gap |
+| `H5Aexists_by_name_async` | Bound |
 | `H5Aget_create_plist` | Bound |
 | `H5Aget_info` | Bound |
 | `H5Aget_info_by_idx` | Bound |
@@ -67,21 +67,21 @@ Native header: `H5Apublic.h`.
 | `H5Aiterate1` | Gap |
 | `H5Aiterate2` | Bound |
 | `H5Aopen` | Bound |
-| `H5Aopen_async` | Gap |
+| `H5Aopen_async` | Bound |
 | `H5Aopen_by_idx` | Bound |
-| `H5Aopen_by_idx_async` | Gap |
+| `H5Aopen_by_idx_async` | Bound |
 | `H5Aopen_by_name` | Bound |
-| `H5Aopen_by_name_async` | Gap |
+| `H5Aopen_by_name_async` | Bound |
 | `H5Aopen_idx` | Gap |
 | `H5Aopen_name` | Gap |
 | `H5Aread` | Bound |
-| `H5Aread_async` | Gap |
+| `H5Aread_async` | Bound |
 | `H5Arename` | Bound |
-| `H5Arename_async` | Gap |
+| `H5Arename_async` | Bound |
 | `H5Arename_by_name` | Bound |
-| `H5Arename_by_name_async` | Gap |
+| `H5Arename_by_name_async` | Bound |
 | `H5Awrite` | Bound |
-| `H5Awrite_async` | Gap |
+| `H5Awrite_async` | Bound |
 
 ## H5DO
 
@@ -101,9 +101,9 @@ Native header: `H5Dpublic.h`.
 |---|---|
 | `H5Dchunk_iter` | Bound |
 | `H5Dclose` | Bound |
-| `H5Dclose_async` | Gap |
+| `H5Dclose_async` | Bound |
 | `H5Dcreate_anon` | Bound |
-| `H5Dcreate_async` | Gap |
+| `H5Dcreate_async` | Bound |
 | `H5Dcreate1` | Gap |
 | `H5Dcreate2` | Bound |
 | `H5Ddebug` | Gap |
@@ -121,31 +121,31 @@ Native header: `H5Dpublic.h`.
 | `H5Dget_num_chunks` | Bound |
 | `H5Dget_offset` | Bound |
 | `H5Dget_space` | Bound |
-| `H5Dget_space_async` | Gap |
+| `H5Dget_space_async` | Bound |
 | `H5Dget_space_status` | Bound |
 | `H5Dget_storage_size` | Bound |
 | `H5Dget_type` | Bound |
 | `H5Diterate` | Bound |
-| `H5Dopen_async` | Gap |
+| `H5Dopen_async` | Bound |
 | `H5Dopen1` | Gap |
 | `H5Dopen2` | Bound |
 | `H5Dread` | Bound |
-| `H5Dread_async` | Gap |
+| `H5Dread_async` | Bound |
 | `H5Dread_chunk1` | Bound |
 | `H5Dread_chunk2` | Bound |
 | `H5Dread_multi` | Bound |
-| `H5Dread_multi_async` | Gap |
+| `H5Dread_multi_async` | Bound |
 | `H5Drefresh` | Bound |
 | `H5Dscatter` | Bound |
 | `H5Dset_extent` | Bound |
-| `H5Dset_extent_async` | Gap |
+| `H5Dset_extent_async` | Bound |
 | `H5Dvlen_get_buf_size` | Bound |
 | `H5Dvlen_reclaim` | Bound |
 | `H5Dwrite` | Bound |
-| `H5Dwrite_async` | Gap |
+| `H5Dwrite_async` | Bound |
 | `H5Dwrite_chunk` | Bound |
 | `H5Dwrite_multi` | Bound |
-| `H5Dwrite_multi_async` | Gap |
+| `H5Dwrite_multi_async` | Bound |
 
 ## H5DS
 
@@ -209,18 +209,18 @@ Native header: `H5ESpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5EScancel` | Gap |
-| `H5ESclose` | Gap |
-| `H5EScreate` | Gap |
-| `H5ESfree_err_info` | Gap |
-| `H5ESget_count` | Gap |
-| `H5ESget_err_count` | Gap |
-| `H5ESget_err_info` | Gap |
-| `H5ESget_err_status` | Gap |
-| `H5ESget_op_counter` | Gap |
-| `H5ESregister_complete_func` | Gap |
-| `H5ESregister_insert_func` | Gap |
-| `H5ESwait` | Gap |
+| `H5EScancel` | Bound |
+| `H5ESclose` | Bound |
+| `H5EScreate` | Bound |
+| `H5ESfree_err_info` | Bound |
+| `H5ESget_count` | Bound |
+| `H5ESget_err_count` | Bound |
+| `H5ESget_err_info` | Bound |
+| `H5ESget_err_status` | Bound |
+| `H5ESget_op_counter` | Bound |
+| `H5ESregister_complete_func` | Bound |
+| `H5ESregister_insert_func` | Bound |
+| `H5ESwait` | Bound |
 
 ## H5FD
 
@@ -238,12 +238,12 @@ Native header: `H5Fpublic.h`.
 |---|---|
 | `H5Fclear_elink_file_cache` | Bound |
 | `H5Fclose` | Bound |
-| `H5Fclose_async` | Gap |
+| `H5Fclose_async` | Bound |
 | `H5Fcreate` | Bound |
-| `H5Fcreate_async` | Gap |
+| `H5Fcreate_async` | Bound |
 | `H5Fdelete` | Bound |
 | `H5Fflush` | Bound |
-| `H5Fflush_async` | Gap |
+| `H5Fflush_async` | Bound |
 | `H5Fformat_convert` | Bound |
 | `H5Fget_access_plist` | Bound |
 | `H5Fget_create_plist` | Bound |
@@ -274,9 +274,9 @@ Native header: `H5Fpublic.h`.
 | `H5Fis_hdf5` | Bound |
 | `H5Fmount` | Bound |
 | `H5Fopen` | Bound |
-| `H5Fopen_async` | Gap |
+| `H5Fopen_async` | Bound |
 | `H5Freopen` | Bound |
-| `H5Freopen_async` | Gap |
+| `H5Freopen_async` | Bound |
 | `H5Freset_mdc_hit_rate_stats` | Bound |
 | `H5Freset_page_buffering_stats` | Bound |
 | `H5Fset_dset_no_attrs_hint` | Bound |
@@ -296,20 +296,20 @@ Native header: `H5Gpublic.h`.
 | Native function | C# coverage |
 |---|---|
 | `H5Gclose` | Bound |
-| `H5Gclose_async` | Gap |
+| `H5Gclose_async` | Bound |
 | `H5Gcreate_anon` | Bound |
-| `H5Gcreate_async` | Gap |
+| `H5Gcreate_async` | Bound |
 | `H5Gcreate1` | Gap |
 | `H5Gcreate2` | Bound |
 | `H5Gflush` | Bound |
 | `H5Gget_comment` | Gap |
 | `H5Gget_create_plist` | Bound |
 | `H5Gget_info` | Bound |
-| `H5Gget_info_async` | Gap |
+| `H5Gget_info_async` | Bound |
 | `H5Gget_info_by_idx` | Bound |
-| `H5Gget_info_by_idx_async` | Gap |
+| `H5Gget_info_by_idx_async` | Bound |
 | `H5Gget_info_by_name` | Bound |
-| `H5Gget_info_by_name_async` | Gap |
+| `H5Gget_info_by_name_async` | Bound |
 | `H5Gget_linkval` | Gap |
 | `H5Gget_num_objs` | Gap |
 | `H5Gget_objinfo` | Gap |
@@ -320,7 +320,7 @@ Native header: `H5Gpublic.h`.
 | `H5Glink2` | Gap |
 | `H5Gmove` | Gap |
 | `H5Gmove2` | Gap |
-| `H5Gopen_async` | Gap |
+| `H5Gopen_async` | Bound |
 | `H5Gopen1` | Gap |
 | `H5Gopen2` | Bound |
 | `H5Grefresh` | Bound |
@@ -393,16 +393,16 @@ Native header: `H5Lpublic.h`.
 | `H5Lcopy` | Bound |
 | `H5Lcreate_external` | Bound |
 | `H5Lcreate_hard` | Bound |
-| `H5Lcreate_hard_async` | Gap |
+| `H5Lcreate_hard_async` | Bound |
 | `H5Lcreate_soft` | Bound |
-| `H5Lcreate_soft_async` | Gap |
+| `H5Lcreate_soft_async` | Bound |
 | `H5Lcreate_ud` | Bound |
 | `H5Ldelete` | Bound |
-| `H5Ldelete_async` | Gap |
+| `H5Ldelete_async` | Bound |
 | `H5Ldelete_by_idx` | Bound |
-| `H5Ldelete_by_idx_async` | Gap |
+| `H5Ldelete_by_idx_async` | Bound |
 | `H5Lexists` | Bound |
-| `H5Lexists_async` | Gap |
+| `H5Lexists_async` | Bound |
 | `H5Lget_info_by_idx1` | Bound |
 | `H5Lget_info_by_idx2` | Bound |
 | `H5Lget_info1` | Bound |
@@ -411,7 +411,7 @@ Native header: `H5Lpublic.h`.
 | `H5Lget_val` | Bound |
 | `H5Lget_val_by_idx` | Bound |
 | `H5Lis_registered` | Bound |
-| `H5Literate_async` | Gap |
+| `H5Literate_async` | Bound |
 | `H5Literate_by_name1` | Bound |
 | `H5Literate_by_name2` | Bound |
 | `H5Literate1` | Bound |
@@ -518,21 +518,21 @@ Native header: `H5Opublic.h`.
 |---|---|
 | `H5Oare_mdc_flushes_disabled` | Bound |
 | `H5Oclose` | Bound |
-| `H5Oclose_async` | Gap |
+| `H5Oclose_async` | Bound |
 | `H5Ocopy` | Bound |
-| `H5Ocopy_async` | Gap |
+| `H5Ocopy_async` | Bound |
 | `H5Odecr_refcount` | Bound |
 | `H5Odisable_mdc_flushes` | Bound |
 | `H5Oenable_mdc_flushes` | Bound |
 | `H5Oexists_by_name` | Bound |
 | `H5Oflush` | Bound |
-| `H5Oflush_async` | Gap |
+| `H5Oflush_async` | Bound |
 | `H5Oget_comment` | Bound |
 | `H5Oget_comment_by_name` | Bound |
 | `H5Oget_info_by_idx1` | Bound |
 | `H5Oget_info_by_idx2` | Gap |
 | `H5Oget_info_by_idx3` | Bound |
-| `H5Oget_info_by_name_async` | Gap |
+| `H5Oget_info_by_name_async` | Bound |
 | `H5Oget_info_by_name1` | Bound |
 | `H5Oget_info_by_name2` | Gap |
 | `H5Oget_info_by_name3` | Bound |
@@ -545,13 +545,13 @@ Native header: `H5Opublic.h`.
 | `H5Oincr_refcount` | Bound |
 | `H5Olink` | Bound |
 | `H5Oopen` | Bound |
-| `H5Oopen_async` | Gap |
+| `H5Oopen_async` | Bound |
 | `H5Oopen_by_addr` | Bound |
 | `H5Oopen_by_idx` | Bound |
-| `H5Oopen_by_idx_async` | Gap |
+| `H5Oopen_by_idx_async` | Bound |
 | `H5Oopen_by_token` | Bound |
 | `H5Orefresh` | Bound |
-| `H5Orefresh_async` | Gap |
+| `H5Orefresh_async` | Bound |
 | `H5Oset_comment` | Gap |
 | `H5Oset_comment_by_name` | Gap |
 | `H5Otoken_cmp` | Bound |
@@ -881,11 +881,11 @@ Native header: `H5Rpublic.h`.
 | `H5Rget_region` | Bound |
 | `H5Rget_type` | Bound |
 | `H5Ropen_attr` | Bound |
-| `H5Ropen_attr_async` | Gap |
+| `H5Ropen_attr_async` | Bound |
 | `H5Ropen_object` | Bound |
-| `H5Ropen_object_async` | Gap |
+| `H5Ropen_object_async` | Bound |
 | `H5Ropen_region` | Bound |
-| `H5Ropen_region_async` | Gap |
+| `H5Ropen_region_async` | Bound |
 
 ## H5S
 
@@ -972,9 +972,9 @@ Native header: `H5Tpublic.h`.
 | `H5Tarray_create1` | Gap |
 | `H5Tarray_create2` | Bound |
 | `H5Tclose` | Bound |
-| `H5Tclose_async` | Gap |
+| `H5Tclose_async` | Bound |
 | `H5Tcommit_anon` | Bound |
-| `H5Tcommit_async` | Gap |
+| `H5Tcommit_async` | Bound |
 | `H5Tcommit1` | Gap |
 | `H5Tcommit2` | Bound |
 | `H5Tcommitted` | Bound |
@@ -1022,7 +1022,7 @@ Native header: `H5Tpublic.h`.
 | `H5Tinsert` | Bound |
 | `H5Tis_variable_str` | Bound |
 | `H5Tlock` | Bound |
-| `H5Topen_async` | Gap |
+| `H5Topen_async` | Bound |
 | `H5Topen1` | Gap |
 | `H5Topen2` | Bound |
 | `H5Tpack` | Bound |

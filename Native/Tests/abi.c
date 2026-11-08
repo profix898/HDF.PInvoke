@@ -180,5 +180,26 @@ int main(int argc, char **argv)
     fprintf(out, "%s|ctime|%zu\n", info2_type, offsetof(H5O_info2_t, ctime));
     fprintf(out, "%s|btime|%zu\n", info2_type, offsetof(H5O_info2_t, btime));
     fprintf(out, "%s|num_attrs|%zu\n", info2_type, offsetof(H5O_info2_t, num_attrs));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|$size|%zu\n", sizeof(H5ES_op_info_t));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|api_name|%zu\n", offsetof(H5ES_op_info_t, api_name));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|api_args|%zu\n", offsetof(H5ES_op_info_t, api_args));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|app_file_name|%zu\n", offsetof(H5ES_op_info_t, app_file_name));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|app_func_name|%zu\n", offsetof(H5ES_op_info_t, app_func_name));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|app_line_num|%zu\n", offsetof(H5ES_op_info_t, app_line_num));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|op_ins_count|%zu\n", offsetof(H5ES_op_info_t, op_ins_count));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|op_ins_ts|%zu\n", offsetof(H5ES_op_info_t, op_ins_ts));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|op_exec_ts|%zu\n", offsetof(H5ES_op_info_t, op_exec_ts));
+    fprintf(out, "HDF.PInvoke.H5ES+op_info_t|op_exec_time|%zu\n", offsetof(H5ES_op_info_t, op_exec_time));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|$size|%zu\n", sizeof(H5ES_err_info_t));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|api_name|%zu\n", offsetof(H5ES_err_info_t, api_name));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|api_args|%zu\n", offsetof(H5ES_err_info_t, api_args));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|app_file_name|%zu\n", offsetof(H5ES_err_info_t, app_file_name));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|app_func_name|%zu\n", offsetof(H5ES_err_info_t, app_func_name));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|app_line_num|%zu\n", offsetof(H5ES_err_info_t, app_line_num));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|op_ins_count|%zu\n", offsetof(H5ES_err_info_t, op_ins_count));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|op_ins_ts|%zu\n", offsetof(H5ES_err_info_t, op_ins_ts));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|op_exec_ts|%zu\n", offsetof(H5ES_err_info_t, op_exec_ts));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|op_exec_time|%zu\n", offsetof(H5ES_err_info_t, op_exec_time));
+    fprintf(out, "HDF.PInvoke.H5ES+err_info_t|err_stack_id|%zu\n", offsetof(H5ES_err_info_t, err_stack_id));
     return fclose(out) == 0 ? 0 : 1;
 }

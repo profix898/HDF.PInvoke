@@ -108,6 +108,8 @@ For a private native installation, call `NativeDependencies.Configure(absoluteDi
 
 [ADVANCED.md](https://github.com/profix898/HDF.PInvoke/blob/master/ADVANCED.md) covers modern integration, builds, tests and packaging. [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/LEGACY.md) covers .NET Standard integration and implementation.
 
+[API_COVERAGE.md](https://github.com/profix898/HDF.PInvoke/blob/master/API_COVERAGE.md) lists native function and predefined-identifier coverage by API group. [ASYNC.md](https://github.com/profix898/HDF.PInvoke/blob/master/ASYNC.md) explains event-set ownership and the distinction between async entry points and actual background execution.
+
 ## License
 
 HDF.PInvoke is licensed under the terms in [LICENSE.txt](LICENSE.txt), which identifies the [3-clause BSD license](https://opensource.org/license/bsd-3-clause). Preserve the copyright notices, conditions and disclaimers when redistributing source or binaries.

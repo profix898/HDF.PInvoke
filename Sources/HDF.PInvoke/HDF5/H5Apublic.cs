@@ -26,7 +26,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 attribute operations.
     /// </summary>
-    public unsafe sealed class H5A
+    public unsafe sealed partial class H5A
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.
