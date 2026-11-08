@@ -18,15 +18,15 @@ Macros, exported datatype/property globals, VFD-specific headers and VOL connect
 | H5IM | 12 | 0 | 12 |
 | H5I | 21 | 19 | 2 |
 | H5LD | 3 | 0 | 3 |
-| H5L | 32 | 20 | 12 |
+| H5L | 32 | 26 | 6 |
 | H5LT | 53 | 0 | 53 |
 | H5M | 20 | 0 | 20 |
-| H5O | 47 | 21 | 26 |
+| H5O | 47 | 33 | 14 |
 | H5PL | 9 | 9 | 0 |
 | H5P | 225 | 191 | 34 |
 | H5PT | 16 | 0 | 16 |
 | H5 | 14 | 10 | 4 |
-| H5R | 24 | 5 | 19 |
+| H5R | 24 | 19 | 5 |
 | H5S | 43 | 30 | 13 |
 | H5TB | 19 | 0 | 19 |
 | H5T | 73 | 66 | 7 |
@@ -404,24 +404,24 @@ Native header: `H5Lpublic.h`.
 | `H5Lexists` | Bound |
 | `H5Lexists_async` | Gap |
 | `H5Lget_info_by_idx1` | Bound |
-| `H5Lget_info_by_idx2` | Gap |
+| `H5Lget_info_by_idx2` | Bound |
 | `H5Lget_info1` | Bound |
-| `H5Lget_info2` | Gap |
+| `H5Lget_info2` | Bound |
 | `H5Lget_name_by_idx` | Bound |
 | `H5Lget_val` | Bound |
 | `H5Lget_val_by_idx` | Bound |
 | `H5Lis_registered` | Bound |
 | `H5Literate_async` | Gap |
 | `H5Literate_by_name1` | Bound |
-| `H5Literate_by_name2` | Gap |
+| `H5Literate_by_name2` | Bound |
 | `H5Literate1` | Bound |
-| `H5Literate2` | Gap |
+| `H5Literate2` | Bound |
 | `H5Lmove` | Bound |
 | `H5Lunpack_elink_val` | Bound |
 | `H5Lvisit_by_name1` | Bound |
-| `H5Lvisit_by_name2` | Gap |
+| `H5Lvisit_by_name2` | Bound |
 | `H5Lvisit1` | Bound |
-| `H5Lvisit2` | Gap |
+| `H5Lvisit2` | Bound |
 
 ## H5LT
 
@@ -531,17 +531,17 @@ Native header: `H5Opublic.h`.
 | `H5Oget_comment_by_name` | Bound |
 | `H5Oget_info_by_idx1` | Bound |
 | `H5Oget_info_by_idx2` | Gap |
-| `H5Oget_info_by_idx3` | Gap |
+| `H5Oget_info_by_idx3` | Bound |
 | `H5Oget_info_by_name_async` | Gap |
 | `H5Oget_info_by_name1` | Bound |
 | `H5Oget_info_by_name2` | Gap |
-| `H5Oget_info_by_name3` | Gap |
+| `H5Oget_info_by_name3` | Bound |
 | `H5Oget_info1` | Bound |
 | `H5Oget_info2` | Gap |
-| `H5Oget_info3` | Gap |
-| `H5Oget_native_info` | Gap |
-| `H5Oget_native_info_by_idx` | Gap |
-| `H5Oget_native_info_by_name` | Gap |
+| `H5Oget_info3` | Bound |
+| `H5Oget_native_info` | Bound |
+| `H5Oget_native_info_by_idx` | Bound |
+| `H5Oget_native_info_by_name` | Bound |
 | `H5Oincr_refcount` | Bound |
 | `H5Olink` | Bound |
 | `H5Oopen` | Bound |
@@ -549,20 +549,20 @@ Native header: `H5Opublic.h`.
 | `H5Oopen_by_addr` | Bound |
 | `H5Oopen_by_idx` | Bound |
 | `H5Oopen_by_idx_async` | Gap |
-| `H5Oopen_by_token` | Gap |
+| `H5Oopen_by_token` | Bound |
 | `H5Orefresh` | Bound |
 | `H5Orefresh_async` | Gap |
 | `H5Oset_comment` | Gap |
 | `H5Oset_comment_by_name` | Gap |
-| `H5Otoken_cmp` | Gap |
-| `H5Otoken_from_str` | Gap |
-| `H5Otoken_to_str` | Gap |
+| `H5Otoken_cmp` | Bound |
+| `H5Otoken_from_str` | Bound |
+| `H5Otoken_to_str` | Bound |
 | `H5Ovisit_by_name1` | Bound |
 | `H5Ovisit_by_name2` | Gap |
-| `H5Ovisit_by_name3` | Gap |
+| `H5Ovisit_by_name3` | Bound |
 | `H5Ovisit1` | Bound |
 | `H5Ovisit2` | Gap |
-| `H5Ovisit3` | Gap |
+| `H5Ovisit3` | Bound |
 
 ## H5PL
 
@@ -862,29 +862,29 @@ Native header: `H5Rpublic.h`.
 
 | Native function | C# coverage |
 |---|---|
-| `H5Rcopy` | Gap |
+| `H5Rcopy` | Bound |
 | `H5Rcreate` | Bound |
-| `H5Rcreate_attr` | Gap |
-| `H5Rcreate_object` | Gap |
-| `H5Rcreate_region` | Gap |
+| `H5Rcreate_attr` | Bound |
+| `H5Rcreate_object` | Bound |
+| `H5Rcreate_region` | Bound |
 | `H5Rdereference1` | Gap |
 | `H5Rdereference2` | Bound |
-| `H5Rdestroy` | Gap |
-| `H5Requal` | Gap |
-| `H5Rget_attr_name` | Gap |
-| `H5Rget_file_name` | Gap |
+| `H5Rdestroy` | Bound |
+| `H5Requal` | Bound |
+| `H5Rget_attr_name` | Bound |
+| `H5Rget_file_name` | Bound |
 | `H5Rget_name` | Bound |
-| `H5Rget_obj_name` | Gap |
+| `H5Rget_obj_name` | Bound |
 | `H5Rget_obj_type1` | Gap |
 | `H5Rget_obj_type2` | Bound |
-| `H5Rget_obj_type3` | Gap |
+| `H5Rget_obj_type3` | Bound |
 | `H5Rget_region` | Bound |
-| `H5Rget_type` | Gap |
-| `H5Ropen_attr` | Gap |
+| `H5Rget_type` | Bound |
+| `H5Ropen_attr` | Bound |
 | `H5Ropen_attr_async` | Gap |
-| `H5Ropen_object` | Gap |
+| `H5Ropen_object` | Bound |
 | `H5Ropen_object_async` | Gap |
-| `H5Ropen_region` | Gap |
+| `H5Ropen_region` | Bound |
 | `H5Ropen_region_async` | Gap |
 
 ## H5S

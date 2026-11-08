@@ -28,7 +28,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 object inspection, copying, and visitation operations.
     /// </summary>
-    public unsafe sealed class H5O
+    public unsafe sealed partial class H5O
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.
@@ -206,9 +206,12 @@ namespace HDF.PInvoke
             NAMED_DATATYPE,
 
             /// <summary>
-            /// Number of different object types (must be last!) [value = 3]
+            /// Object is a map provided by a map-capable connector [value = 3].
             /// </summary>
-            NTYPES
+            MAP = 3,
+
+            /// <summary>Number of native object types.</summary>
+            NTYPES = 4
         }
 
         /// <summary>

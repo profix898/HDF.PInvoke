@@ -26,7 +26,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 link creation, traversal, and inspection operations.
     /// </summary>
-    public unsafe sealed class H5L
+    public unsafe sealed partial class H5L
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.

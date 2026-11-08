@@ -6,6 +6,9 @@ namespace HDF.PInvoke
     /// <summary>Provides additional HDF5 2.2 H5T operations.</summary>
     public unsafe sealed partial class H5T
     {
+        /// <summary>The predefined modern reference datatype, owned by HDF5; do not close it.</summary>
+        public static long STD_REF => H5DLLImporter.Instance.GetHid("H5T_STD_REF_g");
+
         /// <summary>Creates a complex datatype from a floating-point base type; close the result with H5T.close.</summary>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcomplex_create", CallingConvention = CallingConvention.Cdecl)]
         public static extern long complex_create(long baseType);

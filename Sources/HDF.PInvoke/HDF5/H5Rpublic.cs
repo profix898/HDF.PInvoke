@@ -25,7 +25,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 object and dataset-region reference operations.
     /// </summary>
-    public unsafe sealed class H5R
+    public unsafe sealed partial class H5R
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.
@@ -58,7 +58,18 @@ namespace HDF.PInvoke
             /// <summary>
             /// highest type (Invalid as true type)
             /// </summary>
-            MAXTYPE
+            MAXTYPE = 5,
+
+            /// <summary>Legacy object reference, equivalent to OBJECT.</summary>
+            OBJECT1 = OBJECT,
+            /// <summary>Legacy region reference, equivalent to DATASET_REGION.</summary>
+            DATASET_REGION1 = DATASET_REGION,
+            /// <summary>Modern object reference stored in ref_t.</summary>
+            OBJECT2 = 2,
+            /// <summary>Modern region reference stored in ref_t.</summary>
+            DATASET_REGION2 = 3,
+            /// <summary>Modern attribute reference stored in ref_t.</summary>
+            ATTR = 4
         }
 
         /// <summary>

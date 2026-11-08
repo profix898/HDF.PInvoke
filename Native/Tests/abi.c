@@ -154,5 +154,31 @@ int main(int argc, char **argv)
     fprintf(out, "HDF.PInvoke.H5Z+class_t|can_apply|%zu\n", offsetof(H5Z_class2_t, can_apply));
     fprintf(out, "HDF.PInvoke.H5Z+class_t|set_local|%zu\n", offsetof(H5Z_class2_t, set_local));
     fprintf(out, "HDF.PInvoke.H5Z+class_t|filter|%zu\n", offsetof(H5Z_class2_t, filter));
+    fprintf(out, "HDF.PInvoke.H5R+ref_t|$size|%zu\n", sizeof(H5R_ref_t));
+    fprintf(out, "HDF.PInvoke.H5O+token_t|$size|%zu\n", sizeof(H5O_token_t));
+    fprintf(out, "HDF.PInvoke.H5O+native_info_t|$size|%zu\n", sizeof(H5O_native_info_t));
+    fprintf(out, "HDF.PInvoke.H5O+native_info_t|hdr|%zu\n", offsetof(H5O_native_info_t, hdr));
+    fprintf(out, "HDF.PInvoke.H5O+native_info_t|meta_size|%zu\n", offsetof(H5O_native_info_t, meta_size));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|$size|%zu\n", sizeof(H5L_info2_t));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|type|%zu\n", offsetof(H5L_info2_t, type));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|corder_valid|%zu\n", offsetof(H5L_info2_t, corder_valid));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|corder|%zu\n", offsetof(H5L_info2_t, corder));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|cset|%zu\n", offsetof(H5L_info2_t, cset));
+    fprintf(out, "HDF.PInvoke.H5L+info2_t|u|%zu\n", offsetof(H5L_info2_t, u));
+#ifdef _WIN32
+    const char *info2_type = "HDF.PInvoke.H5O+WindowsInfo2";
+#else
+    const char *info2_type = "HDF.PInvoke.H5O+info2_t";
+#endif
+    fprintf(out, "%s|$size|%zu\n", info2_type, sizeof(H5O_info2_t));
+    fprintf(out, "%s|fileno|%zu\n", info2_type, offsetof(H5O_info2_t, fileno));
+    fprintf(out, "%s|token|%zu\n", info2_type, offsetof(H5O_info2_t, token));
+    fprintf(out, "%s|type|%zu\n", info2_type, offsetof(H5O_info2_t, type));
+    fprintf(out, "%s|rc|%zu\n", info2_type, offsetof(H5O_info2_t, rc));
+    fprintf(out, "%s|atime|%zu\n", info2_type, offsetof(H5O_info2_t, atime));
+    fprintf(out, "%s|mtime|%zu\n", info2_type, offsetof(H5O_info2_t, mtime));
+    fprintf(out, "%s|ctime|%zu\n", info2_type, offsetof(H5O_info2_t, ctime));
+    fprintf(out, "%s|btime|%zu\n", info2_type, offsetof(H5O_info2_t, btime));
+    fprintf(out, "%s|num_attrs|%zu\n", info2_type, offsetof(H5O_info2_t, num_attrs));
     return fclose(out) == 0 ? 0 : 1;
 }
