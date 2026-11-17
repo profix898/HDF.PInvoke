@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 
 using herr_t = System.Int32;
 using hsize_t = System.UInt64;
@@ -21,7 +21,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Defines native HDF5 virtual-file-driver types and constants.
     /// </summary>
-    public unsafe sealed class H5FD
+    public unsafe sealed partial class H5FD
     {
         /// <summary>Queries virtual-file-driver capability flags, widening native unsigned long output on Windows.</summary>
         public static int driver_query(long driver, out ulong flags)
@@ -34,8 +34,8 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Imports native driver flags using caller-owned unsigned-long storage.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5FDdriver_query", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int driver_query_native(long driver, IntPtr flags);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5FDdriver_query"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int driver_query_native(long driver, IntPtr flags);
 
         /// <summary>
         /// Initializes HDF5 before this API is first used.

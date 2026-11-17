@@ -24,7 +24,7 @@ Use `H5ES.wait` and check both the return status and its `inProgress` and `error
 
 Inspect `H5ES.get_err_status` and `H5ES.get_err_count` after a failed operation. `H5ES.get_err_info` transfers up to the requested number of records into caller-owned array storage. For a positive returned count, call `H5ES.free_err_info` to release the records' strings and error-stack identifiers, then free the array storage. HDF5 rejects a zero count in `free_err_info`.
 
-Insertion and completion callbacks receive borrowed operation metadata. Copy any text needed after the callback returns. Do not free these callback strings, close borrowed identifiers, or allow managed exceptions to cross native callback frames. A connector can impose additional restrictions on callback execution and reentrancy; consult its documentation before using it.
+Insertion (`H5ES.event_insert_t`) and completion (`H5ES.event_complete_t`) callbacks receive borrowed `IntPtr` addresses to `H5ES.op_info_t` operation metadata, and `H5L.iterate_async` (`H5L.iterate_async_t`) receives borrowed UTF-8 name and `H5L.info2_t` pointers. Copy any text or metadata needed after the callback returns. Do not free these callback strings, close borrowed identifiers, or allow managed exceptions to cross native callback frames. A connector can impose additional restrictions on callback execution and reentrancy; consult its documentation before using it.
 
 ## Validation boundary
 

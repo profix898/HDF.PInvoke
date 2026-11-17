@@ -8,17 +8,20 @@ HDF.PInvoke 2.2 is not a guaranteed source-compatible or binary-compatible repla
 |---|---|
 | Native `hbool_t` parameters and fields | Use `byte` instead of `uint`, with 0 for false and 1 for true. Update matching `ref` variables and callback parameters. |
 | `H5T.find` | Replace `ref H5T.cdata_t` with `out IntPtr`. The returned conversion-data pointer is borrowed; marshal its contents if needed without freeing native-owned storage. |
+| `H5T.conv_t` | Replace `ref H5T.cdata_t` with `IntPtr` (`H5T_cdata_t*`) for the borrowed native conversion-state structure. |
 | `H5F.get_page_buffering_stats` | Supply five `uint[]` output buffers, each with at least two elements, instead of scalar integers. |
 | `H5P.get_filter2` | Supply a writable UTF-8 `byte[]` name buffer instead of an immutable `string`. |
+| `H5P.prp_cb1_t` / `H5P.prp_cb2_t` | Receive the borrowed UTF-8 property name as `IntPtr` instead of `string`. (`H5P.iterate_t` continues to receive a decoded `string`.) |
 | `H5D.append_cb_t` | Read current dimensions through `IntPtr` instead of a marshalled `ulong[]`; the number of elements is the dataset rank. |
-| `H5Z.func_t` | Read filter parameters through `IntPtr` instead of `uint[]`, using the supplied element count. |
-| `H5L.traverse_func_t` | Return a 64-bit object identifier, accept the extra transfer-property-list identifier and decode the borrowed name pointer as UTF-8. |
-| `H5L.traverse_func_ascii_t` | Return a 64-bit object identifier and accept the extra transfer-property-list identifier. Despite its historical name, the string is UTF-8. |
-| `H5L.elink_traverse_t` | Group and object names are UTF-8 `string` values instead of `byte[]`. |
+| `H5Z.func_t` | Receive `cd_values` (`const uint*`), `buf_size` (`size_t*`) and `buf` (`void**`) as `IntPtr` addresses instead of `uint[]` and `ref` parameters; read or update capacity and chunk buffer pointers through those addresses. |
+| `H5L.create_func_t` / `move_func_t` / `copy_func_t` / `delete_func_t` / `query_func_t` | Receive borrowed UTF-8 link names as `IntPtr` instead of `byte[]`; the unused `H5L.*_ascii_t` delegate variants are removed. |
+| `H5L.traverse_func_t` | Return a 64-bit object identifier (`long`), accept the extra transfer-property-list identifier (`dxpl_id`), and receive the borrowed UTF-8 link name as `IntPtr`; `H5L.traverse_func_ascii_t` is removed. |
+| `H5L.elink_traverse_t` | Receive the four borrowed UTF-8 file/group/object names and the mutable `uint` access-flags storage (`unsigned*`) as `IntPtr` values; `H5L.elink_traverse_ascii_t` is removed. |
 | `H5I.free_t` | Add the `IntPtr request` argument required by the native callback. A zero address means synchronous execution with no output storage. Only write through a nonzero address using `Marshal.WriteIntPtr`; do not treat it as an unconditional `ref` parameter. |
 | `H5MM.free_t` | Return `void`, not `IntPtr`. |
 | `H5D.get_num_chunks` | The status result is `int`, not `long`; widening assignment still compiles, but matching delegate signatures must change. |
 | `H5P.get_mdc_config` / `H5P.set_mdc_config` | Pass `ref H5AC.cache_config_t` instead of a raw `IntPtr` buffer. |
+| `H5P.get_mdc_image_config` / `H5P.set_mdc_image_config` | Pass `ref H5AC.cache_image_config_t` instead of a raw `IntPtr` buffer. |
 | `H5AC.cache_config_t` | The trace filename is a fixed UTF-8 byte buffer, `epoch_length` is `System.Runtime.InteropServices.CLong`, `dirty_bytes_threshold` is `IntPtr`, and native boolean fields are bytes. |
 | `H5O.info_t` | The file number is `System.Runtime.InteropServices.CULong` and timestamps are signed `long`. |
 | `H5Z.class_t` | `name` is a UTF-8 `string` instead of `byte*`, and `H5Z.CLASS_T_VERS` defines the structure version. |

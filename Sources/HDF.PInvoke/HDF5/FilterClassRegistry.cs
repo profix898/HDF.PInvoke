@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -8,7 +9,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Keeps registered filter callbacks and their native UTF-8 names alive until HDF5 releases them.
     /// </summary>
-    internal static class FilterClassRegistry
+    internal static partial class FilterClassRegistry
     {
         /// <summary>
         /// Matches the native <c>H5Z_class2_t</c> layout using blittable pointer fields.
@@ -76,14 +77,14 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5Zregister</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zregister", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int RegisterNative(ref ClassInfo info);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Zregister"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int RegisterNative(ref ClassInfo info);
 
         /// <summary>
         /// Invokes the native <c>H5Zunregister</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zunregister", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int UnregisterNative(H5Z.filter_t id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Zunregister"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int UnregisterNative(H5Z.filter_t id);
 
         /// <summary>
         /// Roots each successful filter registration by identifier.

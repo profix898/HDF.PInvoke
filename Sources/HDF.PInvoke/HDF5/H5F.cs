@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
@@ -610,11 +610,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">File identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fclear_elink_file_cache",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t clear_elink_file_cache(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fclear_elink_file_cache"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t clear_elink_file_cache(hid_t file_id);
 
         /// <summary>
         /// Terminates access to an HDF5 file.
@@ -624,10 +621,8 @@ namespace HDF.PInvoke
         /// terminated.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t close(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t file_id);
 
         /// <summary>
         /// Creates an HDF5 file.
@@ -642,13 +637,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a file identifier if successful; otherwise returns
         /// a negative value.</returns>
         /// <remarks><paramref name="filename"/> is marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fcreate",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, uint flags,
-            hid_t create_plist = H5P.DEFAULT, hid_t access_plist = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fcreate", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (string filename, uint flags, hid_t create_plist = H5P.DEFAULT, hid_t access_plist = H5P.DEFAULT);
 
         /// <summary>
         /// Flushes all buffers associated with a file to disk.
@@ -660,21 +651,16 @@ namespace HDF.PInvoke
         /// action.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fflush",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t flush(hid_t object_id, scope_t scope);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fflush"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t flush(hid_t object_id, scope_t scope);
 
         /// <summary>
         /// Converts a file&apos;s superblock and related structures to the format supported by H5Fformat_convert.
         /// </summary>
         /// <param name="fid">The fid value passed to the native function.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fformat_convert",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t format_convert_super(hid_t fid);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fformat_convert"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t format_convert_super(hid_t fid);
 
         /// <summary>
         /// Returns a file access property list identifier.
@@ -684,10 +670,8 @@ namespace HDF.PInvoke
         /// property list</param>
         /// <returns>Returns a file access property list identifier if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_access_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_access_plist(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_access_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_access_plist(hid_t file_id);
 
         /// <summary>
         /// Returns a file creation property list identifier.
@@ -697,10 +681,8 @@ namespace HDF.PInvoke
         /// property list</param>
         /// <returns>Returns a file access property list identifier if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_create_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_create_plist(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_create_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_create_plist(hid_t file_id);
 
         /// <summary>
         /// Retrieves the setting for whether or not a file will create minimized dataset object headers.
@@ -711,11 +693,8 @@ namespace HDF.PInvoke
         /// create minimized dataset object headers</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fget_dset_no_attrs_hint",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_dset_no_attrs_hint(hid_t file_id, ref hbool_t minimize);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_dset_no_attrs_hint"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_dset_no_attrs_hint(hid_t file_id, ref hbool_t minimize);
 
         /// <summary>
         /// Retrieves a copy of the image of an existing, open file.
@@ -728,10 +707,8 @@ namespace HDF.PInvoke
         /// <returns>If successful, returns the size in bytes of the buffer
         /// required to store the file image if successful; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_file_image",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_file_image
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_file_image"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_file_image
             (hid_t file_id, IntPtr buf_ptr, IntPtr buf_len);
 
         /// <summary>
@@ -743,10 +720,8 @@ namespace HDF.PInvoke
         /// <param name="size">Size of the file, in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_filesize",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_filesize
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_filesize"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_filesize
             (hid_t file_id, ref hsize_t size);
 
         /// <summary>
@@ -761,12 +736,9 @@ namespace HDF.PInvoke
         /// <code>H5F.sect_info_t</code> in which the free-space section
         /// information is to be returned.</param>
         /// <returns>The total number of free-space sections, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_free_sections",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_free_sections
-            (hid_t file_id, mem_t type, size_t nsects,
-            sect_info_t[] sect_info);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_free_sections"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_free_sections
+            (hid_t file_id, mem_t type, size_t nsects, sect_info_t[] sect_info);
 
         /// <summary>
         /// Returns the amount of free space in a file.
@@ -776,10 +748,8 @@ namespace HDF.PInvoke
         /// file</param>
         /// <returns>Returns the amount of free space in the file if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_freespace",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hssize_t get_freespace(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_freespace"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hssize_t get_freespace(hid_t file_id);
 
         /// <summary>
         /// Returns global information for a file.
@@ -791,10 +761,8 @@ namespace HDF.PInvoke
         /// information.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_info2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_info2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info
             (hid_t obj_id, ref H5F.info_t bh_info);
 
         /// <summary>
@@ -807,10 +775,8 @@ namespace HDF.PInvoke
         /// with H5Fopen.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_intent",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_intent(hid_t file_id, ref uint intent);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_intent"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_intent(hid_t file_id, ref uint intent);
 
         /// <summary>
         /// Obtain current metadata cache configuration for target file.
@@ -822,10 +788,8 @@ namespace HDF.PInvoke
         /// cache configuration is to be reported.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_config",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_mdc_config
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_config"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_mdc_config
             (hid_t file_id, ref H5AC.cache_config_t config_ptr);
 
         /// <summary>
@@ -837,10 +801,8 @@ namespace HDF.PInvoke
         /// rate is returned.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_hit_rate",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_mdc_hit_rate
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_hit_rate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_mdc_hit_rate
             (hid_t file_id, ref double hit_rate_ptr);
 
         /// <summary>
@@ -854,10 +816,8 @@ namespace HDF.PInvoke
         /// or 0 if it does not.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_image_info",
-           CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_mdc_image_info
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_image_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_mdc_image_info
             (hid_t file_id, ref haddr_t image_addr, ref haddr_t image_len);
 
         /// <summary>
@@ -870,13 +830,9 @@ namespace HDF.PInvoke
         /// being logged.</param>
         /// <returns>Returns a non-negative value if successful. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fget_mdc_logging_status",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_mdc_logging_status
-            (hid_t file_id, ref hbool_t is_enabled,
-            ref hbool_t is_currently_logging);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_logging_status"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_mdc_logging_status
+            (hid_t file_id, ref hbool_t is_enabled, ref hbool_t is_currently_logging);
 
         /// <summary>
         /// Obtain current metadata cache size data for specified file.
@@ -897,13 +853,9 @@ namespace HDF.PInvoke
         /// NULL if that datum is not desired.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_mdc_size
-            (hid_t file_id, ref size_t max_size_ptr,
-            ref size_t min_clean_size_ptr, ref size_t cur_size_ptr,
-            ref int cur_num_entries_ptr);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_mdc_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_mdc_size
+            (hid_t file_id, ref size_t max_size_ptr, ref size_t min_clean_size_ptr, ref size_t cur_size_ptr, ref int cur_num_entries_ptr);
 
         /// <summary>
         /// Retrieves the collection of read retries for metadata entries with
@@ -915,11 +867,8 @@ namespace HDF.PInvoke
         /// for metadata entries with checksum.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fget_metadata_read_retry_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_metadata_read_retry_info
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_metadata_read_retry_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_metadata_read_retry_info
             (hid_t file_id, ref retry_info_t info);
 
         /// <summary>
@@ -934,22 +883,27 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         public static ssize_t get_name(hid_t obj_id, StringBuilder name, size_t size)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_utf8(obj_id, buffer, size);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_utf8(obj_id, buffer, size);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Fget_name</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_name", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_utf8(hid_t obj_id, [Out] byte[] buffer, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_utf8(hid_t obj_id, byte* buffer, size_t size);
 
         /// <summary>
         /// Returns the number of open object identifiers for an open file.
@@ -961,10 +915,8 @@ namespace HDF.PInvoke
         /// returned.</param>
         /// <returns>Returns the number of open objects if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_obj_count",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_obj_count
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_obj_count"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_obj_count
             (hid_t file_id, uint types);
 
         /// <summary>
@@ -980,10 +932,8 @@ namespace HDF.PInvoke
         /// object identifiers.</param>
         /// <returns>Returns number of objects placed into obj_id_list if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_obj_ids",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_obj_ids
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_obj_ids"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_obj_ids
             (hid_t file_id, uint types, size_t max_objs, IntPtr obj_id_list);
 
         /// <summary>
@@ -1036,11 +986,8 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5Fget_page_buffering_stats</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_page_buffering_stats",
-            CallingConvention = CallingConvention.Cdecl)]
-        private static extern herr_t GetPageBufferingStats(hid_t file_id,
-            [Out] uint[] accesses, [Out] uint[] hits, [Out] uint[] misses,
-            [Out] uint[] evictions, [Out] uint[] bypasses);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_page_buffering_stats"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t GetPageBufferingStats(hid_t file_id, uint[] accesses, uint[] hits, uint[] misses, uint[] evictions, uint[] bypasses);
 
         /// <summary>
         /// Returns pointer to the file handle from the virtual file driver.
@@ -1052,10 +999,8 @@ namespace HDF.PInvoke
         /// the low-level virtual file driver.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_vfd_handle",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_vfd_handle
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_vfd_handle"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_vfd_handle
             (hid_t file_id, hid_t fapl, ref IntPtr file_handle);
 
         /// <summary>
@@ -1067,11 +1012,8 @@ namespace HDF.PInvoke
         /// the file does not exist, returns a negative value.</returns>
         /// <remarks><paramref name="filename"/> is marshalled as UTF-8.</remarks>
         /// <param name="filename">The filesystem path, marshalled as UTF-8 for managed string overloads.</param>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fis_hdf5",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t is_hdf5([MarshalAs(UnmanagedType.LPUTF8Str)] string filename);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fis_hdf5", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_hdf5(string filename);
 
         /// <summary>
         /// Mounts a file.
@@ -1085,10 +1027,8 @@ namespace HDF.PInvoke
         /// <param name="plist">File mount property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fmount",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t mount
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fmount"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t mount
             (hid_t loc, byte[] name, hid_t child, hid_t plist = H5P.DEFAULT);
 
         /// <summary>
@@ -1104,12 +1044,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fmount",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t mount
-            (hid_t loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t child, hid_t plist = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fmount", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t mount
+            (hid_t loc, string name, hid_t child, hid_t plist = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an existing HDF5 file.
@@ -1123,12 +1060,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a file identifier if successful; otherwise returns
         /// a negative value.</returns>
         /// <remarks><paramref name="filename"/> is marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fopen",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, uint flags, hid_t plist = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fopen", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
+            (string filename, uint flags, hid_t plist = H5P.DEFAULT);
 
         /// <summary>
         /// Returns a new identifier for a previously-opened HDF5 file.
@@ -1138,10 +1072,8 @@ namespace HDF.PInvoke
         /// identifier is required.</param>
         /// <returns>Returns a new file identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Freopen",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t reopen(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Freopen"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t reopen(hid_t file_id);
 
         /// <summary>
         /// Reset hit rate statistics counters for the target file.
@@ -1150,11 +1082,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">Identifier of the target file.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Freset_mdc_hit_rate_stats",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t reset_mdc_hit_rate_stats(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Freset_mdc_hit_rate_stats"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t reset_mdc_hit_rate_stats(hid_t file_id);
 
         /// <summary>
         /// Resets the page buffer statistics.
@@ -1163,11 +1092,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">File identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Freset_page_buffering_stats",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t reset_page_buffering_stats(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Freset_page_buffering_stats"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t reset_page_buffering_stats(hid_t file_id);
 
         /// <summary>
         /// Sets the flag to create minimized dataset object headers.
@@ -1178,11 +1104,8 @@ namespace HDF.PInvoke
         /// create minimized dataset object headers</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Fset_dset_no_attrs_hint",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_dset_no_attrs_hint(hid_t file_id, hbool_t minimize);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fset_dset_no_attrs_hint"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_dset_no_attrs_hint(hid_t file_id, hbool_t minimize);
 
         /// <summary>
         /// Attempt to configure metadata cache of target file.
@@ -1194,10 +1117,8 @@ namespace HDF.PInvoke
         /// configuration.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fset_mdc_config",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t set_mdc_config
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fset_mdc_config"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_mdc_config
             (hid_t file_id, ref H5AC.cache_config_t config_ptr);
 
         /// <summary>
@@ -1208,10 +1129,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">Identifier of an open HDF5 file.</param>
         /// <returns>Returns a non-negative value if successful. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fstart_mdc_logging",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t start_mdc_logging(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fstart_mdc_logging"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t start_mdc_logging(hid_t file_id);
 
         /// <summary>
         /// Enables SWMR writing mode for a file.
@@ -1220,10 +1139,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">A file identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fstart_swmr_write",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t start_swmr_write(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fstart_swmr_write"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t start_swmr_write(hid_t file_id);
 
         /// <summary>
         /// Stops logging metadata cache events if logging was previously
@@ -1233,10 +1150,8 @@ namespace HDF.PInvoke
         /// <param name="file_id">Identifier of an open HDF5 file.</param>
         /// <returns>Returns a non-negative value if successful. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fstop_mdc_logging",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t stop_mdc_logging(hid_t file_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fstop_mdc_logging"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t stop_mdc_logging(hid_t file_id);
 
         /// <summary>
         /// Unmounts a file.
@@ -1247,10 +1162,8 @@ namespace HDF.PInvoke
         /// <param name="name">Name of the mount point.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Funmount",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t unmount(hid_t loc, byte[] name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Funmount"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t unmount(hid_t loc, byte[] name);
 
         /// <summary>
         /// Unmounts a file.
@@ -1262,10 +1175,7 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Funmount",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t unmount(hid_t loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Funmount", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t unmount(hid_t loc, string name);
     }
 }

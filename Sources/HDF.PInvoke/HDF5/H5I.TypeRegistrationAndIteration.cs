@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -12,13 +13,13 @@ namespace HDF.PInvoke
 
         /// <summary>Registers an identifier type without the obsolete hash-size argument.</summary>
         /// <remarks>Keep release rooted until the type and all registered identifiers have been destroyed; callbacks must not throw through native code.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iregister_type2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern type_t register_type2(uint reserved, free_t release);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iregister_type2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial type_t register_type2(uint reserved, free_t release);
 
         /// <summary>Synchronously iterates an application-defined identifier type.</summary>
         /// <remarks>Callback and state are borrowed for this call; return zero to continue, positive to stop, or negative on error.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iiterate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int iterate(type_t type, iterate_t callback, IntPtr state);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iiterate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int iterate(type_t type, iterate_t callback, IntPtr state);
 
     }
 }

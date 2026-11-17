@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
@@ -178,10 +178,8 @@ namespace HDF.PInvoke
         /// <param name="force">Whether or not to force deletion of all
         /// identifiers</param>
         /// <returns>Returns non-negative on success, negative on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iclear_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t clear_type(type_t type, hbool_t force);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iclear_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t clear_type(type_t type, hbool_t force);
 
         /// <summary>
         /// Decrements the reference count for an object.
@@ -192,10 +190,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative reference count of the object
         /// identifier after decrementing it, if successful; otherwise a
         /// negative value is returned.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Idec_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int dec_ref(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Idec_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int dec_ref(hid_t obj_id);
 
         /// <summary>
         /// Decrements the reference count on an identifier type.
@@ -205,10 +201,8 @@ namespace HDF.PInvoke
         /// is to be decremented</param>
         /// <returns>Returns the current reference count on success, negative
         /// on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Idec_type_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int dec_type_ref(type_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Idec_type_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int dec_type_ref(type_t type);
 
         /// <summary>
         /// Removes the type type and all identifiers within that type.
@@ -217,10 +211,8 @@ namespace HDF.PInvoke
         /// <param name="type">Identifier of identifier type which is to be
         /// destroyed</param>
         /// <returns>Returns non-negative on success, negative on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Idestroy_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t destroy_type(type_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Idestroy_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t destroy_type(type_t type);
 
         /// <summary>
         /// Retrieves an identifier for the file containing the specified object.
@@ -229,10 +221,8 @@ namespace HDF.PInvoke
         /// <param name="obj_id">Identifier of the object whose associated file
         /// identifier will be returned.</param>
         /// <returns>Returns a file identifier on success, negative on failure.S</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_file_id",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_file_id(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iget_file_id"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_file_id(hid_t obj_id);
 
         /// <summary>
         /// Retrieves a name of an object based on the object identifier.
@@ -249,22 +239,27 @@ namespace HDF.PInvoke
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
         public static ssize_t get_name(hid_t obj_id, StringBuilder name, size_t size)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_utf8(obj_id, buffer, size);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_utf8(obj_id, buffer, size);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Iget_name</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_name", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_utf8(hid_t obj_id, [Out] byte[] buffer, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_utf8(hid_t obj_id, byte* buffer, size_t size);
 
         /// <summary>
         /// Retrieves the reference count for an object.
@@ -275,10 +270,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative current reference count of the
         /// object identifier if successful; otherwise a negative value is
         /// returned.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int get_ref(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iget_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_ref(hid_t obj_id);
 
         /// <summary>
         /// Retrieves the type of an object.
@@ -288,10 +281,8 @@ namespace HDF.PInvoke
         /// determined.</param>
         /// <returns>Returns the object type if successful; otherwise
         /// <code>H5I_BADID</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static type_t get_type(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iget_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial type_t get_type(hid_t obj_id);
 
         /// <summary>
         /// Retrieves the reference count on an ID type.
@@ -301,10 +292,8 @@ namespace HDF.PInvoke
         /// is to be retrieved</param>
         /// <returns>Returns the current reference count on success, negative
         /// on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iget_type_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int H5Iget_type_ref(type_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iget_type_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int H5Iget_type_ref(type_t type);
 
         /// <summary>
         /// Increments the reference count for an object.
@@ -315,10 +304,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative reference count of the object ID
         /// after incrementing it if successful; otherwise a negative value is
         /// returned.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iinc_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int inc_ref(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iinc_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int inc_ref(hid_t obj_id);
 
         /// <summary>
         /// Increments the reference count on an ID type.
@@ -328,10 +315,8 @@ namespace HDF.PInvoke
         /// is to be incremented</param>
         /// <returns>Returns the current reference count on success, negative
         /// on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iinc_type_ref",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static int inc_type_ref(type_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iinc_type_ref"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int inc_type_ref(type_t type);
 
         /// <summary>
         /// Determines whether an identifier is valid.
@@ -341,10 +326,8 @@ namespace HDF.PInvoke
         /// <returns>Returns <code>TRUE</code> if <paramref name="obj_id"/> is
         /// valid and <code>FALSE</code> if invalid.
         /// Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iis_valid",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t is_valid(hid_t obj_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iis_valid"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_valid(hid_t obj_id);
 
         /// <summary>
         /// Returns the number of identifiers in a given identifier type.
@@ -356,10 +339,8 @@ namespace HDF.PInvoke
         /// identifier type.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Inmembers",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t nmembers
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Inmembers"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t nmembers
             (type_t type, ref hsize_t num_members);
 
         /// <summary>
@@ -370,10 +351,8 @@ namespace HDF.PInvoke
         /// <param name="id_type">ID type to which id should belong</param>
         /// <returns>Pointer to the object referenced by id on success,
         /// <code>NULL</code> on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iobject_verify",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static IntPtr object_verify
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iobject_verify"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr object_verify
             (hid_t id, type_t id_type);
 
         /// <summary>
@@ -384,10 +363,8 @@ namespace HDF.PInvoke
         /// will belong</param>
         /// <param name="obj">Pointer to memory for the library to store</param>
         /// <returns>Returns the new ID on success, negative on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iregister",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t register(type_t type, IntPtr obj);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iregister"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t register(type_t type, IntPtr obj);
 
         /// <summary>
         /// Creates and returns a new ID type.
@@ -400,10 +377,8 @@ namespace HDF.PInvoke
         /// single ID</param>
         /// <returns>Returns the type identifier on success, negative on
         /// failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iregister_type1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static type_t register_type
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iregister_type1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial type_t register_type
             (size_t hash_size, uint reserved, free_t free_func);
 
         /// <summary>
@@ -415,10 +390,8 @@ namespace HDF.PInvoke
         /// count is to be retrieved</param>
         /// <returns>Returns a pointer to the memory referred to by id on
         /// success, <code>NULL</code> on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Iremove_verify",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static IntPtr remove_verify
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Iremove_verify"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr remove_verify
             (hid_t id, type_t id_type);
 
         /// <summary>
@@ -431,10 +404,8 @@ namespace HDF.PInvoke
         /// <param name="key">A key for the search function</param>
         /// <returns>Returns a pointer to the object which satisfies the search
         /// function on success, NULL on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Isearch",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static IntPtr search
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Isearch"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr search
             (type_t type, search_func_t func, IntPtr key);
 
         /// <summary>
@@ -444,9 +415,7 @@ namespace HDF.PInvoke
         /// <param name="type">Identifier type.</param>
         /// <returns>Returns 1 if the type is registered and 0 if not. Returns
         /// a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Itype_exists",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t type_exists(type_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Itype_exists"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t type_exists(type_t type);
     }
 }

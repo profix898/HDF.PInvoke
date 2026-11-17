@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Keeps registered link callbacks and their native UTF-8 descriptions alive until HDF5 releases them.
     /// </summary>
-    internal static class LinkClassRegistry
+    internal static partial class LinkClassRegistry
     {
         /// <summary>
         /// Matches the native link-class layout with explicitly owned comment and callback pointers.
@@ -81,14 +82,14 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5Lregister</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lregister", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int RegisterNative(ref ClassInfo info);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lregister"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int RegisterNative(ref ClassInfo info);
 
         /// <summary>
         /// Invokes the native <c>H5Lunregister</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lunregister", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int UnregisterNative(H5L.type_t id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lunregister"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int UnregisterNative(H5L.type_t id);
 
         // IDs are bounded; reserve storage before native registration can retain any pointers.
         /// <summary>
@@ -99,19 +100,27 @@ namespace HDF.PInvoke
         /// <summary>
         /// Allocates a NUL-terminated UTF-8 string buffer whose lifetime belongs to a native registration.
         /// </summary>
-        internal static IntPtr AllocateUtf8(string text)
+        internal static unsafe IntPtr AllocateUtf8(string text)
         {
             if (text == null)
             {
                 return IntPtr.Zero;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(text + "\0");
-            var pointer = Marshal.AllocHGlobal(bytes.Length);
+            var byteCount = Encoding.UTF8.GetByteCount(text);
+            var pointer = Marshal.AllocHGlobal(checked(byteCount + 1));
 
             try
             {
-                Marshal.Copy(bytes, 0, pointer, bytes.Length);
+                if (byteCount > 0)
+                {
+                    fixed (char* chars = text)
+                    {
+                        Encoding.UTF8.GetBytes(chars, text.Length, (byte*)pointer, byteCount);
+                    }
+                }
+
+                ((byte*)pointer)[byteCount] = 0;
                 return pointer;
             }
             catch

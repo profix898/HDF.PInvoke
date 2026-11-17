@@ -94,21 +94,21 @@ namespace UnitTests
             }
         }
 
-        /// <summary>Round-trips an external-link callback with UTF-8 strings and a by-reference flags argument.</summary>
+        /// <summary>Round-trips an external-link callback with borrowed UTF-8 pointers and a flags pointer.</summary>
         [TestMethod]
-        public void ExternalLinkCallbackGetterPreservesSignature()
+        public unsafe void ExternalLinkCallbackGetterPreservesSignature()
         {
-            H5L.elink_traverse_t callback = (string parentFile, string parentGroup, string childFile, string childObject,
-                                        ref uint flags, long access, IntPtr state) =>
+            H5L.elink_traverse_t callback = (IntPtr parentFile, IntPtr parentGroup, IntPtr childFile, IntPtr childObject,
+                                        IntPtr flagsPtr, long access, IntPtr state) =>
                                     {
-                                        Assert.AreEqual("日本語", childObject);
-                                        flags = 17;
+                                        Assert.AreEqual((IntPtr)40, childObject);
+                                        *(uint*)flagsPtr = 17;
                                         return 19;
                                     };
             RoundTrip(H5P.LINK_ACCESS, callback, H5P.get_elink_cb, H5P.set_elink_cb, actual =>
             {
                 uint flags = 0;
-                Assert.AreEqual(19, actual("parent", "group", "child", "日本語", ref flags, 0, IntPtr.Zero));
+                Assert.AreEqual(19, actual((IntPtr)10, (IntPtr)20, (IntPtr)30, (IntPtr)40, (IntPtr)(&flags), 0, IntPtr.Zero));
                 Assert.AreEqual(17u, flags);
             });
         }

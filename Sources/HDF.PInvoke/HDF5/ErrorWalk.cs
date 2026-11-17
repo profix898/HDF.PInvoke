@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
@@ -8,7 +9,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Bridges native error-stack records to managed callbacks using a blittable pointer layout.
     /// </summary>
-    internal static unsafe class ErrorWalk
+    internal static unsafe partial class ErrorWalk
     {
         /// <summary>
         /// Matches the native <c>H5E_error2_t</c> record while retaining borrowed strings as pointers.
@@ -35,8 +36,8 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5Ewalk2</c> entry point using a pointer-based callback signature.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ewalk2", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int WalkNative(long stack, H5E.direction_t direction, IntPtr callback, IntPtr data);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ewalk2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int WalkNative(long stack, H5E.direction_t direction, IntPtr callback, IntPtr data);
 
 #if NETSTANDARD2_0
         /// <summary>
@@ -46,22 +47,22 @@ namespace HDF.PInvoke
         private delegate int Callback(uint number, IntPtr info, IntPtr data);
 #else
         /// <summary>
-        /// Holds caller state for the static unmanaged error-walk callback bridge.
+        /// Holds stack-allocated caller state for the unmanaged error-walk callback bridge.
         /// </summary>
-        private sealed class WalkState
+        private struct WalkContext
         {
-            internal H5E.walk_t Callback;
+            internal GCHandle CallbackHandle;
+            internal GCHandle FailureHandle;
             internal IntPtr Data;
-            internal Exception Failure;
         }
 
         /// <summary>
         /// Decodes borrowed error strings and captures managed exceptions before returning to native HDF5.
         /// </summary>
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
         private static int WalkCallback(uint number, ErrorInfo* raw, IntPtr contextPtr)
         {
-            var context = (WalkState)GCHandle.FromIntPtr(contextPtr).Target;
+            var context = (WalkContext*)contextPtr;
 
             try
             {
@@ -75,12 +76,16 @@ namespace HDF.PInvoke
                     file_name = Marshal.PtrToStringUTF8(raw->file_name),
                     desc = Marshal.PtrToStringUTF8(raw->desc)
                 };
-                return context.Callback(number, ref info, context.Data);
+                return ((H5E.walk_t)context->CallbackHandle.Target)(number, ref info, context->Data);
             }
             catch (Exception error)
             {
                 // Never unwind a managed exception through HDF5's native callback stack.
-                context.Failure = error;
+                if (!context->FailureHandle.IsAllocated)
+                {
+                    context->FailureHandle = GCHandle.Alloc(error);
+                }
+
                 return -1;
             }
         }
@@ -133,23 +138,24 @@ namespace HDF.PInvoke
 
             return result;
 #else
-            var context = new WalkState { Callback = callback, Data = data };
-            var handle = GCHandle.Alloc(context);
+            var context = new WalkContext { CallbackHandle = GCHandle.Alloc(callback), Data = data };
             int result;
 
             try
             {
                 var callbackPtr = (IntPtr)(delegate* unmanaged[Cdecl]<uint, ErrorInfo*, IntPtr, int>)&WalkCallback;
-                result = WalkNative(stack, direction, callbackPtr, GCHandle.ToIntPtr(handle));
+                result = WalkNative(stack, direction, callbackPtr, (IntPtr)(&context));
             }
             finally
             {
-                handle.Free();
+                context.CallbackHandle.Free();
             }
 
-            if (context.Failure != null)
+            if (context.FailureHandle.IsAllocated)
             {
-                ExceptionDispatchInfo.Capture(context.Failure).Throw();
+                var failure = (Exception)context.FailureHandle.Target;
+                context.FailureHandle.Free();
+                ExceptionDispatchInfo.Capture(failure).Throw();
             }
 
             return result;

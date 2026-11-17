@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -55,13 +56,13 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Registers the callback address after establishing its managed lifetime.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5atclose", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int atclose_native(atclose_t callback, IntPtr state);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5atclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int atclose_native(atclose_t callback, IntPtr state);
 
         /// <summary>Checks native version compatibility using HDF5's native policy.</summary>
         /// <remarks>On a mismatch native HDF5 may terminate the process. Use H5.get_libversion for a nonterminating version comparison; the wrapper loader already checks native major/minor compatibility.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5check_version", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int check_version(uint major, uint minor, uint release);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5check_version"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int check_version(uint major, uint minor, uint release);
     }
 }
 

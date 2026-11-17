@@ -10,7 +10,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Security;
 
 using size_t = System.IntPtr;
 

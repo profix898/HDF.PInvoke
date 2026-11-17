@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
 using hid_t = System.Int64;
@@ -93,10 +93,8 @@ namespace HDF.PInvoke
         /// <param name="group_id">Group identifier to release.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t close(hid_t group_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t group_id);
 
         /// <summary>
         /// Creates a new group and links it into the file.
@@ -110,12 +108,9 @@ namespace HDF.PInvoke
         /// <param name="gapl_id">Group access property list identifier</param>
         /// <returns>Returns a group identifier if successful; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gcreate2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create
-            (hid_t loc_id, byte[] name, hid_t lcpl_id = H5P.DEFAULT,
-            hid_t gcpl_id = H5P.DEFAULT, hid_t gapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gcreate2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, byte[] name, hid_t lcpl_id = H5P.DEFAULT, hid_t gcpl_id = H5P.DEFAULT, hid_t gapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a new group and links it into the file.
@@ -130,13 +125,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a group identifier if successful; otherwise returns
         /// a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gcreate2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t lcpl_id = H5P.DEFAULT,
-            hid_t gcpl_id = H5P.DEFAULT, hid_t gapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gcreate2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, string name, hid_t lcpl_id = H5P.DEFAULT, hid_t gcpl_id = H5P.DEFAULT, hid_t gapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a new empty group without linking it into the file structure.
@@ -148,12 +139,9 @@ namespace HDF.PInvoke
         /// <param name="gapl_id">Group access property list identifier</param>
         /// <returns>Returns a new group identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gcreate_anon",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create_anon
-            (hid_t loc_id, hid_t gcpl_id = H5P.DEFAULT,
-            hid_t gapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gcreate_anon"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_anon
+            (hid_t loc_id, hid_t gcpl_id = H5P.DEFAULT, hid_t gapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Gets a group creation property list identifier.
@@ -162,10 +150,8 @@ namespace HDF.PInvoke
         /// <param name="group_id"> Identifier of the group.</param>
         /// <returns>Returns an identifier for the group’s creation property
         /// list if successful. Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_create_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_create_plist(hid_t group_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_create_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_create_plist(hid_t group_id);
 
         /// <summary>
         /// Flushes all buffers associated with a group to disk.
@@ -174,10 +160,8 @@ namespace HDF.PInvoke
         /// <param name="group_id">Identifier of the group to be flushed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gflush",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t flush(hid_t group_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gflush"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t flush(hid_t group_id);
 
         /// <summary>
         /// Retrieves information about a group.
@@ -188,10 +172,8 @@ namespace HDF.PInvoke
         /// </param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info
             (hid_t loc_id, ref info_t ginfo);
 
         /// <summary>
@@ -210,13 +192,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, byte[] group_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves information about a group, according to the group’s
@@ -235,14 +213,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_idx",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves information about a group.
@@ -255,12 +228,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_name
-            (hid_t loc_id, byte[] name, ref info_t ginfo,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_name
+            (hid_t loc_id, byte[] name, ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves information about a group.
@@ -274,13 +244,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, ref info_t ginfo,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gget_info_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_name
+            (hid_t loc_id, string name, ref info_t ginfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an existing group with a group access property list.
@@ -292,10 +258,8 @@ namespace HDF.PInvoke
         /// <param name="gapl_id">Group access property list identifier</param>
         /// <returns>Returns a group identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gopen2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gopen2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
             (hid_t loc_id, byte[] name, hid_t gapl_id = H5P.DEFAULT);
 
         /// <summary>
@@ -309,12 +273,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a group identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Gopen2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t gapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Gopen2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
+            (hid_t loc_id, string name, hid_t gapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Refreshes all buffers associated with a group.
@@ -323,11 +284,8 @@ namespace HDF.PInvoke
         /// <param name="group_id">Identifier of the group to be refreshed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Grefresh",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t refresh(hid_t group_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Grefresh"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t refresh(hid_t group_id);
 
     }
 }

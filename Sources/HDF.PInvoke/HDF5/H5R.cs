@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using haddr_t = System.UInt64;
 using herr_t = System.Int32;
@@ -101,12 +101,9 @@ namespace HDF.PInvoke
         /// object reference.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rcreate",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t create
-            (IntPtr refer, hid_t loc_id, byte[] name, type_t ref_type,
-            hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rcreate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create
+            (IntPtr refer, hid_t loc_id, byte[] name, type_t ref_type, hid_t space_id);
 
         /// <summary>
         /// Creates a reference.
@@ -124,13 +121,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rcreate",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t create
-            (IntPtr refer, hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, type_t ref_type,
-            hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rcreate", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create
+            (IntPtr refer, hid_t loc_id, string name, type_t ref_type, hid_t space_id);
 
         /// <summary>
         /// Opens the HDF5 object referenced.
@@ -143,10 +136,8 @@ namespace HDF.PInvoke
         /// <param name="refer">Reference to open.</param>
         /// <returns>Returns identifier of referenced object if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rdereference2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t dereference
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rdereference2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t dereference
             (hid_t obj_id, hid_t oapl_id, type_t ref_type, IntPtr refer);
 
         /// <summary>
@@ -165,12 +156,9 @@ namespace HDF.PInvoke
         /// <returns>Returns the length of the name if successful, returning 0
         /// (zero) if no name is associated with the identifier. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rget_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern ssize_t get_name
-            (hid_t loc_id, type_t ref_type, IntPtr refer, [In][Out] byte[] name,
-            size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name
+            (hid_t loc_id, type_t ref_type, IntPtr refer, byte[] name, size_t size);
 
         /// <summary>
         /// Retrieves a name for a referenced object.
@@ -192,23 +180,27 @@ namespace HDF.PInvoke
         public static ssize_t get_name(hid_t loc_id, type_t ref_type, IntPtr refer, StringBuilder name,
             size_t size)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_utf8(loc_id, ref_type, refer, buffer, size);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_utf8(loc_id, ref_type, refer, buffer, size);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Rget_name</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rget_name", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_utf8(hid_t loc_id, type_t ref_type, IntPtr refer, [Out] byte[] buffer,
-            size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_utf8(hid_t loc_id, type_t ref_type, IntPtr refer, byte* buffer, size_t size);
 
         /// <summary>
         /// Retrieves the type of object that an object reference points to.
@@ -221,12 +213,9 @@ namespace HDF.PInvoke
         /// <param name="obj_type">Type of referenced object.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rget_obj_type2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_obj_type
-            (hid_t loc_id, type_t ref_type, IntPtr refer,
-            ref H5O.type_t obj_type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rget_obj_type2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_obj_type
+            (hid_t loc_id, type_t ref_type, IntPtr refer, ref H5O.type_t obj_type);
 
         /// <summary>
         /// Sets up a dataspace and selection as specified by a region reference.
@@ -239,10 +228,8 @@ namespace HDF.PInvoke
         /// <param name="refer">Region reference to open</param>
         /// <returns>Returns a valid dataspace identifier if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Rget_region",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_region
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Rget_region"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_region
             (hid_t loc_id, type_t ref_type, IntPtr refer);
     }
 }

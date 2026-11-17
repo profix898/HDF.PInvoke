@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using herr_t = System.Int32;
 using hid_t = System.Int64;
 using hsize_t = System.UInt64;
@@ -194,10 +194,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Identifier of dataspace to release.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t space_id);
 
         /// <summary>
         /// Creates an exact copy of a dataspace.
@@ -206,10 +204,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Identifier of dataspace to copy.</param>
         /// <returns>Returns a dataspace identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Scopy",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t copy(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Scopy"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t copy(hid_t space_id);
 
         /// <summary>
         /// Creates a new dataspace of a specified type.
@@ -218,10 +214,8 @@ namespace HDF.PInvoke
         /// <param name="type">Type of dataspace to be created.</param>
         /// <returns>Returns a dataspace identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Screate",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create(class_t type);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Screate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create(class_t type);
 
         /// <summary>
         /// Creates a new simple dataspace and opens it for access.
@@ -233,13 +227,9 @@ namespace HDF.PInvoke
         /// dimension.</param>
         /// <returns>Returns a dataspace identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Screate_simple",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create_simple
-            (int rank,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] hsize_t[] dims,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] hsize_t[] maxdims);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Screate_simple"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_simple
+            (int rank, hsize_t[] dims, hsize_t[] maxdims);
 
         /// <summary>
         /// Creates a new simple dataspace and opens it for access.
@@ -251,10 +241,8 @@ namespace HDF.PInvoke
         /// dimension.</param>
         /// <returns>Returns a dataspace identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Screate_simple",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create_simple(int rank, hsize_t* dims, hsize_t* maxdims);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Screate_simple"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_simple(int rank, hsize_t* dims, hsize_t* maxdims);
 
         /// <summary>
         /// Decode a binary object description of data space and return a new
@@ -264,10 +252,17 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer for the data space object to be decoded.</param>
         /// <returns>Returns an object ID(non-negative) if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sdecode",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t decode(byte[] buf);
+        public static hid_t decode(byte[] buf)
+        {
+            fixed (byte* ptr = buf)
+            {
+                return decode_native(ptr);
+            }
+        }
+
+        /// <summary>Imports native dataspace decoding using a raw byte pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sdecode"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial hid_t decode_native(byte* buf);
 
         /// <summary>
         /// Encode a data space object description into a binary buffer.
@@ -281,13 +276,18 @@ namespace HDF.PInvoke
         /// of the buffer needed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sencode1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t encode
-            (hid_t obj_id,
-            [MarshalAs(UnmanagedType.LPArray)][In, Out] byte[] buf,
-            ref size_t nalloc);
+        public static herr_t encode
+            (hid_t obj_id, byte[] buf, ref size_t nalloc)
+        {
+            fixed (byte* ptr = buf)
+            {
+                return encode_native(obj_id, ptr, ref nalloc);
+            }
+        }
+
+        /// <summary>Imports native dataspace encoding using a raw byte pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sencode1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t encode_native(hid_t obj_id, byte* buf, ref size_t nalloc);
 
         /// <summary>
         /// Copies the extent of a dataspace.
@@ -299,10 +299,8 @@ namespace HDF.PInvoke
         /// which the extent is copied.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sextent_copy",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t extent_copy
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sextent_copy"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t extent_copy
             (hid_t dest_space_id, hid_t source_space_id);
 
         /// <summary>
@@ -313,10 +311,8 @@ namespace HDF.PInvoke
         /// <param name="space2_id">Second dataspace identifier.</param>
         /// <returns>Returns 1 if equal, 0 if unequal, if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sextent_equal",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t extent_equal
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sextent_equal"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t extent_equal
             (hid_t space1_id, hid_t space2_id);
 
         /// <summary>
@@ -334,13 +330,18 @@ namespace HDF.PInvoke
         /// becomes irregular through selection operations, and then becomes
         /// regular again, the final regular selection may be equivalent but
         /// not identical to the original regular selection.</remarks>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_regular_hyperslab",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t H5Sget_regular_hyperslab
-            (hid_t space_id, hsize_t[] start, hsize_t[] stride,
-            hsize_t[] count, hsize_t[] block);
+        public static herr_t H5Sget_regular_hyperslab
+            (hid_t space_id, hsize_t[] start, hsize_t[] stride, hsize_t[] count, hsize_t[] block)
+        {
+            fixed (hsize_t* startPtr = start, stridePtr = stride, countPtr = count, blockPtr = block)
+            {
+                return get_regular_hyperslab_native(space_id, startPtr, stridePtr, countPtr, blockPtr);
+            }
+        }
+
+        /// <summary>Imports regular hyperslab retrieval using coordinate pointers.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_regular_hyperslab"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t get_regular_hyperslab_native(hid_t space_id, hsize_t* start, hsize_t* stride, hsize_t* count, hsize_t* block);
 
         /// <summary>
         /// Gets the bounding box containing the current selection.
@@ -354,11 +355,18 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         /// <remarks>The <code>start</code> and <code>end</code> buffers must
         /// be large enough to hold the dataspace rank number of coordinates.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_bounds",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_select_bounds
-            (hid_t space_id, [In][Out] hsize_t[] start, [In][Out] hsize_t[] end);
+        public static herr_t get_select_bounds
+            (hid_t space_id, hsize_t[] start, hsize_t[] end)
+        {
+            fixed (hsize_t* startPtr = start, endPtr = end)
+            {
+                return get_select_bounds_native(space_id, startPtr, endPtr);
+            }
+        }
+
+        /// <summary>Imports selection bounding-box retrieval using coordinate pointers.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_bounds"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t get_select_bounds_native(hid_t space_id, hsize_t* start, hsize_t* end);
 
         /// <summary>
         /// Gets the number of points in the current point selection.
@@ -368,11 +376,8 @@ namespace HDF.PInvoke
         /// <returns>Returns the number of points in the current dataspace
         /// point selection if successful. Otherwise returns a negative
         /// value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_elem_npoints",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hssize_t get_select_elem_npoints(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_elem_npoints"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hssize_t get_select_elem_npoints(hid_t space_id);
 
         /// <summary>
         /// Gets the list of points in a point selection.
@@ -384,13 +389,18 @@ namespace HDF.PInvoke
         /// <param name="buf">List of element points selected.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_elem_pointlist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_select_elem_pointlist
-            (hid_t space_id, hsize_t startpoint, hsize_t numpoints,
-            [In][Out] hsize_t[] buf);
+        public static herr_t get_select_elem_pointlist
+            (hid_t space_id, hsize_t startpoint, hsize_t numpoints, hsize_t[] buf)
+        {
+            fixed (hsize_t* bufPtr = buf)
+            {
+                return get_select_elem_pointlist_native(space_id, startpoint, numpoints, bufPtr);
+            }
+        }
+
+        /// <summary>Imports point-selection coordinate retrieval using a coordinate pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_elem_pointlist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t get_select_elem_pointlist_native(hid_t space_id, hsize_t startpoint, hsize_t numpoints, hsize_t* buf);
 
         /// <summary>
         /// Gets the list of hyperslab blocks in a hyperslab selection.
@@ -401,13 +411,18 @@ namespace HDF.PInvoke
         /// <param name="numblocks">Number of hyperslab blocks to get.</param>
         /// <param name="buf">List of hyperslab blocks selected.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_hyper_blocklist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_select_hyper_blocklist
-            (hid_t space_id, hsize_t startblock, hsize_t numblocks,
-            [In][Out] hsize_t[] buf);
+        public static herr_t get_select_hyper_blocklist
+            (hid_t space_id, hsize_t startblock, hsize_t numblocks, hsize_t[] buf)
+        {
+            fixed (hsize_t* bufPtr = buf)
+            {
+                return get_select_hyper_blocklist_native(space_id, startblock, numblocks, bufPtr);
+            }
+        }
+
+        /// <summary>Imports hyperslab-block coordinate retrieval using a coordinate pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_hyper_blocklist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t get_select_hyper_blocklist_native(hid_t space_id, hsize_t startblock, hsize_t numblocks, hsize_t* buf);
 
         /// <summary>
         /// Get number of hyperslab blocks in a hyperslab selection.
@@ -416,11 +431,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Identifier of dataspace to query.</param>
         /// <returns>Returns the number of hyperslab blocks in a hyperslab
         /// selection if successful. Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_hyper_nblocks",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hssize_t get_select_hyper_nblocks(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_hyper_nblocks"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hssize_t get_select_hyper_nblocks(hid_t space_id);
 
         /// <summary>
         /// Determines the number of elements in a dataspace selection.
@@ -429,11 +441,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Dataspace identifier.</param>
         /// <returns>Returns the number of elements in the selection if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_npoints",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hssize_t get_select_npoints(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_npoints"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hssize_t get_select_npoints(hid_t space_id);
 
         /// <summary>
         /// Determines the type of the dataspace selection.
@@ -443,11 +452,8 @@ namespace HDF.PInvoke
         /// <returns>Returns the dataspace selection type, a value of the
         /// enumerated datatype <code>H5S.sel_type</code>, if successful.
         /// Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_select_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern sel_type get_select_type(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_select_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial sel_type get_select_type(hid_t space_id);
 
         /// <summary>
         /// Retrieves dataspace dimension size and maximum size.
@@ -460,12 +466,9 @@ namespace HDF.PInvoke
         /// successful; otherwise returns a negative value.</returns>
         /// <remarks>Either or both of <paramref name="dims"/> and
         /// <paramref name="maxdims"/> may be <code>NULL</code>.</remarks>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_simple_extent_dims",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_simple_extent_dims
-            (hid_t space_id, [In][Out] hsize_t[] dims, [In][Out] hsize_t[] maxdims);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_simple_extent_dims"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_simple_extent_dims
+            (hid_t space_id, hsize_t[] dims, hsize_t[] maxdims);
 
         /// <summary>
         /// Retrieves dataspace dimension size and maximum size.
@@ -478,11 +481,8 @@ namespace HDF.PInvoke
         /// successful; otherwise returns a negative value.</returns>
         /// <remarks>Either or both of <paramref name="dims"/> and
         /// <paramref name="maxdims"/> may be <code>NULL</code>.</remarks>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_simple_extent_dims",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_simple_extent_dims(
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_simple_extent_dims"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_simple_extent_dims(
             hid_t space_id, hsize_t* dims, hsize_t* maxdims);
 
         /// <summary>
@@ -492,11 +492,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Identifier of the dataspace</param>
         /// <returns>Returns the number of dimensions in the dataspace if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_simple_extent_ndims",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_simple_extent_ndims(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_simple_extent_ndims"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_simple_extent_ndims(hid_t space_id);
 
         /// <summary>
         /// Determines the number of elements in a dataspace.
@@ -505,11 +502,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Identifier of the dataspace object to query</param>
         /// <returns>Returns the number of elements in the dataspace if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_simple_extent_npoints",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hssize_t get_simple_extent_npoints(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_simple_extent_npoints"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hssize_t get_simple_extent_npoints(hid_t space_id);
 
         /// <summary>
         /// Determines the current class of a dataspace.
@@ -518,11 +512,8 @@ namespace HDF.PInvoke
         /// <param name="space_id">Dataspace identifier.</param>
         /// <returns>Returns a dataspace class name if successful; otherwise
         /// <code>H5S.class_t.NO_CLASS</code>.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sget_simple_extent_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern class_t get_simple_extent_type(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sget_simple_extent_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial class_t get_simple_extent_type(hid_t space_id);
 
         /// <summary>
         /// Determines whether a hyperslab selection is regular.
@@ -533,11 +524,8 @@ namespace HDF.PInvoke
         /// hyperslab selection if successful. Returns <code>FAIL</code>on
         /// error or when querying other selection types such as point
         /// selection.</returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5Sis_regular_hyperslab",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t is_regular_hyperslab(hid_t spaceid);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sis_regular_hyperslab"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_regular_hyperslab(hid_t spaceid);
 
         /// <summary>
         /// Determines whether a dataspace is a simple dataspace.
@@ -547,10 +535,8 @@ namespace HDF.PInvoke
         /// <returns>When successful, returns a positive value, for
         /// <code>TRUE</code>, or 0 (zero), for <code>FALSE</code>. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sis_simple",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t is_simple(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sis_simple"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_simple(hid_t space_id);
 
         /// <summary>
         /// Sets the offset of a simple dataspace.
@@ -565,12 +551,18 @@ namespace HDF.PInvoke
         /// the number of dimensions for the dataspace. If the offset array is
         /// set to <code>NULL</code>, the offset for the dataspace is reset
         /// to 0.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Soffset_simple",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t offset_simple
-            (hid_t space_id,
-            [MarshalAs(UnmanagedType.LPArray)] hssize_t[] offset);
+        public static herr_t offset_simple
+            (hid_t space_id, hssize_t[] offset)
+        {
+            fixed (hssize_t* offsetPtr = offset)
+            {
+                return offset_simple_native(space_id, offsetPtr);
+            }
+        }
+
+        /// <summary>Imports simple dataspace offset updates using a signed coordinate pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Soffset_simple"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t offset_simple_native(hid_t space_id, hssize_t* offset);
 
         /// <summary>
         /// Selects an entire dataspace.
@@ -580,10 +572,8 @@ namespace HDF.PInvoke
         /// the selection is being made.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_all",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t select_all(hid_t dspace_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_all"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t select_all(hid_t dspace_id);
 
         /// <summary>
         /// Selects array elements to be included in the selection for a
@@ -599,12 +589,18 @@ namespace HDF.PInvoke
         /// coordinates of the elements in the point selection.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_elements",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t select_elements
-            (hid_t space_id, seloper_t op, size_t num_elements,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] coord);
+        public static herr_t select_elements
+            (hid_t space_id, seloper_t op, size_t num_elements, hsize_t[] coord)
+        {
+            fixed (hsize_t* coordPtr = coord)
+            {
+                return select_elements_native(space_id, op, num_elements, coordPtr);
+            }
+        }
+
+        /// <summary>Imports point-selection updates using a coordinate pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_elements"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t select_elements_native(hid_t space_id, seloper_t op, size_t num_elements, hsize_t* coord);
 
         /// <summary>
         /// Selects a hyperslab region to add to the current selected region.
@@ -618,15 +614,9 @@ namespace HDF.PInvoke
         /// <param name="block">Size of block in hyperslab.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_hyperslab",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t select_hyperslab
-            (hid_t space_id, seloper_t op,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] start,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] stride,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] count,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] block);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_hyperslab"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t select_hyperslab
+            (hid_t space_id, seloper_t op, hsize_t[] start, hsize_t[] stride, hsize_t[] count, hsize_t[] block);
 
         /// <summary>
         /// Selects a hyperslab region to add to the current selected region.
@@ -640,10 +630,8 @@ namespace HDF.PInvoke
         /// <param name="block">Size of block in hyperslab.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_hyperslab",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t select_hyperslab(hid_t space_id, seloper_t op, hsize_t* start, hsize_t* stride, hsize_t* count, hsize_t* block);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_hyperslab"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t select_hyperslab(hid_t space_id, seloper_t op, hsize_t* start, hsize_t* stride, hsize_t* count, hsize_t* block);
 
         /// <summary>
         /// Resets the selection region to include no elements.
@@ -653,10 +641,8 @@ namespace HDF.PInvoke
         /// the selection is being reset.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_none",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t select_none(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_none"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t select_none(hid_t space_id);
 
         /// <summary>
         /// Verifies that the selection is within the extent of the dataspace.
@@ -667,10 +653,8 @@ namespace HDF.PInvoke
         /// selection is contained within the extent or 0 (zero), for
         /// <code>FALSE</code>, if it is not. Returns a negative value on error
         /// conditions such as the selection or extent not being defined.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sselect_valid",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t select_valid(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sselect_valid"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t select_valid(hid_t space_id);
 
         /// <summary>
         /// Removes the extent from a dataspace.
@@ -680,10 +664,8 @@ namespace HDF.PInvoke
         /// the extent is to be removed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sset_extent_none",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_extent_none(hid_t space_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sset_extent_none"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_extent_none(hid_t space_id);
 
         /// <summary>
         /// Sets or resets the size of an existing dataspace.
@@ -697,12 +679,17 @@ namespace HDF.PInvoke
         /// dataspace.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Sset_extent_simple",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_extent_simple
-            (hid_t space_id, int rank,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] current_size,
-            [MarshalAs(UnmanagedType.LPArray)] hsize_t[] maximum_size);
+        public static herr_t set_extent_simple
+            (hid_t space_id, int rank, hsize_t[] current_size, hsize_t[] maximum_size)
+        {
+            fixed (hsize_t* currentPtr = current_size, maxPtr = maximum_size)
+            {
+                return set_extent_simple_native(space_id, rank, currentPtr, maxPtr);
+            }
+        }
+
+        /// <summary>Imports simple dataspace extent updates using dimension pointers.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Sset_extent_simple"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t set_extent_simple_native(hid_t space_id, int rank, hsize_t* current_size, hsize_t* maximum_size);
     }
 }

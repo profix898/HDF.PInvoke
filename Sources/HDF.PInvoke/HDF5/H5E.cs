@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using herr_t = System.Int32;
 using hid_t = System.Int64;
@@ -153,10 +153,8 @@ namespace HDF.PInvoke
         /// the specified error stack conforms to.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eauto_is_v2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t auto_is_v2
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eauto_is_v2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t auto_is_v2
             (hid_t estack_id, ref uint is_stack);
 
         /// <summary>
@@ -167,10 +165,8 @@ namespace HDF.PInvoke
         /// <param name="estack_id">Error stack identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eclear2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t clear(hid_t estack_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eclear2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t clear(hid_t estack_id);
 
         /// <summary>
         /// Closes an error message identifier.
@@ -179,10 +175,8 @@ namespace HDF.PInvoke
         /// <param name="msg_id">Error message identifier.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eclose_msg",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close_msg(hid_t msg_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eclose_msg"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close_msg(hid_t msg_id);
 
         /// <summary>
         /// Closes object handle for error stack.
@@ -191,10 +185,8 @@ namespace HDF.PInvoke
         /// <param name="estack_id">Error stack identifier.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eclose_stack",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close_stack(hid_t estack_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eclose_stack"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close_stack(hid_t estack_id);
 
         /// <summary>
         /// Add major error message to an error class.
@@ -206,13 +198,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a message identifier on success; otherwise returns
         /// a negative value.</returns>
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ecreate_msg",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create_msg
-            (hid_t cls, type_t msg_type,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string msg);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ecreate_msg", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_msg
+            (hid_t cls, type_t msg_type, string msg);
 
         /// <summary>
         /// Creates a new empty error stack.
@@ -220,10 +208,8 @@ namespace HDF.PInvoke
         /// </summary>
         /// <returns>Returns an error stack identifier on success; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ecreate_stack",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create_stack();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ecreate_stack"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_stack();
 
         /// <summary>
         /// Returns the settings for the automatic error stack traversal
@@ -237,7 +223,6 @@ namespace HDF.PInvoke
         /// <param name="client_data">Data currently set to be passed to the
         /// error function.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static herr_t get_auto(hid_t estack_id, ref auto_t func, ref IntPtr client_data)
         {
             // Callback outputs are borrowed; convert them only after native success.
@@ -252,8 +237,8 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Reads native callback addresses without by-reference delegate marshalling.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_auto2", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        private static extern herr_t get_auto_native(hid_t estack_id, out IntPtr func, ref IntPtr client_data);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eget_auto2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t get_auto_native(hid_t estack_id, out IntPtr func, ref IntPtr client_data);
 
         /// <summary>
         /// Retrieves error class name.
@@ -269,23 +254,28 @@ namespace HDF.PInvoke
         public static ssize_t get_class_name(
             hid_t class_id, StringBuilder name, size_t size)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_class_name_utf8(class_id, buffer, size);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_class_name_utf8(class_id, buffer, size);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Eget_class_name</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_class_name", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_class_name_utf8(
-            hid_t class_id, [Out] byte[] buffer, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eget_class_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_class_name_utf8(
+            hid_t class_id, byte* buffer, size_t size);
 
         /// <summary>
         /// Returns copy of current error stack.
@@ -293,10 +283,8 @@ namespace HDF.PInvoke
         /// </summary>
         /// <returns>Returns an error stack identifier on success; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_current_stack",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_current_stack();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eget_current_stack"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_current_stack();
 
         /// <summary>
         /// Retrieves an error message.
@@ -312,23 +300,28 @@ namespace HDF.PInvoke
         public static ssize_t get_msg(
             hid_t msg_id, ref type_t msg_type, StringBuilder msg, size_t size)
         {
-            var buffer = Utf8Buffer.Create(msg, size);
-            var result = get_msg_utf8(msg_id, ref msg_type, buffer, size);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(msg, size))
             {
-                Utf8Buffer.CopyTo(buffer, msg);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_msg_utf8(msg_id, ref msg_type, buffer, size);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, msg);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Eget_msg</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_msg", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_msg_utf8(
-            hid_t msg_id, ref type_t msg_type, [Out] byte[] buffer, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eget_msg"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_msg_utf8(
+            hid_t msg_id, ref type_t msg_type, byte* buffer, size_t size);
 
         /// <summary>
         /// Retrieves the number of error messages in an error stack.
@@ -337,10 +330,8 @@ namespace HDF.PInvoke
         /// <param name="estack_id">Error stack identifier.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eget_num",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern ssize_t get_num(hid_t estack_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eget_num"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_num(hid_t estack_id);
 
         /// <summary>
         /// Deletes specified number of error messages from the error stack.
@@ -350,10 +341,8 @@ namespace HDF.PInvoke
         /// <param name="count">The number of error messages to be deleted from
         /// the top of error stack.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Epop",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t pop(hid_t estack_id, size_t count);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Epop"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t pop(hid_t estack_id, size_t count);
 
         /// <summary>
         /// Prints the specified error stack in a default manner.
@@ -363,10 +352,8 @@ namespace HDF.PInvoke
         /// <param name="stream">File pointer, or stderr if NULL.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eprint2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t print
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eprint2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t print
             (hid_t estack_id, IntPtr stream);
 
         /// <summary>
@@ -390,13 +377,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Epush2",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        private static extern herr_t push_native
-            (hid_t estack_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string file, [MarshalAs(UnmanagedType.LPUTF8Str)] string func, uint line,
-            hid_t class_id, hid_t major_id, hid_t minor_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string msg);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Epush2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t push_native
+            (hid_t estack_id, string file, string func, uint line, hid_t class_id, hid_t major_id, hid_t minor_id, string msg);
 
         /// <summary>
         /// Pushes a literal UTF-8 message; percent signs are not treated as native varargs.
@@ -426,13 +409,9 @@ namespace HDF.PInvoke
         /// to which the error class belongs. A NULL can be passed in.</param>
         /// <returns>Returns a class identifier on success; otherwise returns a
         /// negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eregister_class",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t register_class
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string cls_name,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string lib_name,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string version);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eregister_class", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t register_class
+            (string cls_name, string lib_name, string version);
 
         /// <summary>
         /// Turns automatic error printing on or off.
@@ -443,10 +422,8 @@ namespace HDF.PInvoke
         /// <param name="client_data">Data passed to the error function.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eset_auto2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_auto
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eset_auto2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_auto
             (hid_t estack_id, auto_t func, IntPtr client_data);
 
         /// <summary>
@@ -456,10 +433,8 @@ namespace HDF.PInvoke
         /// <param name="estack_id">Error stack identifier.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eset_current_stack",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_current_stack(hid_t estack_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eset_current_stack"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_current_stack(hid_t estack_id);
 
         /// <summary>
         /// Removes an error class.
@@ -468,10 +443,8 @@ namespace HDF.PInvoke
         /// <param name="class_id">Error class identifier.</param>
         /// <returns>Returns a non-negative value on success; otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Eunregister_class",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t unregister_class(hid_t class_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Eunregister_class"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t unregister_class(hid_t class_id);
 
         /// <summary>
         /// Walks the specified error stack, calling the specified function.
@@ -484,7 +457,6 @@ namespace HDF.PInvoke
         /// <param name="client_data">Data to be passed with
         /// <paramref name="func"/>.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static herr_t walk
             (hid_t estack_id, direction_t direction, walk_t func,
             IntPtr client_data) => ErrorWalk.Invoke(estack_id, direction, func, client_data);

@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using herr_t = System.Int32;
 using hid_t = System.Int64;
 using hsize_t = System.UInt64;
@@ -22,7 +22,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides native HDF5 data-filter registration and capability queries.
     /// </summary>
-    public unsafe sealed class H5Z
+    public unsafe sealed partial class H5Z
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.
@@ -216,14 +216,14 @@ namespace HDF.PInvoke
         /// <param name="flags">The native flags controlling the filter operation, including reverse filtering when decoding.</param>
         /// <param name="cd_nelmts">The number of filter client-data values.</param>
         /// <param name="cd_values">Pointer to cd_nelmts unsigned 32-bit client-data values. Read only during the callback.</param>
-        /// <param name="nbytes">The buffer or value size in bytes.</param>
-        /// <param name="buf_size">The buffer or value size in bytes.</param>
-        /// <param name="buf">The data buffer supplied to the native operation.</param>
+        /// <param name="nbytes">The number of valid bytes in the input buffer.</param>
+        /// <param name="buf_size">Address of the native <c>size_t</c> buffer capacity (<c>size_t*</c>); update if reallocating.</param>
+        /// <param name="buf">Address of the native data buffer pointer (<c>void**</c>); read via <c>Marshal.ReadIntPtr</c> or pointer dereference.</param>
         /// <returns>The number of valid bytes in the transformed buffer, or zero on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate size_t func_t
         (uint flags, size_t cd_nelmts, IntPtr cd_values, size_t nbytes,
-                 ref size_t buf_size, ref IntPtr buf);
+                 IntPtr buf_size, IntPtr buf);
 
         /// <summary>
         /// The filter table maps filter identification numbers to structs that
@@ -279,10 +279,8 @@ namespace HDF.PInvoke
         /// <param name="filter">Filter identifier.</param>
         /// <returns>Returns a Boolean value if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zfilter_avail",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t filter_avail(filter_t filter);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Zfilter_avail"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t filter_avail(filter_t filter);
 
         /// <summary>
         /// Retrieves information about a filter.
@@ -293,10 +291,8 @@ namespace HDF.PInvoke
         /// filter information</param>
         /// <returns>Returns a non-negative value on success, a negative value
         /// on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zget_filter_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_filter_info
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Zget_filter_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_filter_info
             (filter_t filter, ref uint filter_config);
 
         /// <summary>
@@ -307,7 +303,6 @@ namespace HDF.PInvoke
         /// containing filter-definition information.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static herr_t register(ref class_t filter_class) => FilterClassRegistry.Register(ref filter_class);
 
         /// <summary>
@@ -317,7 +312,6 @@ namespace HDF.PInvoke
         /// <param name="filter">Identifier of the filter to be unregistered.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static herr_t unregister(filter_t filter) => FilterClassRegistry.Unregister(filter);
     }
 }

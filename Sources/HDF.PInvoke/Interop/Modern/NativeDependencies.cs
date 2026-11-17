@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+[assembly: DisableRuntimeMarshalling]
 [assembly: TypeForwardedTo(typeof(CLong))]
 [assembly: TypeForwardedTo(typeof(CULong))]
 

@@ -454,6 +454,135 @@ namespace UnitTests
         }
 
         /// <summary>
+        /// Verifies DisableRuntimeMarshalling metadata, blittable UnmanagedFunctionPointer signatures, and CallbackBridge round-trips and exception capture.
+        /// </summary>
+        [TestMethod]
+        public void DisableRuntimeMarshallingAndCallbackBridgesWorkCleanly()
+        {
+#if NET8_0_OR_GREATER && !HDF_LEGACY
+            var assembly = typeof(H5).Assembly;
+            Assert.AreEqual(1, assembly.GetCustomAttributes(typeof(DisableRuntimeMarshallingAttribute), false).Length);
+
+            foreach (var type in assembly.GetTypes())
+            {
+                if (!typeof(Delegate).IsAssignableFrom(type) ||
+                    type.GetCustomAttributes(typeof(UnmanagedFunctionPointerAttribute), false).Length == 0)
+                {
+                    continue;
+                }
+
+                var invoke = type.GetMethod("Invoke")!;
+                foreach (var parameter in invoke.GetParameters())
+                {
+                    var pt = parameter.ParameterType;
+                    Assert.IsFalse(pt.IsByRef, $"{type.FullName}.{parameter.Name} must not use ref/out/in under DisableRuntimeMarshalling.");
+                    Assert.IsTrue(pt.IsValueType || pt.IsPointer, $"{type.FullName}.{parameter.Name} must be blittable under DisableRuntimeMarshalling.");
+                }
+            }
+#endif
+
+            var path = Path.Combine(Path.GetTempPath(), "drm-bridges-" + Guid.NewGuid() + ".h5");
+            long file = -1, space = -1, attr = -1, fapl = -1;
+
+            try
+            {
+                file = H5F.create(path, H5F.ACC_TRUNC);
+                space = H5S.create_simple(1, new ulong[] { 3 }, null);
+                attr = H5A.create(file, "attr_属性", H5T.NATIVE_INT, space);
+                fapl = H5P.create(H5P.FILE_ACCESS);
+                Assert.IsTrue(file >= 0 && space >= 0 && attr >= 0 && fapl >= 0);
+                Assert.IsTrue(H5G.close(H5G.create(file, "grp_组")) >= 0);
+
+                // H5P.iterate round-trip and exception capture.
+                var propCount = 0;
+                var propIdx = 0;
+                Assert.AreEqual(0, H5P.iterate(fapl, ref propIdx, (id, name, state) =>
+                {
+                    Assert.IsFalse(string.IsNullOrEmpty(name));
+                    propCount++;
+                    return 0;
+                }, IntPtr.Zero));
+                Assert.IsTrue(propCount > 0);
+
+                propIdx = 0;
+                var propEx = Assert.ThrowsExactly<InvalidOperationException>(() =>
+                    H5P.iterate(fapl, ref propIdx, (id, name, state) => throw new InvalidOperationException("prop-boom"), IntPtr.Zero));
+                Assert.AreEqual("prop-boom", propEx.Message);
+
+                // H5D.scatter round-trip and exception capture.
+                var source = new[] { 11, 22, 33 };
+                var dest = new int[3];
+                fixed (int* srcPtr = source, dstPtr = dest)
+                {
+                    var sent = false;
+                    var srcAddr = (IntPtr)srcPtr;
+                    Assert.IsTrue(H5D.scatter((ref IntPtr buf, ref IntPtr bytesUsed, IntPtr state) =>
+                    {
+                        if (sent)
+                        {
+                            bytesUsed = IntPtr.Zero;
+                            return 0;
+                        }
+
+                        sent = true;
+                        buf = srcAddr;
+                        bytesUsed = (IntPtr)(3 * sizeof(int));
+                        return 0;
+                    }, IntPtr.Zero, H5T.NATIVE_INT, space, (IntPtr)dstPtr) >= 0);
+                    CollectionAssert.AreEqual(source, dest);
+
+                    var dstAddr = (IntPtr)dstPtr;
+                    var scatterEx = Assert.ThrowsExactly<InvalidOperationException>(() =>
+                        H5D.scatter((ref IntPtr buf, ref IntPtr bytesUsed, IntPtr state) => throw new InvalidOperationException("scatter-boom"),
+                            IntPtr.Zero, H5T.NATIVE_INT, space, dstAddr));
+                    Assert.AreEqual("scatter-boom", scatterEx.Message);
+                }
+
+                // H5A.iterate, H5L.iterate2, and H5O.visit3 exception capture without unwinding through native C frames.
+                ulong attrIdx = 0;
+                var attrEx = Assert.ThrowsExactly<InvalidOperationException>(() =>
+                    H5A.iterate(file, H5.index_t.NAME, H5.iter_order_t.INC, ref attrIdx,
+                        (long loc, IntPtr name, ref H5A.info_t info, IntPtr state) => throw new InvalidOperationException("attr-boom"), IntPtr.Zero));
+                Assert.AreEqual("attr-boom", attrEx.Message);
+
+                ulong linkIdx = 0;
+                var linkEx = Assert.ThrowsExactly<InvalidOperationException>(() =>
+                    H5L.iterate2(file, H5.index_t.NAME, H5.iter_order_t.INC, ref linkIdx,
+                        (long grp, string name, ref H5L.info2_t info, IntPtr state) => throw new InvalidOperationException("link-boom"), IntPtr.Zero));
+                Assert.AreEqual("link-boom", linkEx.Message);
+
+                var objEx = Assert.ThrowsExactly<InvalidOperationException>(() =>
+                    H5O.visit3(file, H5.index_t.NAME, H5.iter_order_t.INC,
+                        (long root, string name, ref H5O.info2_t info, IntPtr state) => throw new InvalidOperationException("obj-boom"), IntPtr.Zero));
+                Assert.AreEqual("obj-boom", objEx.Message);
+            }
+            finally
+            {
+                if (fapl >= 0)
+                {
+                    H5P.close(fapl);
+                }
+
+                if (attr >= 0)
+                {
+                    H5A.close(attr);
+                }
+
+                if (space >= 0)
+                {
+                    H5S.close(space);
+                }
+
+                if (file >= 0)
+                {
+                    H5F.close(file);
+                }
+
+                File.Delete(path);
+            }
+        }
+
+        /// <summary>
         /// Registers a filter using a transient UTF-8 string and captured state so GC and ownership checks are meaningful.
         /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -462,11 +591,11 @@ namespace UnitTests
             var maskSeed = new object();
             H5Z.can_apply_func_t canApply = (dcpl, typeId, spaceId) => maskSeed != null ? 1 : 0;
             H5Z.set_local_func_t setLocal = (dcpl, typeId, spaceId) => maskSeed != null ? 0 : -1;
-            H5Z.func_t filter = (uint flags, IntPtr cdCount, IntPtr cdValues, IntPtr nbytes, ref IntPtr bufSize, ref IntPtr buf) =>
+            H5Z.func_t filter = (uint flags, IntPtr cdCount, IntPtr cdValues, IntPtr nbytes, IntPtr bufSize, IntPtr buf) =>
             {
                 GC.KeepAlive(maskSeed);
                 var mask = cdCount.ToInt64() > 0 ? (byte)((uint*)cdValues)[0] : (byte)0x5A;
-                var data = (byte*)buf;
+                var data = *(byte**)buf;
                 var length = nbytes.ToInt64();
 
                 for (long i = 0; i < length; i++)

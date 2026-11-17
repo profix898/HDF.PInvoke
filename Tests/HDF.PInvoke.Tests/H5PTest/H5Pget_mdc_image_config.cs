@@ -31,15 +31,9 @@ namespace UnitTests
         {
             var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
-            var conf =
-                new H5AC.cache_image_config_t();
-            conf.version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION;
-            var config_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(conf));
-            Marshal.StructureToPtr((H5AC.cache_image_config_t)conf,
-                config_ptr, false);
-            Assert.IsTrue(H5P.get_mdc_image_config(fapl, config_ptr) >= 0);
+            var conf = new H5AC.cache_image_config_t { version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION };
+            Assert.IsTrue(H5P.get_mdc_image_config(fapl, ref conf) >= 0);
             Assert.IsTrue(H5P.close(fapl) >= 0);
-            Marshal.FreeHGlobal(config_ptr);
         }
     }
 }

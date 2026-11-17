@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -72,7 +73,7 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Copies native information while widening the Windows file number.</summary>
-        private static info2_t ReadInfo2(IntPtr pointer)
+        internal static info2_t ReadInfo2(IntPtr pointer)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -95,12 +96,8 @@ namespace HDF.PInvoke
             return ReadInfo2(pointer);
         }
 
-        /// <summary>Receives borrowed current object information; return zero to continue, positive to stop, or negative on error. Do not throw through native code.</summary>
+        /// <summary>Receives borrowed current object information; return zero to continue, positive to stop, or negative on error.</summary>
         public delegate int iterate2_t(long root, string name, ref info2_t information, IntPtr state);
-
-        /// <summary>Receives a native information pointer before converting its platform-dependent layout.</summary>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int NativeIterate2(long root, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, IntPtr information, IntPtr state);
 
         /// <summary>Gets current object information, normalizing Windows and Unix native layouts; only requested fields are populated.</summary>
         public static int get_info3(long location, out info2_t information, uint fields = INFO_ALL)
@@ -113,11 +110,11 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Imports the native information getter using opaque output storage.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_info3", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int get_info3_native(long location, IntPtr information, uint fields);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_info3"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int get_info3_native(long location, IntPtr information, uint fields);
 
         /// <summary>Gets current object information, normalizing Windows and Unix native layouts; only requested fields are populated.</summary>
-        public static int get_info_by_name3(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, out info2_t information, uint fields = INFO_ALL, long access = H5P.DEFAULT)
+        public static int get_info_by_name3(long location, string name, out info2_t information, uint fields = INFO_ALL, long access = H5P.DEFAULT)
         {
             // Zero unrequested fields and reserve enough aligned storage for both native layouts.
             info2_t storage = default;
@@ -127,11 +124,11 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Imports the native information getter using opaque output storage.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_info_by_name3", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int get_info_by_name3_native(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, IntPtr information, uint fields, long access);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_info_by_name3", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int get_info_by_name3_native(long location, string name, IntPtr information, uint fields, long access);
 
         /// <summary>Gets current object information, normalizing Windows and Unix native layouts; only requested fields are populated.</summary>
-        public static int get_info_by_idx3(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, ulong position, out info2_t information, uint fields = INFO_ALL, long access = H5P.DEFAULT)
+        public static int get_info_by_idx3(long location, string group, H5.index_t index, H5.iter_order_t order, ulong position, out info2_t information, uint fields = INFO_ALL, long access = H5P.DEFAULT)
         {
             // Zero unrequested fields and reserve enough aligned storage for both native layouts.
             info2_t storage = default;
@@ -141,8 +138,8 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Imports the native information getter using opaque output storage.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_info_by_idx3", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int get_info_by_idx3_native(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, ulong position, IntPtr information, uint fields, long access);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_info_by_idx3", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int get_info_by_idx3_native(long location, string group, H5.index_t index, H5.iter_order_t order, ulong position, IntPtr information, uint fields, long access);
 
         /// <summary>Synchronously visits objects with current information; callback and state must remain valid until this call returns.</summary>
         public static int visit3(long location, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, uint fields = INFO_ALL)
@@ -152,41 +149,29 @@ namespace HDF.PInvoke
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            NativeIterate2 bridge = (root, objectName, pointer, data) =>
-            {
-                var information = ReadInfo2(pointer);
-                return callback(root, objectName, ref information, data);
-            };
-            var result = visit3_native(location, index, order, bridge, state, fields);
-            GC.KeepAlive(bridge);
-            return result;
+            return CallbackBridge.InvokeObject2(callback, state, (location, index, order, fields),
+                static (s, cb, ctx) => visit3_native(s.location, s.index, s.order, cb, ctx, s.fields));
         }
 
-        /// <summary>Imports object traversal with a native layout callback.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ovisit3", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int visit3_native(long location, H5.index_t index, H5.iter_order_t order, NativeIterate2 callback, IntPtr state, uint fields);
+        /// <summary>Imports object traversal with a pointer-sized native callback.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ovisit3"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int visit3_native(long location, H5.index_t index, H5.iter_order_t order, IntPtr callback, IntPtr state, uint fields);
 
         /// <summary>Synchronously visits objects with current information; callback and state must remain valid until this call returns.</summary>
-        public static int visit_by_name3(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, uint fields = INFO_ALL, long access = H5P.DEFAULT)
+        public static int visit_by_name3(long location, string name, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, uint fields = INFO_ALL, long access = H5P.DEFAULT)
         {
             if (callback == null)
             {
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            NativeIterate2 bridge = (root, objectName, pointer, data) =>
-            {
-                var information = ReadInfo2(pointer);
-                return callback(root, objectName, ref information, data);
-            };
-            var result = visit_by_name3_native(location, name, index, order, bridge, state, fields, access);
-            GC.KeepAlive(bridge);
-            return result;
+            return CallbackBridge.InvokeObject2(callback, state, (location, name, index, order, fields, access),
+                static (s, cb, ctx) => visit_by_name3_native(s.location, s.name, s.index, s.order, cb, ctx, s.fields, s.access));
         }
 
-        /// <summary>Imports object traversal with a native layout callback.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ovisit_by_name3", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int visit_by_name3_native(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, H5.index_t index, H5.iter_order_t order, NativeIterate2 callback, IntPtr state, uint fields, long access);
+        /// <summary>Imports object traversal with a pointer-sized native callback.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ovisit_by_name3", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int visit_by_name3_native(long location, string name, H5.index_t index, H5.iter_order_t order, IntPtr callback, IntPtr state, uint fields, long access);
 
     }
 }

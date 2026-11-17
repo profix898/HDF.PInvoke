@@ -48,8 +48,8 @@ $install = Join-Path $PSScriptRoot "Native/install/$Rid"
 $stage = Join-Path $PSScriptRoot "Native/runtimes/$Rid/native"
 $interop = Join-Path $PSScriptRoot "Native/interop/$Rid"
 $configure = @('-S', "$root/Native/hdf5", '-C', "$root/Native/HDF5Options.cmake", '-B', $build, '-DCMAKE_BUILD_TYPE=Release', "-DHDF_TEST_EXPRESS=$TestExpressLevel", "-DCMAKE_INSTALL_PREFIX=$install")
-# Match the loader filename on musl to avoid loading a second core through a SONAME alias.
-if ($os -eq 'linux-musl') { $configure += '-DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON' }
+# Emit unversioned shared library names on Linux and macOS to avoid duplicate symlink copies and dual-SONAME loading.
+if (-not $IsWindows) { $configure += '-DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON' }
 $consumer = @('-S', "$root/Native/Tests", '-B', $interop, '-DCMAKE_BUILD_TYPE=Release', "-DCMAKE_PREFIX_PATH=$install")
 if ($IsWindows) {
     $cmakeArch = if ($architecture -eq 'arm64') { 'ARM64' } else { 'x64' }

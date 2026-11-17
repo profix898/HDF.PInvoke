@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -24,7 +25,12 @@ namespace HDF.PInvoke
         public static int read_multi(long[] datasets, long[] memoryTypes, long[] memorySpaces, long[] fileSpaces, long transfer, IntPtr[] buffers)
         {
             ValidateMulti(datasets, memoryTypes, memorySpaces, fileSpaces, buffers);
-            return read_multi_native(new UIntPtr((uint)datasets.Length), datasets, memoryTypes, memorySpaces, fileSpaces, transfer, buffers);
+
+            fixed (long* datasetsPtr = datasets, typesPtr = memoryTypes, memSpacesPtr = memorySpaces, fileSpacesPtr = fileSpaces)
+            fixed (IntPtr* buffersPtr = buffers)
+            {
+                return read_multi_native(new UIntPtr((uint)datasets.Length), datasetsPtr, typesPtr, memSpacesPtr, fileSpacesPtr, transfer, buffersPtr);
+            }
         }
 
         /// <summary>Writes multiple datasets in one file in a single synchronous native call.</summary>
@@ -32,7 +38,12 @@ namespace HDF.PInvoke
         public static int write_multi(long[] datasets, long[] memoryTypes, long[] memorySpaces, long[] fileSpaces, long transfer, IntPtr[] buffers)
         {
             ValidateMulti(datasets, memoryTypes, memorySpaces, fileSpaces, buffers);
-            return write_multi_native(new UIntPtr((uint)datasets.Length), datasets, memoryTypes, memorySpaces, fileSpaces, transfer, buffers);
+
+            fixed (long* datasetsPtr = datasets, typesPtr = memoryTypes, memSpacesPtr = memorySpaces, fileSpacesPtr = fileSpaces)
+            fixed (IntPtr* buffersPtr = buffers)
+            {
+                return write_multi_native(new UIntPtr((uint)datasets.Length), datasetsPtr, typesPtr, memSpacesPtr, fileSpacesPtr, transfer, buffersPtr);
+            }
         }
 
         /// <summary>Checks parallel arrays before native code reads their elements.</summary>
@@ -69,19 +80,17 @@ namespace HDF.PInvoke
             }
         }
 
-        /// <summary>Imports native multi-dataset reads after array bounds validation.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dread_multi", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int read_multi_native(UIntPtr count, [In] long[] datasets, [In] long[] memoryTypes, [In] long[] memorySpaces, [In] long[] fileSpaces, long transfer, [In] IntPtr[] buffers);
+        /// <summary>Imports native multi-dataset reads after bounds validation.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dread_multi"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial int read_multi_native(UIntPtr count, long* datasets, long* memoryTypes, long* memorySpaces, long* fileSpaces, long transfer, IntPtr* buffers);
 
-        /// <summary>Imports native multi-dataset writes after array bounds validation.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dwrite_multi", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int write_multi_native(UIntPtr count, [In] long[] datasets, [In] long[] memoryTypes, [In] long[] memorySpaces, [In] long[] fileSpaces, long transfer, [In] IntPtr[] buffers);
+        /// <summary>Imports native multi-dataset writes after bounds validation.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dwrite_multi"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial int write_multi_native(UIntPtr count, long* datasets, long* memoryTypes, long* memorySpaces, long* fileSpaces, long transfer, IntPtr* buffers);
 
         /// <summary>Reads an encoded chunk with an explicit byte capacity and returns its filter mask and required size.</summary>
         /// <remarks>Offset points to one unsigned 64-bit coordinate per dimension. Buffer size is an input capacity and output size; a null buffer queries size. The caller owns both buffers.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dread_chunk2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int read_chunk2(long dataset, long transfer, IntPtr offset, out uint filters, IntPtr buffer, ref UIntPtr bufferSize);
-
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dread_chunk2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int read_chunk2(long dataset, long transfer, IntPtr offset, out uint filters, IntPtr buffer, ref UIntPtr bufferSize);
     }
 }
-

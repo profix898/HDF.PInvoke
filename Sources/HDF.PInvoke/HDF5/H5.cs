@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
@@ -154,10 +154,8 @@ namespace HDF.PInvoke
         /// On success, returns pointer to newly allocated buffer or returns
         /// NULL if size is 0 (zero). Returns NULL on failure.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5allocate_memory",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern IntPtr allocate_memory
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5allocate_memory"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr allocate_memory
             (IntPtr size, hbool_t clear);
 
         /// <summary>
@@ -191,8 +189,8 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5close</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5close", CallingConvention = CallingConvention.Cdecl)]
-        private static extern herr_t CloseNative();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5close"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t CloseNative();
 
         /// <summary>
         /// Instructs library not to install atexit cleanup routine.
@@ -215,10 +213,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5free_memory",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t free_memory(IntPtr buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5free_memory"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t free_memory(IntPtr buf);
 
         /// <summary>
         /// Garbage collects on all free-lists of all types.
@@ -228,10 +224,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5garbage_collect",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t garbage_collect();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5garbage_collect"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t garbage_collect();
 
         /// <summary>
         /// Returns the HDF library release number.
@@ -250,10 +244,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5get_libversion",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_libversion
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5get_libversion"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_libversion
             (ref uint majnum, ref uint minnum, ref uint relnum);
 
         /// <summary>
@@ -269,10 +261,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5is_library_threadsafe",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t is_library_threadsafe(ref hbool_t is_ts);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5is_library_threadsafe"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t is_library_threadsafe(ref hbool_t is_ts);
 
         /// <summary>
         /// Initializes the HDF5 library.
@@ -282,10 +272,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5open",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t open();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5open"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t open();
 
         /// <summary>
         /// Resizes and possibly re-allocates memory that will later be freed
@@ -302,10 +290,8 @@ namespace HDF.PInvoke
         /// On success, returns pointer to resized or reallocated buffer or
         /// returns NULL if size is 0 (zero). Returns NULL on failure.
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5resize_memory",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern IntPtr resize_memory(IntPtr mem, IntPtr size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5resize_memory"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr resize_memory(IntPtr mem, IntPtr size);
 
         /// <summary>
         /// Sets free-list size limits.
@@ -340,12 +326,8 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        [DllImport(Constants.DLLFileName,
-            EntryPoint = "H5set_free_list_limits",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_free_list_limits
-            (int reg_global_lim, int reg_list_lim, int arr_global_lim,
-            int arr_list_lim, int blk_global_lim, int blk_list_lim);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5set_free_list_limits"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_free_list_limits
+            (int reg_global_lim, int reg_list_lim, int arr_global_lim, int arr_list_lim, int blk_global_lim, int blk_list_lim);
     }
 }

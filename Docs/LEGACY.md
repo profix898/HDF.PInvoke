@@ -62,7 +62,7 @@ The legacy assembly resolves callable exports and global symbols through one sel
 
 The [library project](../Sources/HDF.PInvoke/HDF.PInvoke.csproj) includes `Interop/Modern` for `net8.0` and `Interop/Legacy` for `netstandard2.0`. Both directories define the target's implementation of the same `NativeDependencies` type. There is no runtime backend interface, service registration or switch between implementations inside an assembly. NuGet selects the managed assembly; MSBuild has already selected its loader.
 
-The modern assembly keeps its direct HDF5 P/Invoke declarations and native import resolver. The legacy assembly contains generated methods with the same public signatures instead. Small conditional aliases are used where shared helpers need target-specific types: for example, `H5DLLImporter` aliases `NativeLibrary` to `LegacyNativeLibrary` under `NETSTANDARD2_0`. This avoids introducing an abstraction into every native call.
+The modern assembly enables `[assembly: DisableRuntimeMarshalling]` and compiles shared `[LibraryImport]` declarations through Roslyn's `LibraryImportGenerator` together with its native import resolver, `Span<T>` / `ReadOnlySpan<T>` overloads and bufferless UTF-8 `string` getters. The legacy assembly contains generated methods with the same shared public signatures instead. Small conditional aliases are used where shared helpers need target-specific types: for example, `H5DLLImporter` aliases `NativeLibrary` to `LegacyNativeLibrary` under `NETSTANDARD2_0`. This avoids introducing an abstraction into every native call.
 
 The repository builds with the SDK pinned in `global.json`. The compiler-hosted generator targets .NET Standard 2.0 and references a pinned Roslyn package compatible with that SDK. The generator is a private build dependency: consumers receive compiled wrapper assemblies and do not need the generator or Roslyn at runtime.
 
@@ -74,8 +74,8 @@ The legacy compilation follows these steps:
 
 1. MSBuild builds the generator through a normal project reference and supplies the selected additional files to the compiler.
 2. The generator reads each selected file and the compiler's actual C# parse options, including preprocessor symbols.
-3. It validates syntax and string ownership at the original source locations, then replaces supported HDF5 `DllImport` declarations with managed forwarders, typed unmanaged delegates and lazy caches, or selects an explicit bridge for a special signature.
-4. It transforms UTF-8 marshalling attributes according to whether the call owns or borrows its string buffers.
+3. It validates syntax, calling conventions, `DisableRuntimeMarshalling` delegate rules and string ownership at the original source locations, then replaces supported HDF5 `LibraryImport` declarations with managed forwarders, typed unmanaged delegates and lazy caches, or selects the Windows metadata-cache layout bridge where needed.
+4. It attaches owned `UTF8Marshaler` attributes to forward-call delegate `string` parameters and rejects `LPUTF8Str` or unbridged `string` parameters on shared structures and `[UnmanagedFunctionPointer]` delegates.
 5. It adds the generated sources directly to the legacy compilation through Roslyn's `AddSource` API.
 
 Roslyn owns the generated syntax trees and their lifetime within each compilation. Changes to one input do not require transforming unrelated files within a retained generator driver; a fresh compiler process can still regenerate all inputs. Removing an input removes its generated tree from the next compilation. Relative source paths produce stable, collision-resistant generated names across checkout locations, including files with equal basenames in different directories.
@@ -154,7 +154,7 @@ Use the supplied typed `H5F` and `H5P` methods for metadata-cache configurations
 
 For a managed-to-native input string, the marshaler allocates a NUL-terminated buffer with `Marshal.AllocHGlobal`, encodes UTF-8 into it, and releases it through `Marshal.FreeHGlobal` when the call's marshalling cleanup runs. A null string becomes a null pointer; an empty string becomes a non-null pointer to a terminator. These temporary input buffers are not suitable for an API that retains a pointer after returning.
 
-For a native-to-managed callback parameter, the native caller owns the string. Generated callback declarations select the same marshaler with `MarshalCookie = "borrowed"`. It decodes the pointer while the callback is active, but its native cleanup does nothing. Without this distinction, callback cleanup could free memory owned by HDF5 or by an outer managed call that is still using it.
+For native-to-managed synchronous callbacks (`ErrorWalk` and `CallbackBridge`), the native caller owns the string buffer. On `.NET Standard 2.0`, those bridges decode borrowed pointers directly via `UTF8Marshaler.GetInstance("borrowed")` without freeing native memory (while `.NET 8+` uses `Marshal.PtrToStringUTF8` inside `[UnmanagedCallersOnly]` thunks). Stored and asynchronous `[UnmanagedFunctionPointer]` callbacks expose borrowed `IntPtr` UTF-8 pointers directly.
 
 Ownership cannot be inferred safely for every possible string signature. The generator rejects string returns and `ref`/`out` strings until an explicit bridge defines who allocates and frees their buffers. Shared `StringBuilder` output helpers already use explicit byte buffers and decoding; raw byte-array APIs retain their documented byte-count and NUL-termination requirements.
 
@@ -166,11 +166,11 @@ These are explicitly selected output-only getter contracts, not a general transf
 
 Raw byte-array string parameters must include their own terminating zero byte. Unlike the managed string overloads, the wrapper does not append a terminator to a byte array. Tests must allocate this byte explicitly; relying on padding beyond an array's end produces runtime-dependent failures and native out-of-bounds reads.
 
-### Error callbacks containing string fields
+### Synchronous callback bridges
 
-Nested string fields in a native callback structure require explicit pointer-layout marshalling for both older runtimes and modern NativeAOT. The shared [ErrorWalk](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs) bridge therefore handles `H5E.walk` on both targets through a blittable `ErrorInfo` structure whose string fields are `IntPtr` values. During the native callback (`[UnmanagedCallersOnly]` on modern .NET and a pinned Cdecl delegate with `UTF8Marshaler` on `.NET Standard 2.0`), it reads that structure, decodes its borrowed UTF-8 strings, constructs the public `H5E.error_t` view and invokes the user's callback.
+Synchronous callbacks whose managed delegates expose `string`, `ref` struct, or managed array parameters (`H5E.walk`, `H5D.iterate`, `H5D.scatter`, `H5A.iterate*`, `H5L.iterate*`/`visit*`, `H5O.visit*` and `H5P.iterate`) cannot rely on runtime delegate marshalling when `[assembly: DisableRuntimeMarshalling]` is active on `.NET 8+`. The shared [ErrorWalk](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs), [CallbackBridge](../Sources/HDF.PInvoke/HDF5/CallbackBridge.cs) and `H5D.iterate` bridges handle these calls on both targets through `[UnmanagedCallersOnly]` thunks on `.NET 8+` and Cdecl pointer delegates on `.NET Standard 2.0`, decoding borrowed UTF-8 strings and platform-normalized structures explicitly before invoking the caller's delegate.
 
-The bridge keeps its callback state alive until the walk returns. It catches managed exceptions inside the callback, returns a negative native status, then rethrows the captured exception with `ExceptionDispatchInfo` after native control has returned. `H5D.iterate` uses the same target-split bridge pattern to marshal borrowed coordinate arrays without runtime `SizeParamIndex` reverse-P/Invoke stubs. This exception-handling behavior belongs to these bridges; callers must not assume every callback API provides it.
+Each synchronous bridge keeps its callback state alive until the native call returns. It catches managed exceptions inside the callback, returns a negative native status to stop traversal cleanly, then rethrows the captured exception with `ExceptionDispatchInfo` after native stack frames have unwound. Stored and asynchronous `[UnmanagedFunctionPointer]` callbacks use blittable scalar/`IntPtr` signatures and do not provide exception-catching bridges; callers must never throw across those unmanaged callback frames.
 
 Public structures with `string` or delegate fields never rely on runtime struct marshalling; the generator rejects any `[MarshalAs(UnmanagedType.LPUTF8Str)]` annotation on a structure field unless replaced with an explicit pointer-layout bridge.
 
@@ -189,9 +189,9 @@ This is targeted ownership handling for user-defined links and filters. For othe
 | [HDF.PInvoke.csproj](../Sources/HDF.PInvoke/HDF.PInvoke.csproj) | Select target-specific compilation inputs and the legacy analyzer reference |
 | [LegacyBindingGenerator.cs](../Tools/BindingGenerator/LegacyBindingGenerator.cs) | Integrate incremental inputs, generated sources, cancellation and source diagnostics with Roslyn |
 | [LegacyBindings.cs](../Tools/BindingGenerator/LegacyBindings.cs) | Rewrite imports, create delegate caches and generate the Windows cache-configuration bridge |
-| [BindingSource.cs](../Tools/BindingGenerator/BindingSource.cs) | Validate syntax and rewrite UTF-8 attributes with explicit ownership rules |
+| [BindingSource.cs](../Tools/BindingGenerator/BindingSource.cs) | Validate syntax, string ownership and `DisableRuntimeMarshalling` constraints before rewriting imports |
 | [Interop/Legacy](../Sources/HDF.PInvoke/Interop/Legacy) | Load native handles and provide `CLong`/`CULong` polyfills and UTF-8 marshalling |
-| [ErrorWalk.cs](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs) | Bridge borrowed UTF-8 error records across native stack frames on both targets |
+| [CallbackBridge.cs](../Sources/HDF.PInvoke/HDF5/CallbackBridge.cs) / [ErrorWalk.cs](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs) | Bridge synchronous iteration, scatter and error-walk callbacks across native stack frames on both targets |
 | [H5DLLImporter.cs](../Sources/HDF.PInvoke/HDF5/H5DLLImporter.cs) | Resolve exported native globals through the selected core handle |
 | [LinkClassRegistry.cs](../Sources/HDF.PInvoke/HDF5/LinkClassRegistry.cs) / [FilterClassRegistry.cs](../Sources/HDF.PInvoke/HDF5/FilterClassRegistry.cs) | Retain native registration memory and managed callback roots |
 

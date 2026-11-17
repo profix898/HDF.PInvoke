@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -7,12 +8,12 @@ namespace HDF.PInvoke
     public unsafe sealed partial class H5O
     {
         /// <summary>Sets or removes an object's UTF-8 comment; attributes are preferable for new application metadata.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int set_comment(long objectId, [MarshalAs(UnmanagedType.LPUTF8Str)] string comment);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int set_comment(long objectId, string comment);
 
         /// <summary>Sets or removes a named object's UTF-8 comment; pass null to remove it.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment_by_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int set_comment_by_name(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.LPUTF8Str)] string comment, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oset_comment_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int set_comment_by_name(long location, string name, string comment, long access = H5P.DEFAULT);
 
         /// <summary>Requests identity, object type and hard-link count.</summary>
         public const uint INFO_BASIC = 1;
@@ -55,32 +56,32 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Opens an object by its connector-specific token; close the returned identifier with H5O.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oopen_by_token", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long open_by_token(long location, token_t token);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oopen_by_token"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long open_by_token(long location, token_t token);
 
         /// <summary>Compares tokens through the owning connector and returns their ordering.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Otoken_cmp", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int token_cmp(long location, ref token_t first, ref token_t second, out int comparison);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Otoken_cmp"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int token_cmp(long location, ref token_t first, ref token_t second, out int comparison);
 
         /// <summary>Allocates a UTF-8 token string; release it with H5.free_memory after copying its contents.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Otoken_to_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int token_to_str(long location, ref token_t token, out IntPtr text);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Otoken_to_str"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int token_to_str(long location, ref token_t token, out IntPtr text);
 
         /// <summary>Decodes a token string using the owning connector.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Otoken_from_str", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int token_from_str(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, out token_t token);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Otoken_from_str", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int token_from_str(long location, string text, out token_t token);
 
         /// <summary>Gets native-format header and metadata storage information selected by NATIVE_INFO flags.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_native_info(long location, out native_info_t information, uint fields);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_native_info(long location, out native_info_t information, uint fields);
 
         /// <summary>Gets native-format storage information for a named object.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info_by_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_native_info_by_name(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, out native_info_t information, uint fields, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_native_info_by_name(long location, string name, out native_info_t information, uint fields, long access = H5P.DEFAULT);
 
         /// <summary>Gets native-format storage information for an indexed object.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info_by_idx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_native_info_by_idx(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, ulong position, out native_info_t information, uint fields, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Oget_native_info_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_native_info_by_idx(long location, string group, H5.index_t index, H5.iter_order_t order, ulong position, out native_info_t information, uint fields, long access = H5P.DEFAULT);
 
     }
 }

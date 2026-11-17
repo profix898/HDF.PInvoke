@@ -36,7 +36,7 @@ finally
 
 `ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-On .NET 8 and later, trimming, single-file deployment and NativeAOT (`PublishAot=true`) are supported across all packaged runtime identifiers. For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`; see [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) for .NET Framework and standalone Mono deployment. Unity and IL2CPP are not supported.
+On .NET 8 and later, `[assembly: DisableRuntimeMarshalling]` is enabled: forward P/Invokes use source-generated `[LibraryImport]` stubs with stack-buffered UTF-8 string marshalling, synchronous callbacks use `[UnmanagedCallersOnly]` bridges, and modern APIs add zero-copy `Span<T>` / `ReadOnlySpan<T>` overloads and bufferless UTF-8 `string` getters with full trimming, single-file and NativeAOT (`PublishAot=true`) support across all packaged runtime identifiers. For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`; see [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) for .NET Framework and standalone Mono deployment. Unity and IL2CPP are not supported.
 
 ## Supported platforms
 

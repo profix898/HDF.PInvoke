@@ -162,7 +162,7 @@ namespace UnitTests
         public void FilterCallbackReadsAllClientData()
         {
             var observed = new uint[3];
-            H5Z.func_t callback = (uint flags, IntPtr count, IntPtr values, IntPtr bytes, ref IntPtr capacity, ref IntPtr buffer) =>
+            H5Z.func_t callback = (uint flags, IntPtr count, IntPtr values, IntPtr bytes, IntPtr capacity, IntPtr buffer) =>
             {
                 for (var i = 0; i < (int)count; i++)
                 {
@@ -180,16 +180,16 @@ namespace UnitTests
         }
 
         /// <summary>
-        /// Verifies external Link Callback Decodes Complete Utf8 Names.
+        /// Verifies external Link Callback Receives Borrowed Utf8 Pointers And Flags Pointer.
         /// </summary>
         [TestMethod]
         public void ExternalLinkCallbackDecodesCompleteUtf8Names()
         {
-            string[] observed = null;
-            H5L.elink_traverse_t callback = (string parent, string group, string child, string name, ref uint flags, long properties, IntPtr state) =>
+            IntPtr[] observed = null;
+            H5L.elink_traverse_t callback = (IntPtr parent, IntPtr group, IntPtr child, IntPtr name, IntPtr flagsPtr, long properties, IntPtr state) =>
             {
                 observed = new[] { parent, group, child, name };
-                flags = 23;
+                *(uint*)flagsPtr = 23;
                 return 0;
             };
             var utf8 = System.Text.Encoding.UTF8.GetBytes("/grüppe/数据\0");
@@ -201,7 +201,7 @@ namespace UnitTests
                 var invoke = (delegate* unmanaged[Cdecl]<IntPtr, IntPtr, IntPtr, IntPtr, uint*, long, IntPtr, int>)Marshal.GetFunctionPointerForDelegate(callback);
                 uint flags = 0;
                 Assert.AreEqual(0, invoke(text, text, text, text, &flags, 0, IntPtr.Zero));
-                CollectionAssert.AreEqual(new[] { "/grüppe/数据", "/grüppe/数据", "/grüppe/数据", "/grüppe/数据" }, observed);
+                CollectionAssert.AreEqual(new[] { text, text, text, text }, observed);
                 Assert.AreEqual(23u, flags);
             }
             finally

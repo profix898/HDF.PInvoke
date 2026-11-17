@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using H5O_msg_crt_idx_t = System.UInt32;
 using hbool_t = System.Byte;
@@ -83,7 +83,6 @@ namespace HDF.PInvoke
         /// immediately return that value, indicating failure. The iterator can
         /// be restarted at the next attribute, as indicated by the return value
         /// of <code>n</code>.</returns>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t operator_t
             (hid_t location_id, IntPtr attr_name, ref info_t ainfo,
             IntPtr op_data);
@@ -95,10 +94,8 @@ namespace HDF.PInvoke
         /// <param name="attr_id">Attribute to release access to.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t close(hid_t attr_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t attr_id);
 
         /// <summary>
         /// Creates an attribute attached to a specified object.
@@ -112,12 +109,9 @@ namespace HDF.PInvoke
         /// <param name="aapl_id">Attribute access property list identifier</param>
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Acreate2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create
-            (hid_t loc_id, byte[] attr_name, hid_t type_id, hid_t space_id,
-            hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Acreate2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, byte[] attr_name, hid_t type_id, hid_t space_id, hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates an attribute attached to a specified object.
@@ -132,13 +126,9 @@ namespace HDF.PInvoke
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Acreate2",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name, hid_t type_id, hid_t space_id,
-            hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Acreate2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, string attr_name, hid_t type_id, hid_t space_id, hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates an attribute attached to a specified object.
@@ -156,13 +146,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Acreate_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] attr_name, hid_t type_id,
-            hid_t space_id, hid_t acpl_id = H5P.DEFAULT,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Acreate_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] attr_name, hid_t type_id, hid_t space_id, hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates an attribute attached to a specified object.
@@ -181,14 +167,9 @@ namespace HDF.PInvoke
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Acreate_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t create_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name, hid_t type_id,
-            hid_t space_id, hid_t acpl_id = H5P.DEFAULT,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Acreate_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_by_name
+            (hid_t loc_id, string obj_name, string attr_name, hid_t type_id, hid_t space_id, hid_t acpl_id = H5P.DEFAULT, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Deletes an attribute from a specified location.
@@ -199,10 +180,8 @@ namespace HDF.PInvoke
         /// <param name="name">Name of the attribute to delete.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete(hid_t loc_id, byte[] name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete(hid_t loc_id, byte[] name);
 
         /// <summary>
         /// Deletes an attribute from a specified location.
@@ -214,11 +193,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete(hid_t loc_id, string name);
 
         /// <summary>
         /// Deletes an attribute from an object according to index order.
@@ -234,12 +210,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_idx
-            (hid_t loc_id, byte[] obj_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_idx
+            (hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Deletes an attribute from an object according to index order.
@@ -256,13 +229,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_idx",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_idx
+            (hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes an attribute from a specified location.
@@ -276,12 +245,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] attr_name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes an attribute from a specified location.
@@ -296,13 +262,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Adelete_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_name
+            (hid_t loc_id, string obj_name, string attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determines whether an attribute with a given name exists on an object.
@@ -313,10 +275,8 @@ namespace HDF.PInvoke
         /// <returns>When successful, returns a positive value, for
         /// <code>TRUE</code>, or 0 (zero), for <code>FALSE</code>. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aexists",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists(hid_t obj_id, byte[] attr_name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aexists"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists(hid_t obj_id, byte[] attr_name);
 
         /// <summary>
         /// Determines whether an attribute with a given name exists on an object.
@@ -328,11 +288,8 @@ namespace HDF.PInvoke
         /// <code>TRUE</code>, or 0 (zero), for <code>FALSE</code>. Otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aexists",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists(hid_t obj_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aexists", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists(hid_t obj_id, string attr_name);
 
         /// <summary>
         /// Determines whether an attribute with a given name exists on an object.
@@ -345,12 +302,9 @@ namespace HDF.PInvoke
         /// <returns>When successful, returns a positive value, for
         /// <code>TRUE</code>, or 0 (zero), for <code>FALSE</code>. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aexists_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] attr_name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aexists_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determines whether an attribute with a given name exists on an object.
@@ -364,13 +318,9 @@ namespace HDF.PInvoke
         /// <code>TRUE</code>, or 0 (zero), for <code>FALSE</code>. Otherwise
         /// returns a negative value.</returns>
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aexists_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aexists_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists_by_name
+            (hid_t loc_id, string obj_name, string attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Gets an attribute creation property list identifier.
@@ -379,10 +329,8 @@ namespace HDF.PInvoke
         /// <param name="attr_id">Identifier of the attribute.</param>
         /// <returns>Returns an identifier for the attribute’s creation property
         /// list if successful. Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_create_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_create_plist(hid_t attr_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_create_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_create_plist(hid_t attr_id);
 
         /// <summary>
         /// Retrieves attribute information, by attribute identifier.
@@ -392,10 +340,8 @@ namespace HDF.PInvoke
         /// <param name="ainfo">Attribute information struct</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info(hid_t attr_id, ref info_t ainfo);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info(hid_t attr_id, ref info_t ainfo);
 
         /// <summary>
         /// Retrieves attribute information, by attribute index position.
@@ -413,13 +359,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, byte[] obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves attribute information, by attribute index position.
@@ -438,14 +380,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_idx",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves attribute information, by attribute name.
@@ -461,12 +398,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] attr_name,
-            ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] attr_name, ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves attribute information, by attribute name.
@@ -483,13 +417,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name,
-            ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_info_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_name
+            (hid_t loc_id, string obj_name, string attr_name, ref info_t ainfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Gets an attribute name.
@@ -502,11 +432,9 @@ namespace HDF.PInvoke
         /// <returns>Returns the length of the attribute's name, which may be
         /// longer than <code>buf_size</code>, if successful. Otherwise returns
         /// a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_name(
-            hid_t attr_id, size_t size, [In][Out] byte[] name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name(
+            hid_t attr_id, size_t size, byte[] name);
 
         /// <summary>
         /// Gets an attribute name.
@@ -523,23 +451,28 @@ namespace HDF.PInvoke
         public static ssize_t get_name(
             hid_t attr_id, size_t size, StringBuilder name)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_utf8(attr_id, size, buffer);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_utf8(attr_id, size, buffer);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Aget_name</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_name", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_utf8(
-            hid_t attr_id, size_t size, [Out] byte[] buffer);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_utf8(
+            hid_t attr_id, size_t size, byte* buffer);
 
         /// <summary>
         /// Gets an attribute name, by attribute index position.
@@ -557,13 +490,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns attribute name size, in bytes, if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_name_by_idx
-            (hid_t loc_id, byte[] obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            [In][Out] byte[] name, size_t size, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name_by_idx
+            (hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, byte[] name, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Gets an attribute name, by attribute index position.
@@ -586,24 +515,27 @@ namespace HDF.PInvoke
             H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
             StringBuilder name, size_t size, hid_t lapl_id = H5P.DEFAULT)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_by_idx_utf8(loc_id, obj_name, idx_type, order, n, buffer, size, lapl_id);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_by_idx_utf8(loc_id, obj_name, idx_type, order, n, buffer, size, lapl_id);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Aget_name_by_idx</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_by_idx_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            [Out] byte[] buffer, size_t size, hid_t lapl_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_by_idx_utf8(hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, byte* buffer, size_t size, hid_t lapl_id);
 
         /// <summary>
         /// Gets an attribute name, by attribute index position.
@@ -622,12 +554,8 @@ namespace HDF.PInvoke
         /// <returns>Returns attribute name size, in bytes, if successful;
         /// otherwise returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx",
-            CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_name_by_idx(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n, IntPtr name,
-            size_t size, hid_t lapl_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_name_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name_by_idx(hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, IntPtr name, size_t size, hid_t lapl_id);
 
         /// <summary>
         /// Gets a copy of the dataspace for an attribute.
@@ -636,10 +564,8 @@ namespace HDF.PInvoke
         /// <param name="attr_id">Identifier of an attribute.</param>
         /// <returns>Returns attribute dataspace identifier if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_space",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_space(hid_t attr_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_space"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_space(hid_t attr_id);
 
         /// <summary>
         /// Returns the amount of storage required for an attribute.
@@ -648,10 +574,8 @@ namespace HDF.PInvoke
         /// <param name="attr_id">Identifier of the attribute to query.</param>
         /// <returns>Returns the amount of storage size allocated for the
         /// attribute; otherwise returns 0 (zero).</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_storage_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hsize_t get_storage_size(hid_t attr_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_storage_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hsize_t get_storage_size(hid_t attr_id);
 
         /// <summary>
         /// Returns the amount of storage required for an attribute.
@@ -660,10 +584,8 @@ namespace HDF.PInvoke
         /// <param name="attr_id">Identifier of an attribute.</param>
         /// <returns>Returns a datatype identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aget_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t get_type(hid_t attr_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aget_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_type(hid_t attr_id);
 
         /// <summary>
         /// Calls user-defined function for each attribute on an object.
@@ -683,12 +605,19 @@ namespace HDF.PInvoke
         /// can be a negative value, zero if all attributes were processed, or
         /// a positive value indicating short-circuit success
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aiterate2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate
-            (hid_t obj_id, H5.index_t idx_type, H5.iter_order_t order,
-            ref hsize_t n, operator_t op, IntPtr op_data);
+        public static herr_t iterate
+            (hid_t obj_id, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, operator_t op, IntPtr op_data)
+        {
+            fixed (hsize_t* nPtr = &n)
+            {
+                return CallbackBridge.InvokeAttr(op, op_data, (obj_id, idx_type, order, NPtr: (IntPtr)nPtr),
+                    static (s, cb, ctx) => iterate_native(s.obj_id, s.idx_type, s.order, ref *(hsize_t*)s.NPtr, cb, ctx));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aiterate2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_native
+            (hid_t obj_id, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, IntPtr op, IntPtr op_data);
 
         /// <summary>
         /// Calls user-defined function for each attribute on an object.
@@ -709,13 +638,17 @@ namespace HDF.PInvoke
         /// the return value of the last operator if it was non-zero, which can
         /// be a negative value, zero if all attributes were processed, or a
         /// positive value indicating short-circuit success</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aiterate_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate_by_name(hid_t loc_id,
-            byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order,
-            ref hsize_t n, operator_t op, IntPtr op_data,
-            hid_t lapd_id = H5P.DEFAULT);
+        public static herr_t iterate_by_name(hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, operator_t op, IntPtr op_data, hid_t lapd_id = H5P.DEFAULT)
+        {
+            fixed (hsize_t* nPtr = &n)
+            {
+                return CallbackBridge.InvokeAttr(op, op_data, (loc_id, obj_name, idx_type, order, NPtr: (IntPtr)nPtr, lapd_id),
+                    static (s, cb, ctx) => iterate_by_name_native(s.loc_id, s.obj_name, s.idx_type, s.order, ref *(hsize_t*)s.NPtr, cb, ctx, s.lapd_id));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aiterate_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_by_name_native(hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, IntPtr op, IntPtr op_data, hid_t lapd_id);
 
         /// <summary>
         /// Calls user-defined function for each attribute on an object.
@@ -737,14 +670,17 @@ namespace HDF.PInvoke
         /// be a negative value, zero if all attributes were processed, or a
         /// positive value indicating short-circuit success</returns>
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aiterate_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate_by_name(hid_t loc_id,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, H5.index_t idx_type, H5.iter_order_t order,
-            ref hsize_t n, operator_t op, IntPtr op_data,
-            hid_t lapd_id = H5P.DEFAULT);
+        public static herr_t iterate_by_name(hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, operator_t op, IntPtr op_data, hid_t lapd_id = H5P.DEFAULT)
+        {
+            fixed (hsize_t* nPtr = &n)
+            {
+                return CallbackBridge.InvokeAttr(op, op_data, (loc_id, obj_name, idx_type, order, NPtr: (IntPtr)nPtr, lapd_id),
+                    static (s, cb, ctx) => iterate_by_name_native(s.loc_id, s.obj_name, s.idx_type, s.order, ref *(hsize_t*)s.NPtr, cb, ctx, s.lapd_id));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aiterate_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_by_name_native(hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t n, IntPtr op, IntPtr op_data, hid_t lapd_id);
 
         /// <summary>
         /// Opens an attribute for an object specified by object identifier
@@ -757,10 +693,8 @@ namespace HDF.PInvoke
         /// <param name="aapl_id">Attribute access property list</param>
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
             (hid_t obj_id, byte[] attr_name, hid_t aapl_id = H5P.DEFAULT);
 
         /// <summary>
@@ -775,12 +709,9 @@ namespace HDF.PInvoke
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open
-            (hid_t obj_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name, hid_t aapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
+            (hid_t obj_id, string attr_name, hid_t aapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an attribute for an object specified by attribute index
@@ -798,13 +729,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open_by_idx
-            (hid_t loc_id, byte[] obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open_by_idx
+            (hid_t loc_id, byte[] obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an attribute for an object specified by attribute index
@@ -823,14 +750,9 @@ namespace HDF.PInvoke
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_idx",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open_by_idx
+            (hid_t loc_id, string obj_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an attribute for an object by object name and attribute name.
@@ -845,12 +767,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] attr_name,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] attr_name, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Opens an attribute for an object by object name and attribute name.
@@ -866,13 +785,9 @@ namespace HDF.PInvoke
         /// <returns>Returns an attribute identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static hid_t open_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string attr_name,
-            hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aopen_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open_by_name
+            (hid_t loc_id, string obj_name, string attr_name, hid_t aapl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Reads an attribute.
@@ -884,10 +799,8 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer for data to be read.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Aread",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t read
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Aread"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t read
             (hid_t attr_id, hid_t type_id, IntPtr buf);
 
         /// <summary>
@@ -899,10 +812,8 @@ namespace HDF.PInvoke
         /// <param name="new_name">New name for the attribute.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.S</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Arename",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t rename
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Arename"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t rename
             (hid_t loc_id, byte[] old_name, byte[] new_name);
 
         /// <summary>
@@ -915,12 +826,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Arename",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t rename
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string old_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string new_name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Arename", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t rename
+            (hid_t loc_id, string old_name, string new_name);
 
         /// <summary>
         /// Renames an attribute.
@@ -935,12 +843,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Arename_by_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t rename_by_name
-            (hid_t loc_id, byte[] obj_name, byte[] old_attr_name,
-            byte[] new_attr_name, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Arename_by_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t rename_by_name
+            (hid_t loc_id, byte[] obj_name, byte[] old_attr_name, byte[] new_attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Renames an attribute.
@@ -956,13 +861,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Arename_by_name",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t rename_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string old_attr_name,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string new_attr_name, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Arename_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t rename_by_name
+            (hid_t loc_id, string obj_name, string old_attr_name, string new_attr_name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Writes data to an attribute.
@@ -973,10 +874,8 @@ namespace HDF.PInvoke
         /// (in memory).</param>
         /// <param name="buf">Data to be written.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Awrite",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t write
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Awrite"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t write
             (hid_t attr_id, hid_t mem_type_id, IntPtr buf);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -37,34 +38,57 @@ namespace HDF.PInvoke
             public info2_union_t u;
         }
 
-        /// <summary>Receives borrowed link information; return zero to continue, positive to stop, or negative on error. Do not throw through native code.</summary>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int iterate2_t(long group, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, ref info2_t information, IntPtr state);
+        /// <summary>Receives borrowed link information; return zero to continue, positive to stop, or negative on error.</summary>
+        public delegate int iterate2_t(long group, string name, ref info2_t information, IntPtr state);
 
         /// <summary>Gets token-aware information about a link.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_info2(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, out info2_t information, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_info2(long location, string name, out info2_t information, long access = H5P.DEFAULT);
 
         /// <summary>Gets token-aware link information by index.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_info_by_idx2(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, ulong position, out info2_t information, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_info_by_idx2(long location, string group, H5.index_t index, H5.iter_order_t order, ulong position, out info2_t information, long access = H5P.DEFAULT);
 
         /// <summary>Iterates links with token-aware information; callback and state are borrowed for this synchronous call.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Literate2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int iterate2(long group, H5.index_t index, H5.iter_order_t order, ref ulong position, iterate2_t callback, IntPtr state);
+        public static int iterate2(long group, H5.index_t index, H5.iter_order_t order, ref ulong position, iterate2_t callback, IntPtr state)
+        {
+            fixed (ulong* posPtr = &position)
+            {
+                return CallbackBridge.InvokeLink2(callback, state, (group, index, order, PosPtr: (IntPtr)posPtr),
+                    static (s, cb, ctx) => iterate2_native(s.group, s.index, s.order, ref *(ulong*)s.PosPtr, cb, ctx));
+            }
+        }
 
-        /// <summary>Iterates a named group's links; callback must not throw through native code.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int iterate_by_name2(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, ref ulong position, iterate2_t callback, IntPtr state, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Literate2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int iterate2_native(long group, H5.index_t index, H5.iter_order_t order, ref ulong position, IntPtr callback, IntPtr state);
+
+        /// <summary>Iterates a named group's links with token-aware information.</summary>
+        public static int iterate_by_name2(long location, string group, H5.index_t index, H5.iter_order_t order, ref ulong position, iterate2_t callback, IntPtr state, long access = H5P.DEFAULT)
+        {
+            fixed (ulong* posPtr = &position)
+            {
+                return CallbackBridge.InvokeLink2(callback, state, (location, group, index, order, PosPtr: (IntPtr)posPtr, access),
+                    static (s, cb, ctx) => iterate_by_name2_native(s.location, s.group, s.index, s.order, ref *(ulong*)s.PosPtr, cb, ctx, s.access));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int iterate_by_name2_native(long location, string group, H5.index_t index, H5.iter_order_t order, ref ulong position, IntPtr callback, IntPtr state, long access);
 
         /// <summary>Recursively visits links; callback and state are borrowed for this synchronous call.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lvisit2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int visit2(long group, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state);
+        public static int visit2(long group, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state) =>
+            CallbackBridge.InvokeLink2(callback, state, (group, index, order),
+                static (s, cb, ctx) => visit2_native(s.group, s.index, s.order, cb, ctx));
 
-        /// <summary>Recursively visits a named group's links; callback must not throw through native code.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name2", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int visit_by_name2(long location, [MarshalAs(UnmanagedType.LPUTF8Str)] string group, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lvisit2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int visit2_native(long group, H5.index_t index, H5.iter_order_t order, IntPtr callback, IntPtr state);
 
+        /// <summary>Recursively visits a named group's links with token-aware information.</summary>
+        public static int visit_by_name2(long location, string group, H5.index_t index, H5.iter_order_t order, iterate2_t callback, IntPtr state, long access = H5P.DEFAULT) =>
+            CallbackBridge.InvokeLink2(callback, state, (location, group, index, order, access),
+                static (s, cb, ctx) => visit_by_name2_native(s.location, s.group, s.index, s.order, cb, ctx, s.access));
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int visit_by_name2_native(long location, string group, H5.index_t index, H5.iter_order_t order, IntPtr callback, IntPtr state, long access);
     }
 }
-

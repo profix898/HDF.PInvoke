@@ -158,9 +158,9 @@ internal static unsafe class Program
         var filterRegistered = false;
         var linkRegistered = false;
 
-        H5Z.func_t xorFilter = (uint flags, IntPtr cdCount, IntPtr cdValues, IntPtr nbytes, ref IntPtr bufSize, ref IntPtr buf) =>
+        H5Z.func_t xorFilter = (uint flags, IntPtr cdCount, IntPtr cdValues, IntPtr nbytes, IntPtr bufSize, IntPtr buf) =>
         {
-            var data = (byte*)buf;
+            var data = *(byte**)buf;
             var count = nbytes.ToInt64();
 
             for (long i = 0; i < count; i++)
@@ -243,63 +243,83 @@ internal static unsafe class Program
                 throw new InvalidOperationException("Transitive CLong/CULong type forwarding mismatch.");
             }
 
-            Check(space = H5S.create_simple(1, new ulong[] { 0 }, new ulong[] { H5S.UNLIMITED }));
+            Check(space = H5S.create_simple([0], [H5S.UNLIMITED]));
             Check(dcpl = H5P.create(H5P.DATASET_CREATE));
-            Check(H5P.set_chunk(dcpl, 1, new ulong[] { 3 }));
+            Check(H5P.set_chunk(dcpl, [3]));
             Check(H5P.set_deflate(dcpl, 6));
             Check(dataset = H5D.create(file, "données_数据", H5T.NATIVE_INT, space, H5P.DEFAULT, dcpl));
-            int[] values = { 17, -42, 12345 };
-
-            fixed (int* valuesPtr = values)
-            {
-                Check(H5DO.append(dataset, H5P.DEFAULT, 0, (IntPtr)values.Length, H5T.NATIVE_INT, (IntPtr)valuesPtr));
-            }
-
+            Check(H5DO.append<int>(dataset, H5P.DEFAULT, 0, (IntPtr)3, H5T.NATIVE_INT, [17, -42, 12345]));
             Check(H5D.close(dataset));
             dataset = -1;
             Check(H5S.close(space));
             space = -1;
 
-            Check(space = H5S.create_simple(2, new ulong[] { 2, 2 }, null));
+            Check(space = H5S.create_simple([2, 2]));
             Check(customDcpl = H5P.create(H5P.DATASET_CREATE));
-            Check(H5P.set_chunk(customDcpl, 2, new ulong[] { 2, 2 }));
-            Check(H5P.set_filter(customDcpl, customFilter, 0, IntPtr.Zero, null));
+            Check(H5P.set_chunk(customDcpl, [2, 2]));
+            Check(H5P.set_filter(customDcpl, customFilter, 0, ReadOnlySpan<uint>.Empty));
             Check(customDataset = H5D.create(file, "xor_2d", H5T.NATIVE_INT, space, H5P.DEFAULT, customDcpl));
-            int[] grid = { 1, 2, 3, 4 };
+            Span<int> grid = [1, 2, 3, 4];
 
-            fixed (int* gridPtr = grid)
+            // 5. Multidimensional zero-allocation H5D.iterate<T> span bridge.
+            var coordinateSum = 0ul;
+            Check(H5D.iterate(grid, H5T.NATIVE_INT, space, (ref int elem, long typeId, ReadOnlySpan<ulong> point) =>
             {
-                // 5. Multidimensional H5D.iterate bridge.
-                var coordinateSum = 0ul;
-                Check(H5D.iterate((IntPtr)gridPtr, H5T.NATIVE_INT, space, (elem, typeId, ndim, point, opData) =>
-                {
-                    coordinateSum += point[0] * 10 + point[1];
-                    *(int*)elem *= 10;
-                    return 0;
-                }, IntPtr.Zero));
+                coordinateSum += point[0] * 10 + point[1];
+                elem *= 10;
+                return 0;
+            }));
 
-                if (coordinateSum != 22ul)
-                {
-                    throw new InvalidOperationException("H5D.iterate coordinate marshalling mismatch.");
-                }
-
-                Check(H5D.write(customDataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)gridPtr));
+            if (coordinateSum != 22ul)
+            {
+                throw new InvalidOperationException("H5D.iterate coordinate marshalling mismatch.");
             }
 
+            Check(H5D.write<int>(customDataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, grid));
             Check(H5D.close(customDataset));
             customDataset = -1;
             Check(H5F.close(file));
             file = -1;
 
-            // Reopen and verify both deflate and custom-filter datasets.
+            // Reopen and verify both deflate and custom-filter datasets via Span<int> and CallbackBridge.
             Check(file = H5F.open(path, H5F.ACC_RDONLY));
             Check(dataset = H5D.open(file, "données_数据"));
-            Array.Clear(values, 0, values.Length);
 
-            fixed (int* valuesPtr = values)
+            if (H5I.get_name(dataset) != "/données_数据")
             {
-                Check(H5D.read(dataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)valuesPtr));
+                throw new InvalidOperationException("Truncation-free H5I.get_name string getter mismatch.");
             }
+
+            ulong linkPos = 0;
+            var linkCount = 0;
+            Check(H5L.iterate2(file, H5.index_t.NAME, H5.iter_order_t.INC, ref linkPos, (long grp, string name, ref H5L.info2_t info, IntPtr state) =>
+            {
+                linkCount++;
+                return 0;
+            }, IntPtr.Zero));
+
+            var visitedObjects = 0;
+            Check(H5O.visit3(file, H5.index_t.NAME, H5.iter_order_t.INC, (long root, string name, ref H5O.info2_t info, IntPtr state) =>
+            {
+                visitedObjects++;
+                return 0;
+            }, IntPtr.Zero));
+
+            var propIdx = 0;
+            var propSeen = 0;
+            Check(H5P.iterate(fapl, ref propIdx, (id, name, state) =>
+            {
+                propSeen++;
+                return 0;
+            }, IntPtr.Zero));
+
+            if (linkCount < 3 || visitedObjects < 3 || propSeen == 0)
+            {
+                throw new InvalidOperationException("NativeAOT CallbackBridge traversal counts failed.");
+            }
+
+            Span<int> values = stackalloc int[3];
+            Check(H5D.read(dataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, values));
 
             if (values[0] != 17 || values[1] != -42 || values[2] != 12345)
             {
@@ -307,12 +327,8 @@ internal static unsafe class Program
             }
 
             Check(customDataset = H5D.open(file, "xor_2d"));
-            Array.Clear(grid, 0, grid.Length);
-
-            fixed (int* gridPtr = grid)
-            {
-                Check(H5D.read(customDataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)gridPtr));
-            }
+            grid.Clear();
+            Check(H5D.read(customDataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, grid));
 
             if (grid[0] != 10 || grid[1] != 20 || grid[2] != 30 || grid[3] != 40)
             {

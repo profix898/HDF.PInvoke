@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public sealed class IncrementalGeneratorTests
 {
     /// <summary>Provides a representative import whose body must come from the generator.</summary>
-    private const string Import = "class H5 { [DllImport(Constants.DLLFileName, EntryPoint = \"example\", CallingConvention = CallingConvention.Cdecl)] public static extern int Call(); }";
+    private const string Import = "partial class H5 { [LibraryImport(Constants.DLLFileName, EntryPoint = \"example\"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])] public static partial int Call(); }";
 
     /// <summary>Uses an otherwise empty compilation to isolate additional-file transformations.</summary>
     private static readonly CSharpCompilation Compilation = CSharpCompilation.Create("GeneratorTests");
@@ -32,9 +32,9 @@ public sealed class IncrementalGeneratorTests
     /// <param name="source">The invalid binding declaration.</param>
     /// <param name="line">The expected zero-based source line.</param>
     [TestMethod]
-    [DataRow("class H5 {\n[DllImport(\"other\", EntryPoint = \"x\", CallingConvention = CallingConvention.Cdecl)] public static extern int Call();\n}", 1)]
+    [DataRow("partial class H5 {\n[LibraryImport(\"other\", EntryPoint = \"x\"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])] public static partial int Call();\n}", 1)]
     [DataRow("class H5 {\npublic delegate string Callback();\n}", 1)]
-    [DataRow("class H5 {\n[DllImport(Constants.DLLFileName, EntryPoint = \"x\", CallingConvention = CallingConvention.Cdecl)] public static extern string Call();\n}", 1)]
+    [DataRow("partial class H5 {\n[LibraryImport(Constants.DLLFileName, EntryPoint = \"x\"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])] public static partial string Call();\n}", 1)]
     [DataRow("class H5 {\nstruct Unknown {\n[MarshalAs(UnmanagedType.LPUTF8Str)] public string Text;\n}\n}", 2)]
     public void ReportsOriginalSourceLocations(string source, int line)
     {
@@ -58,13 +58,13 @@ public sealed class IncrementalGeneratorTests
     /// <summary>Reports malformed import metadata without an unhandled generator exception.</summary>
     /// <param name="attributes">The invalid import attributes to diagnose.</param>
     [TestMethod]
-    [DataRow("[DllImport]")]
-    [DataRow("[DllImport(Constants.DLLFileName, 1)]")]
-    [DataRow("[DllImport(Constants.DLLFileName, EntryPoint = \"a\", EntryPoint = \"b\")]")]
-    [DataRow("[DllImport(Constants.DLLFileName)][DllImport(Constants.DLLFileName)]")]
+    [DataRow("[LibraryImport, UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]")]
+    [DataRow("[LibraryImport(Constants.DLLFileName, 1), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]")]
+    [DataRow("[LibraryImport(Constants.DLLFileName, EntryPoint = \"a\", EntryPoint = \"b\"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]")]
+    [DataRow("[LibraryImport(Constants.DLLFileName), LibraryImport(Constants.DLLFileName), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]")]
     public void ReportsMalformedImportMetadata(string attributes)
     {
-        var result = Create(new Input("/repo/HDF5/Bad.cs", "class H5 { " + attributes + " public static extern int Call(); }"))
+        var result = Create(new Input("/repo/HDF5/Bad.cs", "partial class H5 { " + attributes + " public static partial int Call(); }"))
                             .RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual("HDFGEN001", result.Diagnostics.Single().Id);
         Assert.IsNull(result.Results[0].Exception);
@@ -73,12 +73,12 @@ public sealed class IncrementalGeneratorTests
     /// <summary>Rejects method shapes that cannot represent a native import without discarding source semantics.</summary>
     /// <param name="declaration">The invalid method shape following the import attribute.</param>
     [TestMethod]
-    [DataRow("public extern int Call();")]
+    [DataRow("public partial int Call();")]
     [DataRow("public static int Call() => 42;")]
-    [DataRow("public static extern int Call<T>();")]
+    [DataRow("public static partial int Call<T>();")]
     public void ReportsUnsupportedMethodShapes(string declaration)
     {
-        var source = Import.Replace("public static extern int Call();", declaration);
+        var source = Import.Replace("public static partial int Call();", declaration);
         var result = Create(new Input("/repo/HDF5/Bad.cs", source)).RunGenerators(Compilation).GetRunResult();
         Assert.AreEqual("HDFGEN001", result.Diagnostics.Single().Id);
         Assert.IsNull(result.Results[0].Exception);
@@ -112,7 +112,7 @@ public sealed class IncrementalGeneratorTests
     public void ReusesUnchangedTransformations()
     {
         var first = new Input("/repo/HDF5/First.cs", Import);
-        var second = new Input("/repo/HDF5/Second.cs", Import.Replace("class H5", "class H5F"));
+        var second = new Input("/repo/HDF5/Second.cs", Import.Replace("partial class H5", "partial class H5F"));
         var driver = Create(first, second).RunGenerators(Compilation);
         driver = driver.RunGenerators(Compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText("class Unrelated {}")));
         Assert.IsTrue(Reasons(driver).All(reason => reason == IncrementalStepRunReason.Cached));
@@ -126,7 +126,7 @@ public sealed class IncrementalGeneratorTests
     public void HandlesRemovalAndDistinctRelativePaths()
     {
         var first = new Input("/repo/HDF5/One/H5.cs", Import);
-        var second = new Input("/repo/HDF5/Two/H5.cs", Import.Replace("class H5", "class H5F"));
+        var second = new Input("/repo/HDF5/Two/H5.cs", Import.Replace("partial class H5", "partial class H5F"));
         var driver = Create(first, second).RunGenerators(Compilation);
         Assert.AreEqual(2, driver.GetRunResult().Results[0].GeneratedSources.Select(source => source.HintName).Distinct().Count());
         driver = driver.RemoveAdditionalTexts(ImmutableArray.Create<AdditionalText>(first)).RunGenerators(Compilation);

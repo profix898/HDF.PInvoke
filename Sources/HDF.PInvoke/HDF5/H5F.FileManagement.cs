@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
@@ -17,29 +18,29 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Imports the platform-dependent unsigned-long output into caller-owned storage.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_fileno", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int get_fileno_native(long file, IntPtr number);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_fileno"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial int get_fileno_native(long file, IntPtr number);
 
         /// <summary>Tests whether a UTF-8 filename is accessible through the configured file driver.</summary>
         /// <remarks>Returns positive if accessible, zero if not, or negative on error.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fis_accessible", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int is_accessible([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fis_accessible", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int is_accessible(string filename, long access = H5P.DEFAULT);
 
         /// <summary>Deletes an HDF5 file through the configured driver after all handles have been closed.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fdelete", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int delete([MarshalAs(UnmanagedType.LPUTF8Str)] string filename, long access = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fdelete", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int delete(string filename, long access = H5P.DEFAULT);
 
         /// <summary>Retrieves the file's end-of-allocation address.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fget_eoa", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_eoa(long file, out ulong address);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fget_eoa"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_eoa(long file, out ulong address);
 
         /// <summary>Sets the end-of-allocation address to max(EOA, EOF) plus the requested byte increment.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fincrement_filesize", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int increment_filesize(long file, ulong increment);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fincrement_filesize"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int increment_filesize(long file, ulong increment);
 
         /// <summary>Changes format-version bounds for an open file; existing objects are not downgraded.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Fset_libver_bounds", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int set_libver_bounds(long file, libver_t low, libver_t high);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Fset_libver_bounds"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int set_libver_bounds(long file, libver_t low, libver_t high);
 
     }
 }

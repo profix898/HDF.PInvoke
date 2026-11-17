@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
 {
     /// <summary>Provides virtual object layer discovery and configuration.</summary>
-    public unsafe sealed class H5VL
+    public unsafe sealed partial class H5VL
     {
         /// <summary>Initializes native HDF5 before connector operations.</summary>
         static H5VL()
@@ -56,56 +57,56 @@ namespace HDF.PInvoke
         }
 
         /// <summary>Registers a loadable connector and returns an identifier to release with H5VL.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLregister_connector_by_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long register_connector_by_name([MarshalAs(UnmanagedType.LPUTF8Str)] string name, long initialize = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLregister_connector_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long register_connector_by_name(string name, long initialize = H5P.DEFAULT);
 
         /// <summary>Registers a connector by class value; release the returned identifier with H5VL.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLregister_connector_by_value", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long register_connector_by_value(int value, long initialize = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLregister_connector_by_value"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long register_connector_by_value(int value, long initialize = H5P.DEFAULT);
 
         /// <summary>Tests connector registration by name.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLis_connector_registered_by_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int is_connector_registered_by_name([MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLis_connector_registered_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int is_connector_registered_by_name(string name);
 
         /// <summary>Tests connector registration by class value.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLis_connector_registered_by_value", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int is_connector_registered_by_value(int value);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLis_connector_registered_by_value"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int is_connector_registered_by_value(int value);
 
         /// <summary>Gets the object's connector identifier; release it with H5VL.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long get_connector_id(long objectId);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long get_connector_id(long objectId);
 
         /// <summary>Gets a registered connector identifier by name; release it with H5VL.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id_by_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long get_connector_id_by_name([MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id_by_name", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long get_connector_id_by_name(string name);
 
         /// <summary>Gets a registered connector identifier by class value; release it with H5VL.close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id_by_value", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long get_connector_id_by_value(int value);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_id_by_value"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long get_connector_id_by_value(int value);
 
         /// <summary>Gets an object's connector name length excluding the terminator; a null buffer queries length.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_name", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr get_connector_name(long objectId, IntPtr buffer, UIntPtr capacity);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLget_connector_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr get_connector_name(long objectId, IntPtr buffer, UIntPtr capacity);
 
         /// <summary>Releases a connector identifier.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLclose", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int close(long connector);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int close(long connector);
 
         /// <summary>Unregisters a connector after all its objects have been closed.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLunregister_connector", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int unregister_connector(long connector);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLunregister_connector"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int unregister_connector(long connector);
 
         /// <summary>Queries optional-operation capability flags for an object.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLquery_optional", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int query_optional(long objectId, subclass_t subclass, int operation, out ulong flags);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLquery_optional"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int query_optional(long objectId, subclass_t subclass, int operation, out ulong flags);
 
         /// <summary>Gets whether an object uses the native connector.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLobject_is_native", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int object_is_native(long objectId, out byte native);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLobject_is_native"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int object_is_native(long objectId, out byte native);
 
         /// <summary>Frees connector-specific information returned by H5P.get_vol_info.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5VLfree_connector_info", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int free_connector_info(long connector, IntPtr information);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5VLfree_connector_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int free_connector_info(long connector, IntPtr information);
 
         /// <summary>No special connector capabilities.</summary>
         public const ulong CAP_FLAG_NONE = 0x0000000000000000UL;

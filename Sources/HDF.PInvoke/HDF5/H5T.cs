@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
@@ -642,7 +642,7 @@ namespace HDF.PInvoke
         /// </summary>
         /// <param name="src_id">The source datatype identifier.</param>
         /// <param name="dst_id">The destination datatype identifier.</param>
-        /// <param name="cdata">The native conversion state and command information.</param>
+        /// <param name="cdata">Borrowed pointer to the native <see cref="cdata_t"/> conversion state and command information.</param>
         /// <param name="nelmts">The number of elements to convert.</param>
         /// <param name="buf_stride">The byte stride between elements in the conversion buffer.</param>
         /// <param name="bkg_stride">The byte stride between elements in the background buffer.</param>
@@ -652,7 +652,7 @@ namespace HDF.PInvoke
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t conv_t
-        (hid_t src_id, hid_t dst_id, ref cdata_t cdata,
+        (hid_t src_id, hid_t dst_id, IntPtr cdata,
         size_t nelmts, size_t buf_stride, size_t bkg_stride, IntPtr buf,
         IntPtr bkg, hid_t dset_xfer_plist = H5P.DEFAULT);
 
@@ -666,12 +666,18 @@ namespace HDF.PInvoke
         /// <param name="dims">Size of each array dimension.</param>
         /// <returns>Returns a valid datatype identifier if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tarray_create2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t array_create
-            (hid_t base_type_id, uint rank,
-            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] hsize_t[] dims);
+        public static hid_t array_create
+            (hid_t base_type_id, uint rank, hsize_t[] dims)
+        {
+            fixed (hsize_t* dimsPtr = dims)
+            {
+                return array_create_native(base_type_id, rank, dimsPtr);
+            }
+        }
+
+        /// <summary>Imports array datatype creation using a dimension pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tarray_create2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial hid_t array_create_native(hid_t base_type_id, uint rank, hsize_t* dims);
 
         /// <summary>
         /// Releases a datatype.
@@ -680,10 +686,8 @@ namespace HDF.PInvoke
         /// <param name="type_id">Identifier of datatype to release.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close(hid_t type_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t type_id);
 
         /// <summary>
         /// Commits a transient datatype, linking it into the file and creating
@@ -699,13 +703,9 @@ namespace HDF.PInvoke
         /// <param name="tapl_id">Datatype access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcommit2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t commit
-            (hid_t loc_id, byte[] name, hid_t dtype_id,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t tcpl_id = H5P.DEFAULT,
-            hid_t tapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcommit2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t commit
+            (hid_t loc_id, byte[] name, hid_t dtype_id, hid_t lcpl_id = H5P.DEFAULT, hid_t tcpl_id = H5P.DEFAULT, hid_t tapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Commits a transient datatype, linking it into the file and creating
@@ -722,14 +722,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcommit2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t commit
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t dtype_id,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t tcpl_id = H5P.DEFAULT,
-            hid_t tapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcommit2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t commit
+            (hid_t loc_id, string name, hid_t dtype_id, hid_t lcpl_id = H5P.DEFAULT, hid_t tcpl_id = H5P.DEFAULT, hid_t tapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Commits a transient datatype to a file, creating a new named
@@ -742,12 +737,9 @@ namespace HDF.PInvoke
         /// <param name="tcpl_id">A datatype creation property list identifier.</param>
         /// <param name="tapl_id">A datatype access property list identifier.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcommit_anon",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t commit_anon
-            (hid_t loc_id, hid_t dtype_id, hid_t tcpl_id = H5P.DEFAULT,
-            hid_t tapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcommit_anon"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t commit_anon
+            (hid_t loc_id, hid_t dtype_id, hid_t tcpl_id = H5P.DEFAULT, hid_t tapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determines whether a datatype is a named type or a transient type.
@@ -758,10 +750,8 @@ namespace HDF.PInvoke
         /// <code>TRUE</code>, if the datatype has been committed, or 0 (zero),
         /// for <code>FALSE</code>, if the datatype has not been committed.
         /// Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcommitted",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t committed(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcommitted"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t committed(hid_t dtype_id);
 
         /// <summary>
         /// Check whether the library’s default conversion is hard conversion.
@@ -773,10 +763,8 @@ namespace HDF.PInvoke
         /// <code>TRUE</code>, if the datatype has been committed, or 0 (zero),
         /// for <code>FALSE</code>, if the datatype has not been committed.
         /// Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcompiler_conv",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t compiler_conv(hid_t src_id, hid_t dst_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcompiler_conv"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t compiler_conv(hid_t src_id, hid_t dst_id);
 
         /// <summary>
         /// Converts data from one specified datatype to another.
@@ -790,12 +778,9 @@ namespace HDF.PInvoke
         /// <param name="plist_id">Dataset transfer property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tconvert",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t convert
-            (hid_t src_type_id, hid_t dest_type_id, size_t nelmts,
-            IntPtr buf, IntPtr background, hid_t plist_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tconvert"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t convert
+            (hid_t src_type_id, hid_t dest_type_id, size_t nelmts, IntPtr buf, IntPtr background, hid_t plist_id = H5P.DEFAULT);
 
         /// <summary>
         /// Copies an existing datatype.
@@ -804,10 +789,8 @@ namespace HDF.PInvoke
         /// <param name="type_id">Identifier of datatype to copy.</param>
         /// <returns>Returns a datatype identifier if successful; otherwise
         /// returns a negative value</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcopy",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t copy(hid_t type_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcopy"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t copy(hid_t type_id);
 
         /// <summary>
         /// Creates a new datatype.
@@ -817,10 +800,8 @@ namespace HDF.PInvoke
         /// <param name="size">Size, in bytes, of the datatype being created</param>
         /// <returns>Returns datatype identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tcreate",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create(class_t cls, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tcreate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create(class_t cls, size_t size);
 
         /// <summary>
         /// Decode a binary object description of datatype and return a new
@@ -830,10 +811,8 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer for the datatype object to be decoded.</param>
         /// <returns>Returns an object identifier (non-negative) if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tdecode1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t decode(byte[] buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tdecode1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t decode(byte[] buf);
 
         /// <summary>
         /// Determines whether a datatype contains any datatypes of the given
@@ -844,10 +823,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_class">Datatype class.</param>
         /// <returns>Returns <code>TRUE</code> or <code>FALSE</code> if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tdetect_class",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t detect_class
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tdetect_class"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t detect_class
             (hid_t dtype_id, class_t dtype_class);
 
         /// <summary>
@@ -860,11 +837,18 @@ namespace HDF.PInvoke
         /// needed is returned through <paramref name="nalloc"/>.</param>
         /// <param name="nalloc">The size of the buffer allocated or needed.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tencode",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t encode
-            (hid_t obj_id, byte[] buf, ref size_t nalloc);
+        public static herr_t encode
+            (hid_t obj_id, byte[] buf, ref size_t nalloc)
+        {
+            fixed (byte* ptr = buf)
+            {
+                return encode_native(obj_id, ptr, ref nalloc);
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tencode"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t encode_native
+            (hid_t obj_id, byte* buf, ref size_t nalloc);
 
         /// <summary>
         /// Creates a new enumeration datatype.
@@ -874,10 +858,8 @@ namespace HDF.PInvoke
         /// Must be an integer datatype.</param>
         /// <returns>Returns the datatype identifier for the new enumeration
         /// datatype if successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tenum_create",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t enum_create(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tenum_create"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t enum_create(hid_t dtype_id);
 
         /// <summary>
         /// Inserts a new enumeration datatype member.
@@ -890,12 +872,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tenum_insert",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t enum_insert
-            (hid_t dtype_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, IntPtr value);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tenum_insert", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t enum_insert
+            (hid_t dtype_id, string name, IntPtr value);
 
         /// <summary>
         /// Returns the symbol name corresponding to a specified member of an
@@ -912,22 +891,27 @@ namespace HDF.PInvoke
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
         public static herr_t enum_nameof(hid_t dtype_id, IntPtr value, StringBuilder name, size_t size)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = enum_nameof_utf8(dtype_id, value, buffer, size);
-
-            if (result >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = enum_nameof_utf8(dtype_id, value, buffer, size);
 
-            return result;
+                    if (result >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Tenum_nameof</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tenum_nameof", CallingConvention = CallingConvention.Cdecl)]
-        private static extern herr_t enum_nameof_utf8(hid_t dtype_id, IntPtr value, [Out] byte[] buffer, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tenum_nameof"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial herr_t enum_nameof_utf8(hid_t dtype_id, IntPtr value, byte* buffer, size_t size);
 
         /// <summary>
         /// Returns the value corresponding to a specified member of an
@@ -941,12 +925,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tenum_valueof",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t enum_valueof
-            (hid_t dtype_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, IntPtr value);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tenum_valueof", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t enum_valueof
+            (hid_t dtype_id, string name, IntPtr value);
 
         /// <summary>
         /// Determines whether two datatype identifiers refer to the same
@@ -959,10 +940,8 @@ namespace HDF.PInvoke
         /// <code>TRUE</code>, if the datatype has been committed, or 0 (zero),
         /// for <code>FALSE</code>, if the datatype has not been committed.
         /// Otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tequal",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t equal(hid_t type_id1, hid_t type_id2);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tequal"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t equal(hid_t type_id1, hid_t type_id2);
 
         /// <summary>
         /// Finds a conversion function.
@@ -973,10 +952,8 @@ namespace HDF.PInvoke
         /// <param name="pcdata">Receives a native-owned pointer to conversion data. Do not free it; its lifetime is controlled by HDF5.</param>
         /// <returns>Returns a pointer to a suitable conversion function if
         /// successful. Otherwise returns <code>NULL</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tfind",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern conv_t find
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tfind"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial conv_t find
             (hid_t src_id, hid_t dst_id, out IntPtr pcdata);
 
         /// <summary>
@@ -987,10 +964,8 @@ namespace HDF.PInvoke
         /// flushed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tflush",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t flush(hid_t type_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tflush"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t flush(hid_t type_id);
 
         /// <summary>
         /// Retrieves sizes of array dimensions.
@@ -1000,11 +975,18 @@ namespace HDF.PInvoke
         /// <param name="dims">Sizes of array dimensions.</param>
         /// <returns>Returns the non-negative number of dimensions of the array
         /// type if successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_array_dims2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_array_dims
-            (hid_t adtype_id, hsize_t[] dims);
+        public static int get_array_dims
+            (hid_t adtype_id, hsize_t[] dims)
+        {
+            fixed (hsize_t* dimsPtr = dims)
+            {
+                return get_array_dims_native(adtype_id, dimsPtr);
+            }
+        }
+
+        /// <summary>Imports array datatype dimension retrieval using a dimension pointer.</summary>
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_array_dims2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial int get_array_dims_native(hid_t adtype_id, hsize_t* dims);
 
         /// <summary>
         /// Returns the rank of an array datatype.
@@ -1013,10 +995,8 @@ namespace HDF.PInvoke
         /// <param name="adtype_id">Array datatype identifier.</param>
         /// <returns>Returns the rank of the array if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_array_ndims",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_array_ndims(hid_t adtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_array_ndims"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_array_ndims(hid_t adtype_id);
 
         /// <summary>
         /// Returns the datatype class identifier.
@@ -1025,10 +1005,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns datatype class identifier if successful; otherwise
         /// <code>H5T_NO_CLASS</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_class",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern class_t get_class(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_class"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial class_t get_class(hid_t dtype_id);
 
         /// <summary>
         /// Returns a copy of a datatype creation property list.
@@ -1037,10 +1015,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Datatype identifier.</param>
         /// <returns>Returns a datatype property list identifier if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_create_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_create_plist(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_create_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_create_plist(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the character set type of a string datatype.
@@ -1049,10 +1025,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a valid character set type if successful;
         /// otherwise <code>H5T.cset_t.CSET_ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_cset",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern cset_t get_cset(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_cset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial cset_t get_cset(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the exponent bias of a floating-point type.
@@ -1060,10 +1034,8 @@ namespace HDF.PInvoke
         /// </summary>
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns the bias if successful; otherwise 0.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_ebias",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern size_t get_ebias(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_ebias"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial size_t get_ebias(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves floating point datatype bit field information.
@@ -1082,12 +1054,9 @@ namespace HDF.PInvoke
         /// in bits.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_fields",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_fields
-            (hid_t dtype_id, ref size_t spos, ref size_t epos,
-            ref size_t esize, ref size_t mpos, ref size_t msize);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_fields"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_fields
+            (hid_t dtype_id, ref size_t spos, ref size_t epos, ref size_t esize, ref size_t mpos, ref size_t msize);
 
         /// <summary>
         /// Retrieves the internal padding type for unused bits in
@@ -1097,10 +1066,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a valid padding type if successful; otherwise
         /// <code>H5T.pad_t.ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_inpad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern pad_t get_inpad(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_inpad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial pad_t get_inpad(hid_t dtype_id);
 
         /// <summary>
         /// Returns datatype class of compound datatype member.
@@ -1110,10 +1077,8 @@ namespace HDF.PInvoke
         /// <param name="member_no">Compound type member number.</param>
         /// <returns>Returns the datatype class, a non-negative value, if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_class",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern class_t get_member_class
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_class"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial class_t get_member_class
             (hid_t cdtype_id, uint member_no);
 
         /// <summary>
@@ -1126,12 +1091,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a valid field or member index if successful;
         /// otherwise returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_index",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_member_index
-            (hid_t dtype_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string field_name);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_index", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_member_index
+            (hid_t dtype_id, string field_name);
 
         /// <summary>
         /// Retrieves the name of a compound or enumeration datatype member.
@@ -1144,10 +1106,8 @@ namespace HDF.PInvoke
         /// memory if successful; otherwise returns <code>NULL</code>.</returns>
         /// <remarks>The caller is responsible for freeing the allocated
         /// memory.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_name",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern IntPtr get_member_name
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_name"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr get_member_name
             (hid_t dtype_id, uint field_idx);
 
         /// <summary>
@@ -1158,10 +1118,8 @@ namespace HDF.PInvoke
         /// <param name="memb_no">Number of the field whose offset is
         /// requested.</param>
         /// <returns>The member offset in bytes; zero may indicate either the first member or an error.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_offset",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern size_t get_member_offset
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_offset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial size_t get_member_offset
             (hid_t dtype_id, uint memb_no);
 
         /// <summary>
@@ -1173,10 +1131,8 @@ namespace HDF.PInvoke
         /// retrieve.</param>
         /// <returns>Returns the identifier of a copy of the datatype of the
         /// field if successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_member_type
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_member_type
             (hid_t dtype_id, uint field_idx);
 
         /// <summary>
@@ -1190,10 +1146,8 @@ namespace HDF.PInvoke
         /// the enumeration datatype member.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_value",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_member_value
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_member_value"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_member_value
             (hid_t dtype_id, uint memb_no, IntPtr value);
 
         /// <summary>
@@ -1205,10 +1159,8 @@ namespace HDF.PInvoke
         /// <param name="direction">Direction of search.</param>
         /// <returns>Returns the native datatype identifier for the specified
         /// dataset datatype if successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_native_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_native_type
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_native_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_native_type
             (hid_t dtype_id, direction_t direction);
 
         /// <summary>
@@ -1219,10 +1171,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns the number of elements if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_nmembers",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_nmembers(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_nmembers"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_nmembers(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves mantissa normalization of a floating-point datatype.
@@ -1231,10 +1181,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a valid normalization type if successful;
         /// otherwise <code>H5T.norm_t.ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_norm",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern norm_t get_norm(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_norm"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial norm_t get_norm(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the bit offset of the first significant bit.
@@ -1243,10 +1191,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns an offset value if successful; otherwise returns a
         /// negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_offset",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern int get_offset(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_offset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_offset(hid_t dtype_id);
 
         /// <summary>
         /// Returns the byte order of an atomic datatype.
@@ -1255,10 +1201,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a byte order constant if successful; otherwise
         /// <code>H5T.order_t.ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_order",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern order_t get_order(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_order"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial order_t get_order(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the padding type of the least and most-significant bit
@@ -1272,10 +1216,8 @@ namespace HDF.PInvoke
         /// bit padding type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_pad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_pad
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_pad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_pad
             (hid_t dtype_id, ref pad_t lsb, ref pad_t msb);
 
         /// <summary>
@@ -1285,10 +1227,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns the number of significant bits if successful;
         /// otherwise 0.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_precision",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern size_t get_precision(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_precision"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial size_t get_precision(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the sign type for an integer type.
@@ -1297,10 +1237,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a valid sign type if successful; otherwise
         /// <code>H5T.sign_t.ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_sign",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern sign_t get_sign(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_sign"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial sign_t get_sign(hid_t dtype_id);
 
         /// <summary>
         /// Returns the size of a datatype.
@@ -1309,10 +1247,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns the size of the datatype in bytes if successful;
         /// otherwise 0.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern size_t get_size(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial size_t get_size(hid_t dtype_id);
 
         /// <summary>
         /// Retrieves the type of padding used for a string datatype.
@@ -1321,10 +1257,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to query.</param>
         /// <returns>Returns a valid string storage mechanism if successful;
         /// otherwise <code>H5T.str_t.ERROR</code>.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_strpad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern str_t get_strpad(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_strpad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial str_t get_strpad(hid_t dtype_id);
 
         /// <summary>
         /// Returns the base datatype from which a datatype is derived.
@@ -1334,10 +1268,8 @@ namespace HDF.PInvoke
         /// datatype.</param>
         /// <returns>Returns the datatype identifier for the base datatype if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_super",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_super(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_super"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_super(hid_t dtype_id);
 
         /// <summary>
         /// Gets the tag associated with an opaque datatype.
@@ -1348,10 +1280,8 @@ namespace HDF.PInvoke
         /// memory if successful; otherwise returns <code>NULL</code>.</returns>
         /// <remarks>The caller is responsible for freeing the allocated
         /// memory.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tget_tag",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern IntPtr get_tag(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tget_tag"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial IntPtr get_tag(hid_t dtype_id);
 
         /// <summary>
         /// Adds a new member to a compound datatype.
@@ -1365,12 +1295,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tinsert",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t insert
-            (hid_t dtype_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, size_t offset, hid_t field_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tinsert", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t insert
+            (hid_t dtype_id, string name, size_t offset, hid_t field_id);
 
         /// <summary>
         /// Determines whether datatype is a variable-length string.
@@ -1379,10 +1306,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Datatype identifier.</param>
         /// <returns>Returns <code>TRUE</code> or <code>FALSE</code> if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tis_variable_str",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern htri_t is_variable_str(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tis_variable_str"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_variable_str(hid_t dtype_id);
 
         /// <summary>
         /// Locks a datatype.
@@ -1391,10 +1316,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to lock.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tlock",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t lock_datatype(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tlock"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t lock_datatype(hid_t dtype_id);
 
         /// <summary>
         /// Opens a committed (named) datatype.
@@ -1406,10 +1329,8 @@ namespace HDF.PInvoke
         /// <param name="tapl_id">Datatype access property list identifier.</param>
         /// <returns>Returns a committed datatype identifier if successful;
         /// otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Topen2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t open
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Topen2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
             (hid_t loc_id, byte[] name, hid_t tapl_id = H5P.DEFAULT);
 
         /// <summary>
@@ -1423,12 +1344,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a committed datatype identifier if successful;
         /// otherwise returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Topen2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t open
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t tapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Topen2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
+            (hid_t loc_id, string name, hid_t tapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Recursively removes padding from within a compound datatype.
@@ -1437,10 +1355,8 @@ namespace HDF.PInvoke
         /// <param name="dtype_id">Identifier of datatype to modify.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tpack",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t pack(hid_t dtype_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tpack"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t pack(hid_t dtype_id);
 
         /// <summary>
         /// Refreshes all buffers associated with a committed datatype.
@@ -1450,10 +1366,8 @@ namespace HDF.PInvoke
         /// refreshed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Trefresh",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t H5Trefresh(hid_t type_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Trefresh"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t H5Trefresh(hid_t type_id);
 
         /// <summary>
         /// Registers a conversion function.
@@ -1468,12 +1382,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tregister",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t register(pers_t type, [MarshalAs(UnmanagedType.LPUTF8Str)] string name,
-            hid_t src_id, hid_t dst_id, conv_t func);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tregister", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t register(pers_t type, string name, hid_t src_id, hid_t dst_id, conv_t func);
 
         /// <summary>
         /// Sets character set to be used in a string or character datatype.
@@ -1483,10 +1393,8 @@ namespace HDF.PInvoke
         /// <param name="cset">Character set type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_cset",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_cset(hid_t dtype_id, cset_t cset);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_cset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_cset(hid_t dtype_id, cset_t cset);
 
         /// <summary>
         /// Sets the exponent bias of a floating-point type.
@@ -1496,10 +1404,8 @@ namespace HDF.PInvoke
         /// <param name="ebias">Exponent bias value.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_ebias",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_ebias(hid_t dtype_id, size_t ebias);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_ebias"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_ebias(hid_t dtype_id, size_t ebias);
 
         /// <summary>
         /// Sets locations and sizes of floating point bit fields.
@@ -1514,12 +1420,9 @@ namespace HDF.PInvoke
         /// <param name="msize">Size of mantissa in bits.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_fields",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_fields
-            (hid_t dtype_id, size_t spos, size_t epos, size_t esize,
-            size_t mpos, size_t msize);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_fields"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_fields
+            (hid_t dtype_id, size_t spos, size_t epos, size_t esize, size_t mpos, size_t msize);
 
         /// <summary>
         /// Sets interal bit padding of floating point numbers.
@@ -1529,10 +1432,8 @@ namespace HDF.PInvoke
         /// <param name="inpad">Padding type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_inpad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_inpad(hid_t dtype_id, pad_t inpad);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_inpad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_inpad(hid_t dtype_id, pad_t inpad);
 
         /// <summary>
         /// Sets the mantissa normalization of a floating-point datatype.
@@ -1542,10 +1443,8 @@ namespace HDF.PInvoke
         /// <param name="norm">Mantissa normalization type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_norm",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_norm(hid_t dtype_id, norm_t norm);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_norm"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_norm(hid_t dtype_id, norm_t norm);
 
         /// <summary>
         /// Sets the bit offset of the first significant bit.
@@ -1555,10 +1454,8 @@ namespace HDF.PInvoke
         /// <param name="offset">Offset of first significant bit.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_offset",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_offset(hid_t dtype_id, size_t offset);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_offset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_offset(hid_t dtype_id, size_t offset);
 
         /// <summary>
         /// Sets the byte order of a datatype.
@@ -1568,10 +1465,8 @@ namespace HDF.PInvoke
         /// <param name="order">Byte order.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_order",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_order(hid_t dtype_id, order_t order);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_order"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_order(hid_t dtype_id, order_t order);
 
         /// <summary>
         /// Sets the least and most-significant bits padding types.
@@ -1582,10 +1477,8 @@ namespace HDF.PInvoke
         /// <param name="msb">Padding type for most-significant bits.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_pad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_pad
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_pad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_pad
             (hid_t dtype_id, pad_t lsb, pad_t msb);
 
         /// <summary>
@@ -1596,10 +1489,8 @@ namespace HDF.PInvoke
         /// <param name="precision">Number of bits of precision for datatype.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_precision",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_precision
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_precision"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_precision
             (hid_t dtype_id, size_t precision);
 
         /// <summary>
@@ -1610,10 +1501,8 @@ namespace HDF.PInvoke
         /// <param name="sign">Sign type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_sign",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_sign(hid_t dtype_id, sign_t sign);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_sign"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_sign(hid_t dtype_id, sign_t sign);
 
         /// <summary>
         /// Sets the total size for a datatype.
@@ -1624,10 +1513,8 @@ namespace HDF.PInvoke
         /// <param name="size">New datatype size in bytes or <code>VARIABLE</code></param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_size(hid_t dtype_id, size_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_size(hid_t dtype_id, size_t size);
 
         /// <summary>
         /// Defines the type of padding used for character strings.
@@ -1637,10 +1524,8 @@ namespace HDF.PInvoke
         /// <param name="strpad">String padding type.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_strpad",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_strpad(hid_t dtype_id, str_t strpad);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_strpad"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_strpad(hid_t dtype_id, str_t strpad);
 
         /// <summary>
         /// Tags an opaque datatype.
@@ -1655,11 +1540,8 @@ namespace HDF.PInvoke
         /// <remarks><paramref name="tag"/> is intended to provide a concise
         /// description; the maximum size is hard-coded in the HDF5 Library as
         /// 256 bytes </remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tset_tag",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_tag(hid_t dtype_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string tag);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tset_tag", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_tag(hid_t dtype_id, string tag);
 
         /// <summary>
         /// Removes a conversion function.
@@ -1674,12 +1556,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tunregister",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t unregister
-            (pers_t type, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t src_id, hid_t dst_id, conv_t func);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tunregister", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t unregister
+            (pers_t type, string name, hid_t src_id, hid_t dst_id, conv_t func);
 
         /// <summary>
         /// Creates a new variable-length array datatype.
@@ -1688,9 +1567,7 @@ namespace HDF.PInvoke
         /// <param name="base_type_id">Base type of datatype to create.</param>
         /// <returns>Returns datatype identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Tvlen_create",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t vlen_create(hid_t base_type_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Tvlen_create"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t vlen_create(hid_t base_type_id);
     }
 }

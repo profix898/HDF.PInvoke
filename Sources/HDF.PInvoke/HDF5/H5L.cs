@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
@@ -167,22 +167,6 @@ namespace HDF.PInvoke
             size_t lnkdata_size, hid_t lcpl_id);
 
         /// <summary>
-        /// Link creation callback
-        /// </summary>
-        /// <param name="link_name">The link name.</param>
-        /// <param name="loc_group">The identifier of the group containing the link.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <param name="lcpl_id">The link-creation property-list identifier.</param>
-        /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate herr_t create_func_ascii_t
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, hid_t loc_group, IntPtr lnkdata,
-            size_t lnkdata_size, hid_t lcpl_id);
-
-        /// <summary>
         /// Callback for when the link is moved
         /// </summary>
         /// <param name="new_name">The link name at its destination.</param>
@@ -195,20 +179,6 @@ namespace HDF.PInvoke
         (IntPtr new_name, hid_t new_loc, IntPtr lnkdata, size_t lnkdata_size);
 
         /// <summary>
-        /// Callback for when the link is moved
-        /// </summary>
-        /// <param name="new_name">The link name at its destination.</param>
-        /// <param name="new_loc">The destination group identifier.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate herr_t move_func_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string new_name, hid_t new_loc, IntPtr lnkdata, size_t lnkdata_size);
-
-        /// <summary>
         /// Callback for when the link is copied
         /// </summary>
         /// <param name="new_name">The link name at its destination.</param>
@@ -219,20 +189,6 @@ namespace HDF.PInvoke
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t copy_func_t
         (IntPtr new_name, hid_t new_loc, IntPtr lnkdata, size_t lnkdata_size);
-
-        /// <summary>
-        /// Callback for when the link is copied
-        /// </summary>
-        /// <param name="new_name">The link name at its destination.</param>
-        /// <param name="new_loc">The destination group identifier.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate herr_t copy_func_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string new_name, hid_t new_loc, IntPtr lnkdata, size_t lnkdata_size);
 
         /// <summary>
         /// Callback during link traversal
@@ -250,23 +206,6 @@ namespace HDF.PInvoke
         size_t lnkdata_size, hid_t lapl_id, hid_t dxpl_id);
 
         /// <summary>
-        /// Callback during link traversal
-        /// </summary>
-        /// <param name="link_name">The link name.</param>
-        /// <param name="cur_group">The group identifier from which the link is traversed.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <param name="lapl_id">The link-access property-list identifier.</param>
-        /// <returns>The opened target object identifier, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        /// <param name="dxpl_id">The dataset-transfer property-list identifier supplied by the native traversal operation.</param>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate hid_t traverse_func_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, hid_t cur_group, IntPtr lnkdata,
-        size_t lnkdata_size, hid_t lapl_id, hid_t dxpl_id);
-
-        /// <summary>
         /// Callback for when the link is deleted
         /// </summary>
         /// <param name="link_name">The link name.</param>
@@ -277,20 +216,6 @@ namespace HDF.PInvoke
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t delete_func_t
         (IntPtr link_name, hid_t file, IntPtr lnkdata, size_t lnkdata_size);
-
-        /// <summary>
-        /// Callback for when the link is deleted
-        /// </summary>
-        /// <param name="link_name">The link name.</param>
-        /// <param name="file">The identifier of the file containing the link.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate herr_t delete_func_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, hid_t file, IntPtr lnkdata, size_t lnkdata_size);
 
         /// <summary>
         /// Callback for querying the link
@@ -304,22 +229,6 @@ namespace HDF.PInvoke
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate ssize_t query_func_t
         (IntPtr link_name, IntPtr lnkdata, size_t lnkdata_size,
-        IntPtr buf, size_t buf_size);
-
-        /// <summary>
-        /// Callback for querying the link
-        /// </summary>
-        /// <param name="link_name">The link name.</param>
-        /// <param name="lnkdata">The user-defined link data.</param>
-        /// <param name="lnkdata_size">The size of the link data in bytes.</param>
-        /// <param name="buf">The native data buffer.</param>
-        /// <param name="buf_size">The buffer capacity in bytes.</param>
-        /// <returns>Returns the size of the buffer needed</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate ssize_t query_func_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, IntPtr lnkdata, size_t lnkdata_size,
         IntPtr buf, size_t buf_size);
 
         /// <summary>
@@ -388,47 +297,25 @@ namespace HDF.PInvoke
         /// the visit iterator to immediately return that positive value,
         /// indicating short-circuit success. A negative value causes the visit
         /// iterator to immediately return that value, indicating failure.</returns>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t iterate_t
         (hid_t group, IntPtr name, ref info_t info, IntPtr op_data);
 
         /// <summary>
         /// Callback for external link traversal
         /// </summary>
-        /// <param name="parent_file_name">The name of the file containing the external link.</param>
-        /// <param name="parent_group_name">The name of the group containing the external link.</param>
-        /// <param name="child_file_name">The target filename stored in the external link.</param>
-        /// <param name="child_object_name">The target object name stored in the external link.</param>
-        /// <param name="acc_flags">The target file access flags; the callback may modify them.</param>
+        /// <param name="parent_file_name">Borrowed UTF-8 pointer to the name of the file containing the external link.</param>
+        /// <param name="parent_group_name">Borrowed UTF-8 pointer to the name of the group containing the external link.</param>
+        /// <param name="child_file_name">Borrowed UTF-8 pointer to the target filename stored in the external link.</param>
+        /// <param name="child_object_name">Borrowed UTF-8 pointer to the target object name stored in the external link.</param>
+        /// <param name="acc_flags">Pointer to the 32-bit unsigned target file access flags (<c>unsigned*</c>); the callback may modify them.</param>
         /// <param name="fapl_id">The file-access property-list identifier used to open the target file.</param>
         /// <param name="op_data">The caller-provided callback state.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t elink_traverse_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string parent_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string parent_group_name,
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string child_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string child_object_name,
-        ref uint acc_flags, hid_t fapl_id, IntPtr op_data);
-
-        /// <summary>
-        /// Callback for external link traversal
-        /// </summary>
-        /// <param name="parent_file_name">The name of the file containing the external link.</param>
-        /// <param name="parent_group_name">The name of the group containing the external link.</param>
-        /// <param name="child_file_name">The target filename stored in the external link.</param>
-        /// <param name="child_object_name">The target object name stored in the external link.</param>
-        /// <param name="acc_flags">The target file access flags; the callback may modify them.</param>
-        /// <param name="fapl_id">The file-access property-list identifier used to open the target file.</param>
-        /// <param name="op_data">The caller-provided callback state.</param>
-        /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi)]
-        public delegate herr_t elink_traverse_ascii_t
-        ([MarshalAs(UnmanagedType.LPUTF8Str)] string parent_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string parent_group_name,
-        [MarshalAs(UnmanagedType.LPUTF8Str)] string child_file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string child_object_name,
-        ref uint acc_flags, hid_t fapl_id, IntPtr op_data);
+        (IntPtr parent_file_name, IntPtr parent_group_name,
+        IntPtr child_file_name, IntPtr child_object_name,
+        IntPtr acc_flags, hid_t fapl_id, IntPtr op_data);
 
         /// <summary>
         /// Copies a link from one location to another.
@@ -443,12 +330,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcopy",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t copy
-            (hid_t src_loc, byte[] src_name, hid_t dst_loc, byte[] dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcopy"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t copy
+            (hid_t src_loc, byte[] src_name, hid_t dst_loc, byte[] dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Copies a link from one location to another.
@@ -464,13 +348,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcopy",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t copy
-            (hid_t src_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string src_name, hid_t dst_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcopy", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t copy
+            (hid_t src_loc, string src_name, hid_t dst_loc, string dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates an external link, a soft link to an object in a different file.
@@ -489,14 +369,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>The <paramref name="file_name"/> is marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_external",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_external
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string file_name, byte[] obj_name, hid_t link_loc_id,
-            byte[] link_name, hid_t lcpl_id = H5P.DEFAULT,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_external", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_external
+            (string file_name, byte[] obj_name, hid_t link_loc_id, byte[] link_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates an external link, a soft link to an object in a different file.
@@ -515,13 +390,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_external",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_external
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string file_name, [MarshalAs(UnmanagedType.LPUTF8Str)] string obj_name, hid_t link_loc_id,
-            [MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, hid_t lcpl_id = H5P.DEFAULT,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_external", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_external
+            (string file_name, string obj_name, hid_t link_loc_id, string link_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a hard link to an object.
@@ -537,12 +408,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_hard",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_hard
-            (hid_t cur_loc, byte[] cur_name, hid_t dst_loc, byte[] dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_hard"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_hard
+            (hid_t cur_loc, byte[] cur_name, hid_t dst_loc, byte[] dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a hard link to an object.
@@ -559,13 +427,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>Managed strings are marshalled as UTF-8.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_hard",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_hard
-            (hid_t cur_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string cur_name, hid_t dst_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_hard", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_hard
+            (hid_t cur_loc, string cur_name, hid_t dst_loc, string dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a soft link to an object.
@@ -580,12 +444,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_soft",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_soft
-            (byte[] link_target, hid_t link_loc_id, byte[] link_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_soft"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_soft
+            (byte[] link_target, hid_t link_loc_id, byte[] link_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a soft link to an object.
@@ -601,13 +462,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_soft",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_soft
-            ([MarshalAs(UnmanagedType.LPUTF8Str)] string link_target, hid_t link_loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string link_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_soft", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_soft
+            (string link_target, hid_t link_loc_id, string link_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a link of a user-defined type.
@@ -622,13 +479,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_ud",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_ud
-            (hid_t link_loc_id, byte[] link_name, type_t link_type,
-            IntPtr udata, size_t udata_size,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_ud"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_ud
+            (hid_t link_loc_id, byte[] link_name, type_t link_type, IntPtr udata, size_t udata_size, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a link of a user-defined type.
@@ -644,14 +497,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_ud",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t create_ud
-            (hid_t link_loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string link_name, type_t link_type,
-            IntPtr udata, size_t udata_size,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lcreate_ud", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t create_ud
+            (hid_t link_loc_id, string link_name, type_t link_type, IntPtr udata, size_t udata_size, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes a link from a group.
@@ -663,11 +511,8 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ldelete",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete(hid_t loc_id, byte[] name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ldelete"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete(hid_t loc_id, byte[] name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes a link from a group.
@@ -680,12 +525,8 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ldelete",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ldelete", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete(hid_t loc_id, string name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes the n-th link in a group.
@@ -700,12 +541,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ldelete_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_idx
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ldelete_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_idx
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Removes the n-th link in a group.
@@ -721,13 +559,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ldelete_by_idx",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t delete_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Ldelete_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t delete_by_idx
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determine whether a link with the specified name exists in a group.
@@ -738,11 +572,8 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier.</param>
         /// <returns>Returns 1 or 0 if successful; otherwise returns a negative
         /// value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lexists",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists(hid_t loc_id, byte[] name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lexists"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists(hid_t loc_id, byte[] name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determine whether a link with the specified name exists in a group.
@@ -754,12 +585,8 @@ namespace HDF.PInvoke
         /// <returns>Returns 1 or 0 if successful; otherwise returns a negative
         /// value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lexists",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t exists(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lexists", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t exists(hid_t loc_id, string name, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Returns information about a link.
@@ -772,12 +599,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list identifier.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info
-            (hid_t loc_id, byte[] name, ref info_t linfo,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info
+            (hid_t loc_id, byte[] name, ref info_t linfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Returns information about a link.
@@ -791,13 +615,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info1",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, ref info_t linfo,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info1", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info
+            (hid_t loc_id, string name, ref info_t linfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves metadata for a link in a group, according to the order
@@ -814,13 +634,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, ref info_t linfo,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t linfo, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves metadata for a link in a group, according to the order
@@ -838,14 +654,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx1",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_info_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, ref info_t linfo /*out*/,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_info_by_idx1", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_info_by_idx
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, ref info_t linfo /*out*/, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves name of the nth link in a group, according to the order
@@ -863,13 +674,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns the size of the link name if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_name_by_idx
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, [In][Out] byte[] name, size_t size,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name_by_idx
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, byte[] name, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves name of the nth link in a group, according to the order
@@ -892,24 +699,27 @@ namespace HDF.PInvoke
             H5.iter_order_t order, hsize_t n, StringBuilder name, size_t size,
             hid_t lapl_id = H5P.DEFAULT)
         {
-            var buffer = Utf8Buffer.Create(name, size);
-            var result = get_name_by_idx_utf8(loc_id, group_name, idx_type, order, n, buffer, size, lapl_id);
-
-            if (result.ToInt64() >= 0)
+            using (var scratch = Utf8Buffer.Rent(name, size))
             {
-                Utf8Buffer.CopyTo(buffer, name);
-            }
+                fixed (byte* buffer = scratch.Buffer)
+                {
+                    var result = get_name_by_idx_utf8(loc_id, group_name, idx_type, order, n, buffer, size, lapl_id);
 
-            return result;
+                    if (result.ToInt64() >= 0)
+                    {
+                        Utf8Buffer.CopyTo(buffer, scratch.Capacity, name);
+                    }
+
+                    return result;
+                }
+            }
         }
 
         /// <summary>
         /// Invokes the native <c>H5Lget_name_by_idx</c> entry point using its explicit ABI declaration.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ssize_t get_name_by_idx_utf8(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, [Out] byte[] buffer, size_t size,
-            hid_t lapl_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        internal static partial ssize_t get_name_by_idx_utf8(hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, byte* buffer, size_t size, hid_t lapl_id);
 
         /// <summary>
         /// Retrieves name of the nth link in a group, according to the order
@@ -928,13 +738,8 @@ namespace HDF.PInvoke
         /// <returns>Returns the size of the link name if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static ssize_t get_name_by_idx(hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name,
-            H5.index_t idx_type, H5.iter_order_t order, hsize_t n,
-            IntPtr name /*out*/, size_t size, hid_t lapl_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_name_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial ssize_t get_name_by_idx(hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, IntPtr name /*out*/, size_t size, hid_t lapl_id);
 
         /// <summary>
         /// Returns the value of a symbolic link.
@@ -949,12 +754,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value, with the link value in
         /// <paramref name="buf"/>, if successful. Otherwise returns a negative
         /// value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_val",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_val
-            (hid_t loc_id, byte[] name, IntPtr buf, size_t size,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_val"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_val
+            (hid_t loc_id, byte[] name, IntPtr buf, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Returns the value of a symbolic link.
@@ -970,13 +772,9 @@ namespace HDF.PInvoke
         /// <paramref name="buf"/>, if successful. Otherwise returns a negative
         /// value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_val",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_val
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, IntPtr buf, size_t size,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_val", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_val
+            (hid_t loc_id, string name, IntPtr buf, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves value of the nth link in a group, according to the order
@@ -994,13 +792,9 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_val_by_idx",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_val_by_idx
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, IntPtr buf, size_t size,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_val_by_idx"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_val_by_idx
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, IntPtr buf, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Retrieves value of the nth link in a group, according to the order
@@ -1019,14 +813,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lget_val_by_idx",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t get_val_by_idx
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, hsize_t n, IntPtr buf, size_t size,
-            hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lget_val_by_idx", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_val_by_idx
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, hsize_t n, IntPtr buf, size_t size, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Determines whether a class of user-defined links is registered.
@@ -1037,10 +826,8 @@ namespace HDF.PInvoke
         /// registered and zero if it is unregistered. Otherwise returns a
         /// negative value; this may mean that the identifier is not a valid
         /// user-defined class identifier.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lis_registered",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static htri_t is_registered(type_t id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lis_registered"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial htri_t is_registered(type_t id);
 
         /// <summary>
         /// Iterates through links in a group.
@@ -1059,12 +846,19 @@ namespace HDF.PInvoke
         /// processed with no operator returning non-zero. On failure, returns
         /// a negative value if something goes wrong within the library, or the
         /// first negative value returned by an operator.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Literate1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate
-            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order,
-            ref hsize_t idx, iterate_t op, IntPtr op_data);
+        public static herr_t iterate
+            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, iterate_t op, IntPtr op_data)
+        {
+            fixed (hsize_t* idxPtr = &idx)
+            {
+                return CallbackBridge.InvokeLink1(op, op_data, (grp_id, idx_type, order, IdxPtr: (IntPtr)idxPtr),
+                    static (s, cb, ctx) => iterate_native(s.grp_id, s.idx_type, s.order, ref *(hsize_t*)s.IdxPtr, cb, ctx));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Literate1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_native
+            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, IntPtr op, IntPtr op_data);
 
         /// <summary>
         /// Iterates through links in a group.
@@ -1083,13 +877,19 @@ namespace HDF.PInvoke
         /// <param name="lapl_id">Link access property list</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate_by_name
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, ref hsize_t idx, iterate_t op,
-            IntPtr op_data, hid_t lapl_id = H5P.DEFAULT);
+        public static herr_t iterate_by_name
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, iterate_t op, IntPtr op_data, hid_t lapl_id = H5P.DEFAULT)
+        {
+            fixed (hsize_t* idxPtr = &idx)
+            {
+                return CallbackBridge.InvokeLink1(op, op_data, (loc_id, group_name, idx_type, order, IdxPtr: (IntPtr)idxPtr, lapl_id),
+                    static (s, cb, ctx) => iterate_by_name_native(s.loc_id, s.group_name, s.idx_type, s.order, ref *(hsize_t*)s.IdxPtr, cb, ctx, s.lapl_id));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_by_name_native
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, IntPtr op, IntPtr op_data, hid_t lapl_id);
 
         /// <summary>
         /// Iterates through links in a group.
@@ -1109,14 +909,19 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name1",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t iterate_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, ref hsize_t idx, iterate_t op,
-            IntPtr op_data, hid_t lapl_id = H5P.DEFAULT);
+        public static herr_t iterate_by_name
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, iterate_t op, IntPtr op_data, hid_t lapl_id = H5P.DEFAULT)
+        {
+            fixed (hsize_t* idxPtr = &idx)
+            {
+                return CallbackBridge.InvokeLink1(op, op_data, (loc_id, group_name, idx_type, order, IdxPtr: (IntPtr)idxPtr, lapl_id),
+                    static (s, cb, ctx) => iterate_by_name_native(s.loc_id, s.group_name, s.idx_type, s.order, ref *(hsize_t*)s.IdxPtr, cb, ctx, s.lapl_id));
+            }
+        }
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Literate_by_name1", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_by_name_native
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, ref hsize_t idx, IntPtr op, IntPtr op_data, hid_t lapl_id);
 
         /// <summary>
         /// Moves a link within an HDF5 file.
@@ -1132,12 +937,9 @@ namespace HDF.PInvoke
         /// associated with the new link.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lmove",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t move
-            (hid_t src_loc, byte[] src_name, hid_t dst_loc, byte[] dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lmove"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t move
+            (hid_t src_loc, byte[] src_name, hid_t dst_loc, byte[] dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Moves a link within an HDF5 file.
@@ -1154,13 +956,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lmove",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t move
-            (hid_t src_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string src_name, hid_t dst_loc, [MarshalAs(UnmanagedType.LPUTF8Str)] string dst_name,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lmove", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t move
+            (hid_t src_loc, string src_name, hid_t dst_loc, string dst_name, hid_t lcpl_id = H5P.DEFAULT, hid_t lapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Registers a user-defined link class or changes behavior of an existing class.
@@ -1187,12 +985,9 @@ namespace HDF.PInvoke
         /// <paramref name="filename"/></param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lunpack_elink_val",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t unpack_elink_val
-            (IntPtr ext_linkval, size_t link_size, ref uint flags,
-            ref IntPtr filename, ref IntPtr obj_path);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lunpack_elink_val"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t unpack_elink_val
+            (IntPtr ext_linkval, size_t link_size, ref uint flags, ref IntPtr filename, ref IntPtr obj_path);
 
         /// <summary>
         /// Unregisters a class of user-defined links.
@@ -1221,12 +1016,14 @@ namespace HDF.PInvoke
         /// processed with no operator returning non-zero. On failure, returns
         /// a negative value if something goes wrong within the library, or the
         /// first negative value returned by an operator.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lvisit1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t visit
-            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order,
-            iterate_t op, IntPtr op_data);
+        public static herr_t visit
+            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order, iterate_t op, IntPtr op_data) =>
+            CallbackBridge.InvokeLink1(op, op_data, (grp_id, idx_type, order),
+                static (s, cb, ctx) => visit_native(s.grp_id, s.idx_type, s.order, cb, ctx));
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lvisit1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t visit_native
+            (hid_t grp_id, H5.index_t idx_type, H5.iter_order_t order, IntPtr op, IntPtr op_data);
 
         /// <summary>
         /// Recursively visits all links starting from a specified group.
@@ -1247,13 +1044,14 @@ namespace HDF.PInvoke
         /// processed with no operator returning non-zero. On failure, returns
         /// a negative value if something goes wrong within the library, or the
         /// first negative value returned by an operator.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t visit_by_name
-            (hid_t loc_id, byte[] group_name, H5.index_t idx_type,
-            H5.iter_order_t order, iterate_t op, IntPtr op_data,
-            hid_t lapl_id = H5P.DEFAULT);
+        public static herr_t visit_by_name
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, iterate_t op, IntPtr op_data, hid_t lapl_id = H5P.DEFAULT) =>
+            CallbackBridge.InvokeLink1(op, op_data, (loc_id, group_name, idx_type, order, lapl_id),
+                static (s, cb, ctx) => visit_by_name_native(s.loc_id, s.group_name, s.idx_type, s.order, cb, ctx, s.lapl_id));
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t visit_by_name_native
+            (hid_t loc_id, byte[] group_name, H5.index_t idx_type, H5.iter_order_t order, IntPtr op, IntPtr op_data, hid_t lapl_id);
 
         /// <summary>
         /// Recursively visits all links starting from a specified group.
@@ -1275,13 +1073,13 @@ namespace HDF.PInvoke
         /// a negative value if something goes wrong within the library, or the
         /// first negative value returned by an operator.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name1",
-            CharSet = CharSet.Ansi,
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public extern static herr_t visit_by_name
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string group_name, H5.index_t idx_type,
-            H5.iter_order_t order, iterate_t op, IntPtr op_data,
-            hid_t lapl_id = H5P.DEFAULT);
+        public static herr_t visit_by_name
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, iterate_t op, IntPtr op_data, hid_t lapl_id = H5P.DEFAULT) =>
+            CallbackBridge.InvokeLink1(op, op_data, (loc_id, group_name, idx_type, order, lapl_id),
+                static (s, cb, ctx) => visit_by_name_native(s.loc_id, s.group_name, s.idx_type, s.order, cb, ctx, s.lapl_id));
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Lvisit_by_name1", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t visit_by_name_native
+            (hid_t loc_id, string group_name, H5.index_t idx_type, H5.iter_order_t order, IntPtr op, IntPtr op_data, hid_t lapl_id);
     }
 }

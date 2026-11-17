@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using haddr_t = System.UInt64;
 using hbool_t = System.Byte;
 using herr_t = System.Int32;
@@ -361,7 +361,6 @@ namespace HDF.PInvoke
         /// callback function.</param>
         /// <returns>The callback function should return zero (0) to indicate
         /// success, and a negative value to indicate failure.</returns>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t scatter_func_t
         (
         ref IntPtr src_buf/*out*/,
@@ -377,10 +376,8 @@ namespace HDF.PInvoke
         /// </param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dclose",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t close(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t close(hid_t dset_id);
 
         /// <summary>
         /// Creates a new dataset and links it into the file.
@@ -395,13 +392,9 @@ namespace HDF.PInvoke
         /// <param name="dapl_id">Dataset access property list</param>
         /// <returns>Returns a dataset identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dcreate2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create
-            (hid_t loc_id, byte[] name, hid_t type_id, hid_t space_id,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t dcpl_id = H5P.DEFAULT,
-            hid_t dapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dcreate2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, byte[] name, hid_t type_id, hid_t space_id, hid_t lcpl_id = H5P.DEFAULT, hid_t dcpl_id = H5P.DEFAULT, hid_t dapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a new dataset and links it into the file.
@@ -417,14 +410,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a dataset identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dcreate2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create
-            (hid_t loc_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t type_id, hid_t space_id,
-            hid_t lcpl_id = H5P.DEFAULT, hid_t dcpl_id = H5P.DEFAULT,
-            hid_t dapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dcreate2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create
+            (hid_t loc_id, string name, hid_t type_id, hid_t space_id, hid_t lcpl_id = H5P.DEFAULT, hid_t dcpl_id = H5P.DEFAULT, hid_t dapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Creates a dataset in a file without linking it into the file structure.
@@ -440,12 +428,9 @@ namespace HDF.PInvoke
         /// <param name="dapl_id">Dataset access property list identifier.</param>
         /// <returns>Returns a dataset identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dcreate_anon",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t create_anon
-            (hid_t file_id, hid_t type_id, hid_t space_id,
-            hid_t dcpl_id = H5P.DEFAULT, hid_t dapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dcreate_anon"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t create_anon
+            (hid_t file_id, hid_t type_id, hid_t space_id, hid_t dcpl_id = H5P.DEFAULT, hid_t dapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Fills dataspace elements with a fill value in a memory buffer.
@@ -461,12 +446,9 @@ namespace HDF.PInvoke
         /// containing the selection to be filled.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dfill",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t fill
-            (IntPtr fill, hid_t fill_type, IntPtr buf, hid_t buf_type,
-            hid_t space);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dfill"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t fill
+            (IntPtr fill, hid_t fill_type, IntPtr buf, hid_t buf_type, hid_t space);
 
         /// <summary>
         /// Flushes all buffers associated with a dataset to disk.
@@ -475,20 +457,16 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Identifier of the dataset to be flushed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dflush",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t flush(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dflush"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t flush(hid_t dset_id);
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="dset_id">Identifier of the dataset to be flushed.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dformat_convert",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t format_convert(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dformat_convert"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t format_convert(hid_t dset_id);
 
         /// <summary>
         /// Gathers data from a selection within a memory buffer.
@@ -513,13 +491,9 @@ namespace HDF.PInvoke
         /// <paramref name="op"/>.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dgather",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t gather
-            (hid_t src_space_id, IntPtr src_buf, hid_t type_id,
-            size_t dst_buf_size, IntPtr dst_buf, gather_func_t op,
-            IntPtr op_data);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dgather"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t gather
+            (hid_t src_space_id, IntPtr src_buf, hid_t type_id, size_t dst_buf_size, IntPtr dst_buf, gather_func_t op, IntPtr op_data);
 
         /// <summary>
         /// Returns the dataset access property list associated with a dataset.
@@ -529,10 +503,8 @@ namespace HDF.PInvoke
         /// property list of.</param>
         /// <returns>Returns a dataset access property list identifier if
         /// Ssuccessful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_access_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_access_plist(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_access_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_access_plist(hid_t dset_id);
 
         /// <summary>
         ///
@@ -540,10 +512,8 @@ namespace HDF.PInvoke
         /// <param name="did">The dataset identifier.</param>
         /// <param name="idx_type">Receives the native chunk-index implementation type.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_index_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_index_type
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_index_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_index_type
             (hid_t did, ref chunk_index_t idx_type);
 
         /// <summary>
@@ -560,12 +530,9 @@ namespace HDF.PInvoke
         /// <param name="size">Chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_info
-            (hid_t dset_id, hid_t fspace_id, hsize_t index, hsize_t* offset,
-            ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_info
+            (hid_t dset_id, hid_t fspace_id, hsize_t index, hsize_t* offset, ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
 
         /// <summary>
         /// Retrieves information about a chunk specified by the chunk index.
@@ -581,12 +548,9 @@ namespace HDF.PInvoke
         /// <param name="size">Chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_info
-            (hid_t dset_id, hid_t fspace_id, hsize_t index, [In][Out] hsize_t[] offset,
-            ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_info
+            (hid_t dset_id, hid_t fspace_id, hsize_t index, hsize_t[] offset, ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
 
         /// <summary>
         /// Retrieves information about a chunk specified by its coordinates
@@ -600,12 +564,9 @@ namespace HDF.PInvoke
         /// <param name="size">Chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info_by_coord",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_info_by_coord
-            (hid_t dset_id, hsize_t* offset, ref uint32_t filter_mask,
-            ref haddr_t addr, ref hsize_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info_by_coord"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_info_by_coord
+            (hid_t dset_id, hsize_t* offset, ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
 
         /// <summary>
         /// Retrieves information about a chunk specified by its coordinates
@@ -619,12 +580,9 @@ namespace HDF.PInvoke
         /// <param name="size">Chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info_by_coord",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_info_by_coord
-            (hid_t dset_id, [In][Out] hsize_t[] offset, ref uint32_t filter_mask,
-            ref haddr_t addr, ref hsize_t size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_info_by_coord"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_info_by_coord
+            (hid_t dset_id, hsize_t[] offset, ref uint32_t filter_mask, ref haddr_t addr, ref hsize_t size);
 
         /// <summary>
         /// Determines the storage size (in bytes) of a chunk.
@@ -635,10 +593,8 @@ namespace HDF.PInvoke
         /// <param name="chunk_bytes">The chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_storage_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_storage_size
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_storage_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_storage_size
             (hid_t dset_id, hsize_t* offset, ref hsize_t chunk_bytes);
 
         /// <summary>
@@ -650,11 +606,9 @@ namespace HDF.PInvoke
         /// <param name="chunk_bytes">The chunk size in bytes.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_storage_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_chunk_storage_size
-            (hid_t dset_id, [In][Out] hsize_t[] offset, ref hsize_t chunk_bytes);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_chunk_storage_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_chunk_storage_size
+            (hid_t dset_id, hsize_t[] offset, ref hsize_t chunk_bytes);
 
         /// <summary>
         /// Returns an identifier for a copy of the dataset creation property
@@ -664,10 +618,8 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Identifier of the dataset to query.</param>
         /// <returns>Returns a dataset creation property list identifier if
         /// successful; otherwise returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_create_plist",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_create_plist(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_create_plist"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_create_plist(hid_t dset_id);
 
         /// <summary>
         /// Retrieves number of chunks that have nonempty intersection with a specified selection.
@@ -678,10 +630,8 @@ namespace HDF.PInvoke
         /// <param name="nchunks">Number of chunks in the selection.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_num_chunks",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_num_chunks(hid_t dset_id, hid_t fspace_id, ref hsize_t nchunks);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_num_chunks"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_num_chunks(hid_t dset_id, hid_t fspace_id, ref hsize_t nchunks);
 
         /// <summary>
         /// Returns dataset address in file.
@@ -690,10 +640,8 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Dataset identifier.</param>
         /// <returns>Returns the offset in bytes; otherwise returns
         /// <code>HADDR_UNDEF</code>, a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_offset",
-           CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern haddr_t get_offset(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_offset"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial haddr_t get_offset(hid_t dset_id);
 
         /// <summary>
         /// Returns an identifier for a copy of the dataspace for a dataset.
@@ -702,10 +650,8 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Identifier of the dataset to query.</param>
         /// <returns>Returns a dataspace identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_space",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_space(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_space"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_space(hid_t dset_id);
 
         /// <summary>
         /// Determines whether space has been allocated for a dataset.
@@ -715,10 +661,8 @@ namespace HDF.PInvoke
         /// <param name="allocation">Space allocation status.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_space_status",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_space_status
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_space_status"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t get_space_status
             (hid_t dset_id, ref space_status_t allocation);
 
         /// <summary>
@@ -729,10 +673,8 @@ namespace HDF.PInvoke
         /// <returns>Returns the amount of storage space, in bytes, allocated
         /// for the dataset, not counting metadata; otherwise returns 0 (zero).
         /// </returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_storage_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hsize_t get_storage_size(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_storage_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hsize_t get_storage_size(hid_t dset_id);
 
         /// <summary>
         /// Returns an identifier for a copy of the datatype for a dataset.
@@ -741,10 +683,8 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Identifier of the dataset to query.</param>
         /// <returns>Returns a datatype identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dget_type",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t get_type(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dget_type"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t get_type(hid_t dset_id);
 
         /// <summary>
         /// Iterates over all selected elements in a dataspace.
@@ -762,7 +702,6 @@ namespace HDF.PInvoke
         /// <returns>Returns the return value of the last operator if it was
         /// non-zero, or zero if all elements have been processed. Otherwise
         /// returns a negative value.</returns>
-        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static herr_t iterate
             (IntPtr buf, hid_t type_id, hid_t space_id,
             operator_t op, IntPtr op_data)
@@ -804,23 +743,24 @@ namespace HDF.PInvoke
 
             return result;
 #else
-            var context = new IterateState { Callback = op, OpData = op_data };
-            var handle = GCHandle.Alloc(context);
+            var context = new IterateContext { CallbackHandle = GCHandle.Alloc(op), OpData = op_data };
             herr_t result;
 
             try
             {
                 var callbackPtr = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, hid_t, uint, hsize_t*, IntPtr, herr_t>)&IterateCallback;
-                result = iterate_native(buf, type_id, space_id, callbackPtr, GCHandle.ToIntPtr(handle));
+                result = iterate_native(buf, type_id, space_id, callbackPtr, (IntPtr)(&context));
             }
             finally
             {
-                handle.Free();
+                context.CallbackHandle.Free();
             }
 
-            if (context.Failure != null)
+            if (context.FailureHandle.IsAllocated)
             {
-                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(context.Failure).Throw();
+                var failure = (System.Exception)context.FailureHandle.Target;
+                context.FailureHandle.Free();
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
             }
 
             return result;
@@ -835,31 +775,35 @@ namespace HDF.PInvoke
         private delegate herr_t IterateNativeCallback(IntPtr elem, hid_t type_id, uint ndim, IntPtr point, IntPtr op_data);
 #else
         /// <summary>
-        /// Holds caller state for the static unmanaged dataset-iteration callback bridge.
+        /// Holds stack-allocated caller state for the unmanaged dataset-iteration callback bridge.
         /// </summary>
-        private sealed class IterateState
+        private struct IterateContext
         {
-            internal operator_t Callback;
+            internal GCHandle CallbackHandle;
+            internal GCHandle FailureHandle;
             internal IntPtr OpData;
-            internal System.Exception Failure;
         }
 
         /// <summary>
         /// Marshals native coordinate arrays explicitly so dataset iteration works under NativeAOT without runtime SizeParamIndex marshalling.
         /// </summary>
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
         private static herr_t IterateCallback(IntPtr elem, hid_t type_id, uint ndim, hsize_t* point, IntPtr contextPtr)
         {
-            var context = (IterateState)GCHandle.FromIntPtr(contextPtr).Target;
+            var context = (IterateContext*)contextPtr;
 
             try
             {
                 var coordinates = ndim == 0 ? Array.Empty<hsize_t>() : new ReadOnlySpan<hsize_t>(point, checked((int)ndim)).ToArray();
-                return context.Callback(elem, type_id, ndim, coordinates, context.OpData);
+                return ((operator_t)context->CallbackHandle.Target)(elem, type_id, ndim, coordinates, context->OpData);
             }
             catch (System.Exception error)
             {
-                context.Failure = error;
+                if (!context->FailureHandle.IsAllocated)
+                {
+                    context->FailureHandle = GCHandle.Alloc(error);
+                }
+
                 return -1;
             }
         }
@@ -868,11 +812,9 @@ namespace HDF.PInvoke
         /// <summary>
         /// Invokes the native <c>H5Diterate</c> entry point with a pointer-sized callback address.
         /// </summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Diterate", CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        private static extern herr_t iterate_native
-            (IntPtr buf, hid_t type_id, hid_t space_id,
-            IntPtr op, IntPtr op_data);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Diterate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t iterate_native
+            (IntPtr buf, hid_t type_id, hid_t space_id, IntPtr op, IntPtr op_data);
 
         /// <summary>
         /// Opens an existing dataset.
@@ -883,10 +825,8 @@ namespace HDF.PInvoke
         /// <param name="dapl_id">Dataset access property list</param>
         /// <returns>Returns a dataset identifier if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dopen2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t open
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dopen2"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
             (hid_t file_id, byte[] name, hid_t dapl_id = H5P.DEFAULT);
 
         /// <summary>
@@ -899,12 +839,9 @@ namespace HDF.PInvoke
         /// <returns>Returns a dataset identifier if successful; otherwise
         /// returns a negative value.</returns>
         /// <remarks>String inputs use UTF-8. For encoded output, prefer the byte-buffer overload.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dopen2",
-            CallingConvention = CallingConvention.Cdecl,
-            CharSet = CharSet.Ansi),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern hid_t open
-            (hid_t file_id, [MarshalAs(UnmanagedType.LPUTF8Str)] string name, hid_t dapl_id = H5P.DEFAULT);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dopen2", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial hid_t open
+            (hid_t file_id, string name, hid_t dapl_id = H5P.DEFAULT);
 
         /// <summary>
         /// Reads raw data from a dataset into a buffer.
@@ -920,12 +857,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer to receive data read from file.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dread",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t read
-            (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id,
-            hid_t file_space_id, hid_t plist_id, IntPtr buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dread"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t read
+            (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t plist_id, IntPtr buf);
 
         /// <summary>
         /// Reads a raw data chunk directly from a dataset in a file into a buffer.
@@ -941,12 +875,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer containing the chunk read from the dataset</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dread_chunk1",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t read_chunk
-            (hid_t dset_id, hid_t dxpl_id, ref hsize_t offset,
-            ref uint32_t filter_mask, IntPtr buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dread_chunk1"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t read_chunk
+            (hid_t dset_id, hid_t dxpl_id, ref hsize_t offset, ref uint32_t filter_mask, IntPtr buf);
 
         /// <summary>
         /// Refreshes all buffers associated with a dataset.
@@ -955,10 +886,8 @@ namespace HDF.PInvoke
         /// <param name="dset_id">Identifier of the dataset to be refreshed.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Drefresh",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t refresh(hid_t dset_id);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Drefresh"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t refresh(hid_t dset_id);
 
         /// <summary>
         /// Scatters data into a selection within a memory buffer.
@@ -977,12 +906,14 @@ namespace HDF.PInvoke
         /// scattered to.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dscatter",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t scatter
-            (scatter_func_t op, IntPtr op_data, hid_t type_id,
-            hid_t dst_space_id, IntPtr dst_buf);
+        public static herr_t scatter
+            (scatter_func_t op, IntPtr op_data, hid_t type_id, hid_t dst_space_id, IntPtr dst_buf) =>
+            CallbackBridge.InvokeScatter(op, op_data, (type_id, dst_space_id, dst_buf),
+                static (s, cb, ctx) => scatter_native(cb, ctx, s.type_id, s.dst_space_id, s.dst_buf));
+
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dscatter"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        private static partial herr_t scatter_native
+            (IntPtr op, IntPtr op_data, hid_t type_id, hid_t dst_space_id, IntPtr dst_buf);
 
         /// <summary>
         /// Changes the sizes of a dataset’s dimensions.
@@ -993,10 +924,8 @@ namespace HDF.PInvoke
         /// dimension of the dataset.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dset_extent",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_extent(hid_t dset_id, hsize_t[] size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dset_extent"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_extent(hid_t dset_id, hsize_t[] size);
 
         /// <summary>
         /// Changes the sizes of a dataset’s dimensions.
@@ -1007,10 +936,8 @@ namespace HDF.PInvoke
         /// dimension of the dataset.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dset_extent",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_extent(hid_t dset_id, hsize_t* size);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dset_extent"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t set_extent(hid_t dset_id, hsize_t* size);
 
         /// <summary>
         /// Determines the number of bytes required to store variable-length
@@ -1024,10 +951,8 @@ namespace HDF.PInvoke
         /// to store the VL data.</param>
         /// <returns>Returns non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dvlen_get_buf_size",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t vlen_get_buf_size
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dvlen_get_buf_size"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t vlen_get_buf_size
             (hid_t dataset_id, hid_t type_id, hid_t space_id, ref hsize_t size);
 
         /// <summary>
@@ -1041,10 +966,8 @@ namespace HDF.PInvoke
         /// <param name="buf">Pointer to the buffer to be reclaimed.</param>
         /// <returns>Returns non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dvlen_reclaim",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t vlen_reclaim
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dvlen_reclaim"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t vlen_reclaim
             (hid_t type_id, hid_t space_id, hid_t plist_id, IntPtr buf);
 
         /// <summary>
@@ -1061,12 +984,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer with data to be written to the file.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dwrite",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t write
-            (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id,
-            hid_t file_space_id, hid_t plist_id, IntPtr buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dwrite"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t write
+            (hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t plist_id, IntPtr buf);
 
         /// <summary>
         /// Writes a raw data chunk from a buffer directly to a dataset.
@@ -1082,12 +1002,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer containing data to be written to the file</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Dwrite_chunk",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t write_chunk
-            (hid_t dset_id, hid_t dxpl_id, uint32_t filter_mask,
-            ref hsize_t offset, size_t data_size, IntPtr buf);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5Dwrite_chunk"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t write_chunk
+            (hid_t dset_id, hid_t dxpl_id, uint32_t filter_mask, ref hsize_t offset, size_t data_size, IntPtr buf);
 
     }
 }

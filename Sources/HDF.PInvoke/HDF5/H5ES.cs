@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace HDF.PInvoke
 {
     /// <summary>Provides native event-set lifecycle, completion and error inspection.</summary>
     /// <remarks>Event sets do not own application buffers. Keep all operation buffers and callbacks alive until completion; the packaged native connector executes synchronously.</remarks>
-    public unsafe sealed class H5ES
+    public unsafe sealed partial class H5ES
     {
         /// <summary>Initializes native HDF5 before using event sets.</summary>
         static H5ES()
@@ -105,65 +106,65 @@ namespace HDF.PInvoke
             public long err_stack_id;
         }
 
-        /// <summary>Receives borrowed metadata for a newly inserted operation; do not throw through native code.</summary>
+        /// <summary>Receives a borrowed <see cref="op_info_t"/> pointer for a newly inserted operation; do not throw through native code.</summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int event_insert_t(ref op_info_t information, IntPtr state);
+        public delegate int event_insert_t(IntPtr information, IntPtr state);
 
-        /// <summary>Receives borrowed completion metadata and error stack; do not throw through native code.</summary>
+        /// <summary>Receives a borrowed <see cref="op_info_t"/> pointer, completion status and error stack; do not throw through native code.</summary>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int event_complete_t(ref op_info_t information, status_t status, long errorStack, IntPtr state);
+        public delegate int event_complete_t(IntPtr information, status_t status, long errorStack, IntPtr state);
 
         /// <summary>Creates an event set; wait for operations and then release it with close.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5EScreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern long create();
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5EScreate"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial long create();
 
         /// <summary>Waits up to timeout nanoseconds and reports remaining operations and error status.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESwait", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int wait(long events, ulong timeout, out UIntPtr inProgress, out byte errorOccurred);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESwait"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int wait(long events, ulong timeout, out UIntPtr inProgress, out byte errorOccurred);
 
         /// <summary>Requests cancellation; operations reported as not canceled still require completion before buffers are released.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5EScancel", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int cancel(long events, out UIntPtr notCanceled, out byte errorOccurred);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5EScancel"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int cancel(long events, out UIntPtr notCanceled, out byte errorOccurred);
 
         /// <summary>Gets the number of active events.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESget_count", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_count(long events, out UIntPtr count);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESget_count"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_count(long events, out UIntPtr count);
 
         /// <summary>Gets the operation insertion counter.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESget_op_counter", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_op_counter(long events, out ulong counter);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESget_op_counter"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_op_counter(long events, out ulong counter);
 
         /// <summary>Gets whether an event failed.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_status", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_err_status(long events, out byte errorOccurred);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_status"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_err_status(long events, out byte errorOccurred);
 
         /// <summary>Gets the number of stored errors.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_count", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_err_count(long events, out UIntPtr count);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_count"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_err_count(long events, out UIntPtr count);
 
         /// <summary>Transfers error records into caller-owned storage sized for capacity err_info_t elements.</summary>
         /// <remarks>Release the cleared records with free_err_info, then free the storage itself. The returned strings and stack identifiers belong to the records.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_info", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_err_info(long events, UIntPtr capacity, IntPtr information, out UIntPtr cleared);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESget_err_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int get_err_info(long events, UIntPtr capacity, IntPtr information, out UIntPtr cleared);
 
         /// <summary>Releases strings and stack identifiers in count error records, leaving the array storage caller-owned.</summary>
         /// <remarks>Call only when get_err_info returned a positive record count; HDF5 rejects zero.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESfree_err_info", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int free_err_info(UIntPtr count, IntPtr information);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESfree_err_info"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int free_err_info(UIntPtr count, IntPtr information);
 
         /// <summary>Registers an insertion callback.</summary>
         /// <remarks>Keep callback and state rooted until replaced or until all operations complete and the event set closes.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESregister_insert_func", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int register_insert_func(long events, event_insert_t callback, IntPtr state);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESregister_insert_func"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int register_insert_func(long events, event_insert_t callback, IntPtr state);
 
         /// <summary>Registers a completion callback.</summary>
         /// <remarks>Keep callback and state rooted until replaced or until all operations complete and the event set closes.</remarks>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESregister_complete_func", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int register_complete_func(long events, event_complete_t callback, IntPtr state);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESregister_complete_func"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int register_complete_func(long events, event_complete_t callback, IntPtr state);
 
         /// <summary>Closes an event set after pending operations have completed.</summary>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5ESclose", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int close(long events);
+        [LibraryImport(Constants.DLLFileName, EntryPoint = "H5ESclose"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial int close(long events);
 
     }
 }

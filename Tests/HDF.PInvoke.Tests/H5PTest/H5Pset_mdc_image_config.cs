@@ -32,24 +32,23 @@ namespace UnitTests
             var fapl = H5P.create(H5P.FILE_ACCESS);
             Assert.IsTrue(fapl >= 0);
 
-            Assert.IsTrue(H5P.set_libver_bounds(fapl, H5F.libver_t.LATEST) >= 0);
+            Assert.IsTrue(H5P.set_libver_bounds(fapl, H5F.libver_t.LATEST, H5F.libver_t.LATEST) >= 0);
 
-            var conf = new H5AC.cache_image_config_t();
-            conf.version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION;
-            conf.entry_ageout = H5AC.CACHE_IMAGE__ENTRY_AGEOUT__NONE;
+            var conf = new H5AC.cache_image_config_t
+            {
+                version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION,
+                generate_image = 1,
+                save_resize_status = 0,
+                entry_ageout = H5AC.CACHE_IMAGE__ENTRY_AGEOUT__NONE
+            };
 
-            var config_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(conf));
-            Marshal.StructureToPtr(conf, config_ptr, false);
-
-            var conf1 = new H5AC.cache_image_config_t();
-
-            conf1 = (H5AC.cache_image_config_t)Marshal.PtrToStructure(
-                config_ptr, typeof(H5AC.cache_image_config_t));
-
-            //Assert.IsTrue(H5P.set_mdc_image_config(fapl, config_ptr) >= 0);
+            Assert.IsTrue(H5P.set_mdc_image_config(fapl, ref conf) >= 0);
+            var roundTrip = new H5AC.cache_image_config_t { version = H5AC.CURR_CACHE_IMAGE_CONFIG_VERSION };
+            Assert.IsTrue(H5P.get_mdc_image_config(fapl, ref roundTrip) >= 0);
+            Assert.AreEqual((byte)1, roundTrip.generate_image);
+            Assert.AreEqual(H5AC.CACHE_IMAGE__ENTRY_AGEOUT__NONE, roundTrip.entry_ageout);
 
             Assert.IsTrue(H5P.close(fapl) >= 0);
-            Marshal.FreeHGlobal(config_ptr);
         }
     }
 }

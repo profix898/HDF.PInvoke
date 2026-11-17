@@ -82,8 +82,8 @@ namespace UnitTests
                 Check(result);
                 owned.Remove(id);
             }
-            H5ES.event_insert_t inserted = (ref H5ES.op_info_t info, IntPtr state) => 0;
-            H5ES.event_complete_t completed = (ref H5ES.op_info_t info, H5ES.status_t status, long stack, IntPtr state) => 0;
+            H5ES.event_insert_t inserted = (IntPtr info, IntPtr state) => info != IntPtr.Zero ? 0 : -1;
+            H5ES.event_complete_t completed = (IntPtr info, H5ES.status_t status, long stack, IntPtr state) => info != IntPtr.Zero ? 0 : -1;
 
             try
             {
@@ -156,8 +156,13 @@ namespace UnitTests
                 Assert.AreEqual((byte)1, exists);
                 ulong index = 0;
                 var visits = 0;
-                H5L.iterate2_t visitor = (long id, string name, ref H5L.info2_t details, IntPtr state) =>
+                H5L.iterate_async_t visitor = (long id, IntPtr name, IntPtr details, IntPtr state) =>
                 {
+                    if (name == IntPtr.Zero || details == IntPtr.Zero)
+                    {
+                        return -1;
+                    }
+
                     visits++;
                     return 0;
                 };

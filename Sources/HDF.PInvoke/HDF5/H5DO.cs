@@ -9,8 +9,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 using herr_t = System.Int32;
 using hid_t = System.Int64;
 using hsize_t = System.UInt64;
@@ -22,7 +22,7 @@ namespace HDF.PInvoke
     /// <summary>
     /// Provides high-level HDF5 dataset operations.
     /// </summary>
-    public unsafe sealed class H5DO
+    public unsafe sealed partial class H5DO
     {
         /// <summary>
         /// Initializes HDF5 before this API is first used.
@@ -46,12 +46,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer containing the chunk read from the dataset</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.HLDLLFileName, EntryPoint = "H5DOread_chunk",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t read_chunk
-            (hid_t dset_id, hid_t dxpl_id, ref hsize_t offset,
-            ref uint32_t filter_mask, IntPtr buf);
+        [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5DOread_chunk"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t read_chunk
+            (hid_t dset_id, hid_t dxpl_id, ref hsize_t offset, ref uint32_t filter_mask, IntPtr buf);
 
         /// <summary>
         /// Writes a raw data chunk from a buffer directly to a dataset.
@@ -67,12 +64,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Buffer containing data to be written to the file</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.HLDLLFileName, EntryPoint = "H5DOwrite_chunk",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t write_chunk
-            (hid_t dset_id, hid_t dxpl_id, uint32_t filter_mask,
-            ref hsize_t offset, size_t data_size, IntPtr buf);
+        [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5DOwrite_chunk"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t write_chunk
+            (hid_t dset_id, hid_t dxpl_id, uint32_t filter_mask, ref hsize_t offset, size_t data_size, IntPtr buf);
 
         /// <summary>
         /// Appends data to a dataset along a specified dimension.
@@ -87,12 +81,9 @@ namespace HDF.PInvoke
         /// <param name="buf">Data buffer.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.HLDLLFileName, EntryPoint = "H5DOappend",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t append
-            (hid_t dset_id, hid_t dxpl_id, uint axis,
-            size_t num_elem, hid_t memtype, IntPtr buf);
+        [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5DOappend"), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+        public static partial herr_t append
+            (hid_t dset_id, hid_t dxpl_id, uint axis, size_t num_elem, hid_t memtype, IntPtr buf);
 
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 /// <summary>
-/// Replaces native imports with typed delegates, lazy export caches, and targeted ABI bridges.
+/// Replaces source-generated LibraryImport declarations with typed delegates, lazy export caches, and targeted ABI bridges for .NET Standard 2.0.
 /// </summary>
 sealed class LegacyBindings : CSharpSyntaxRewriter
 {
@@ -41,17 +41,13 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
     /// </summary>
     private static MemberDeclarationSyntax CreateCache(string name, string delegateType, string library, string entryPoint) =>
         SyntaxFactory.ParseMemberDeclaration($$"""
-            /// <summary>Retains the native delegate after its first successful lookup.</summary>
             private static class {{name}}
             {
-                /// <summary>Prevents the runtime from resolving this binding before its first use.</summary>
                 static {{name}}() { }
 
-                /// <summary>Stores the resolved delegate; failed lookups leave it null.</summary>
                 private static {{delegateType}} function;
 
                 // A failed lookup leaves the cache empty so corrected configuration can be retried.
-                /// <summary>Gets the cached delegate, retrying resolution after a previous lookup failure.</summary>
                 internal static {{delegateType}} Function => System.Threading.LazyInitializer.EnsureInitialized(
                     ref function, () => NativeDependencies.GetFunction<{{delegateType}}>({{library}}, {{entryPoint}}));
             }
@@ -70,6 +66,34 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
         }
 
         return field.WithDeclaration(field.Declaration.WithType(type)).ToFullString();
+    }
+
+    private static bool IsAttributeNamed(AttributeSyntax attribute, string shortName)
+    {
+        var name = attribute.Name.ToString();
+        return name == shortName || name == shortName + "Attribute" ||
+               name.EndsWith("." + shortName, StringComparison.Ordinal) ||
+               name.EndsWith("." + shortName + "Attribute", StringComparison.Ordinal);
+    }
+
+    private static bool IsStringType(TypeSyntax? type) => type?.ToString() is "string" or "String" or "System.String";
+
+    private static bool SpecifiesCdecl(AttributeSyntax callConv)
+    {
+        if (callConv.ArgumentList == null || callConv.ArgumentList.Arguments.Count != 1)
+        {
+            return false;
+        }
+
+        var arg = callConv.ArgumentList.Arguments[0];
+
+        if (arg.NameEquals?.Name.Identifier.ValueText != "CallConvs")
+        {
+            return false;
+        }
+
+        var types = arg.Expression.DescendantNodesAndSelf().OfType<TypeOfExpressionSyntax>().Select(t => t.Type.ToString()).ToArray();
+        return types.Length == 1 && (types[0] == "CallConvCdecl" || types[0] == "System.Runtime.CompilerServices.CallConvCdecl");
     }
 
     /// <summary>
@@ -128,12 +152,17 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 continue;
             }
 
+            if (method.AttributeLists.SelectMany(a => a.Attributes).Any(a => IsAttributeNamed(a, "DllImport")))
+            {
+                throw new BindingGenerationException("Use LibraryImport with UnmanagedCallConv instead of DllImport.", method.GetLocation());
+            }
+
             var imports = method.AttributeLists.SelectMany(a => a.Attributes)
-                .Where(a => a.Name.ToString() == "DllImport").ToArray();
+                .Where(a => IsAttributeNamed(a, "LibraryImport")).ToArray();
 
             if (imports.Length > 1)
             {
-                throw new BindingGenerationException("Expected one DllImport attribute per declaration.", method.GetLocation());
+                throw new BindingGenerationException("Expected one LibraryImport attribute per declaration.", method.GetLocation());
             }
 
             var import = imports.SingleOrDefault();
@@ -144,11 +173,20 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 continue;
             }
 
-            // Only native declarations may lose their extern modifier and acquire a generated body.
-            if (!method.Modifiers.Any(SyntaxKind.StaticKeyword) || !method.Modifiers.Any(SyntaxKind.ExternKeyword) ||
-                method.TypeParameterList != null || method.Body != null || method.ExpressionBody != null)
+            // Only static partial declarations without bodies may acquire a generated legacy forwarding body.
+            if (!method.Modifiers.Any(SyntaxKind.StaticKeyword) || !method.Modifiers.Any(SyntaxKind.PartialKeyword) ||
+                method.Modifiers.Any(SyntaxKind.ExternKeyword) || method.TypeParameterList != null ||
+                method.Body != null || method.ExpressionBody != null)
             {
-                throw new BindingGenerationException("Expected a static, non-generic extern import without a method body.", method.GetLocation());
+                throw new BindingGenerationException("Expected a static, non-generic partial LibraryImport without a method body.", method.GetLocation());
+            }
+
+            var callConvs = method.AttributeLists.SelectMany(a => a.Attributes)
+                .Where(a => IsAttributeNamed(a, "UnmanagedCallConv")).ToArray();
+
+            if (callConvs.Length != 1 || !SpecifiesCdecl(callConvs[0]))
+            {
+                throw new BindingGenerationException("Expected [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])] on LibraryImport declaration.", method.GetLocation());
             }
 
             if (import.ArgumentList == null || import.ArgumentList.Arguments.Count == 0)
@@ -172,7 +210,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
 
                 if (name == null || named.ContainsKey(name))
                 {
-                    throw new BindingGenerationException("Expected unique named DllImport options after the library argument.", argument.GetLocation());
+                    throw new BindingGenerationException("Expected unique named LibraryImport options after the library argument.", argument.GetLocation());
                 }
 
                 named.Add(name, argument.Expression.ToString());
@@ -185,28 +223,49 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
 
             named.Remove("EntryPoint");
 
-            if (!named.TryGetValue("CallingConvention", out var convention))
+            var hasStringParameter = method.ParameterList.Parameters.Any(p => IsStringType(p.Type));
+            var hasUtf8StringMarshalling = false;
+
+            if (named.TryGetValue("StringMarshalling", out var stringMarshalling))
             {
-                throw new BindingGenerationException("Missing calling convention.", method.GetLocation());
+                if (stringMarshalling is not ("StringMarshalling.Utf8" or "System.Runtime.InteropServices.StringMarshalling.Utf8"))
+                {
+                    throw new BindingGenerationException("Unsupported StringMarshalling mode; use StringMarshalling.Utf8.", method.GetLocation());
+                }
+
+                hasUtf8StringMarshalling = true;
+                named.Remove("StringMarshalling");
             }
 
-            named.Remove("CallingConvention");
+            if (hasStringParameter && !hasUtf8StringMarshalling)
+            {
+                throw new BindingGenerationException("String parameters in LibraryImport require StringMarshalling = StringMarshalling.Utf8.", method.GetLocation());
+            }
 
             // Reject new import options until their delegate-marshalling equivalents are understood.
-            var supported = new[] { "CharSet", "SetLastError", "BestFitMapping", "ThrowOnUnmappableChar" };
+            var supported = new[] { "SetLastError" };
 
             if (named.Keys.Any(k => !supported.Contains(k)))
             {
-                throw new BindingGenerationException("Unsupported DllImport option.", method.GetLocation());
+                throw new BindingGenerationException("Unsupported LibraryImport option.", method.GetLocation());
             }
 
             var pointerOptions = string.Join("", named.Select(p => $", {p.Key} = {p.Value}"));
             var suffix = "__Legacy" + sourceIdentity + Count++;
             var returnAttributes = string.Join("\n", method.AttributeLists.Where(a => a.Target?.Identifier.ValueText == "return"));
-            // Delegate parameter attributes retain all native marshalling semantics.
+            var utf8Attribute = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(
+                SyntaxFactory.Attribute(
+                    SyntaxFactory.ParseName("MarshalAs"),
+                    SyntaxFactory.ParseAttributeArgumentList("(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))"))));
+
+            // Delegate parameter attributes retain marshalling semantics and attach UTF8Marshaler to owned forward-call strings.
             var parameters = method.ParameterList.WithParameters(SyntaxFactory.SeparatedList(
-                method.ParameterList.Parameters.Select(p => p.WithDefault(null))));
-            var declaration = $"/// <summary>Calls the native export {entryPoint.Trim('"')} with the shared declaration's ABI.</summary>\n[UnmanagedFunctionPointer({convention}{pointerOptions})] {returnAttributes} private delegate {method.ReturnType} {suffix}Delegate{parameters};";
+                method.ParameterList.Parameters.Select(p =>
+                {
+                    var stripped = p.WithDefault(null);
+                    return IsStringType(stripped.Type) ? stripped.AddAttributeLists(utf8Attribute) : stripped;
+                })));
+            var declaration = $"[UnmanagedFunctionPointer(CallingConvention.Cdecl{pointerOptions}), System.Security.SuppressUnmanagedCodeSecurity] {returnAttributes} private delegate {method.ReturnType} {suffix}Delegate{parameters};";
             members.Add(SyntaxFactory.ParseMemberDeclaration(declaration)!);
             // Lazy caches avoid loading HDF5 before Configure or dont_atexit can run.
             members.Add(CreateCache(suffix + "Cache", suffix + "Delegate", library, entryPoint));
@@ -214,13 +273,14 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             // Default values belong on the public API; ref/out/in modifiers must also survive forwarding.
             var actuals = string.Join(", ", method.ParameterList.Parameters.Select(p =>
                 string.Join(" ", p.Modifiers.Where(m => m.IsKind(SyntaxKind.RefKeyword) || m.IsKind(SyntaxKind.OutKeyword) || m.IsKind(SyntaxKind.InKeyword)).Select(m => m.Text).Append(p.Identifier.Text))));
-            var lists = method.AttributeLists.Select(list => list.WithAttributes(SyntaxFactory.SeparatedList(list.Attributes.Where(a => a != import))))
+            var callConvAttr = callConvs[0];
+            var lists = method.AttributeLists.Select(list => list.WithAttributes(SyntaxFactory.SeparatedList(list.Attributes.Where(a => a != import && a != callConvAttr))))
                 .Where(list => list.Attributes.Count != 0);
             var body = SyntaxFactory.ArrowExpressionClause(SyntaxFactory.ParseExpression($"{suffix}Cache.Function({actuals})"));
             var implementation = method.WithAttributeLists(SyntaxFactory.List(lists))
-                .WithModifiers(SyntaxFactory.TokenList(method.Modifiers.Where(m => !m.IsKind(SyntaxKind.ExternKeyword))))
+                .WithModifiers(SyntaxFactory.TokenList(method.Modifiers.Where(m => !m.IsKind(SyntaxKind.PartialKeyword))))
                 .WithExpressionBody(body).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-            // Keep export metadata available to validation even though DllImport itself is removed.
+            // Keep export metadata available to validation even though LibraryImport itself is removed.
             implementation = implementation.AddAttributeLists(SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(
                 SyntaxFactory.Attribute(SyntaxFactory.ParseName("LegacyImport"), SyntaxFactory.ParseAttributeArgumentList($"({library}, {entryPoint})")))));
             var config = method.ParameterList.Parameters.SingleOrDefault(p => p.Type!.ToString() == "H5AC.cache_config_t");
