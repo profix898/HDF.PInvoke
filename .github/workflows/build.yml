@@ -150,7 +150,7 @@ jobs:
     needs: collect-native
     name: Package consumer ${{ matrix.rid }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -167,6 +167,9 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
+      - name: Install Linux NativeAOT linker dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
       - uses: actions/download-artifact@v8
         with:
           name: nuget-packages-candidate
@@ -176,13 +179,15 @@ jobs:
         run: |
           ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net8.0
           ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net10.0
+          ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net8.0 -Aot
+          ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net10.0 -Aot
           ./Build/testPack.ps1 -Rid ${{ matrix.rid }} -Framework net10.0 -Legacy
           if ('${{ matrix.rid }}' -eq 'win-x64') { ./Build/testPack.ps1 -Rid win-x64 -Framework net472 }
   package-consumer-musl:
     needs: collect-native
     name: Package consumer ${{ matrix.rid }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:

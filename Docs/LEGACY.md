@@ -23,9 +23,9 @@ Use an SDK-style project with PackageReference. The validated Windows configurat
 dotnet publish -c Release -r win-x64
 ```
 
-Configure a package source containing the built package. Install the Microsoft Visual C++ v14 Redistributable for x64, as described in [README.md](../README.md#supported-platforms). Deploy the entire publish directory, including both native DLLs. A successful reference to a .NET Standard assembly does not by itself deploy its native dependencies.
+Install the Microsoft Visual C++ v14 Redistributable for x64, as described in [README.md](../README.md#supported-platforms). Deploy the entire publish directory, including both native DLLs. A successful reference to a .NET Standard assembly does not by itself deploy its native dependencies.
 
-Older Framework versions, packages.config and Unity are outside the validated configurations. Standalone Mono validation is described below. NativeAOT, trimming, IL2CPP and single-file deployment are not supported configurations. The native package has no 32-bit or mobile assets.
+Older Framework versions, packages.config and Unity are outside the validated configurations. Standalone Mono validation is described below. NativeAOT, trimming and single-file deployment are supported on .NET 8+ through the modern `net8.0` asset; IL2CPP and legacy AOT runtimes against the `netstandard2.0` asset are not supported configurations. The native package has no 32-bit or mobile assets.
 
 ## Native library selection
 
@@ -138,15 +138,15 @@ The loader lock makes configuration and first loading consistent. It does not ma
 
 ### C long and Windows structure layouts
 
-The legacy assembly exposes [CLong](../Sources/HDF.PInvoke/Interop/Legacy/CLong.cs) and [CULong](../Sources/HDF.PInvoke/Interop/Legacy/CULong.cs) in the `HDF.PInvoke` namespace. The modern assembly uses the runtime's equivalents. These legacy types are compatibility representations for the structures used here, not a general replacement for platform-sized C integers in arbitrary P/Invoke declarations.
+The legacy assembly exposes [CLong](../Sources/HDF.PInvoke/Interop/Legacy/CLong.cs) and [CULong](../Sources/HDF.PInvoke/Interop/Legacy/CULong.cs) in the `System.Runtime.InteropServices` namespace with the exact constructor, `IntPtr`/`UIntPtr` `Value` property and `IEquatable<T>` signatures of .NET 8, while the modern `net8.0` assembly forwards both types via `[TypeForwardedTo]` to the runtime's built-in definitions. This allows `.NET Standard 2.0` libraries referencing `HDF.PInvoke` to load cleanly on `.NET 8+` without type mismatches, while remaining compatible with `.NET Framework 4.7.2+` and standalone Mono. These legacy polyfills are compatibility representations for the structures used here, not a general runtime intrinsic for arbitrary P/Invoke declarations on legacy runtimes.
 
-`CLong` stores a managed 64-bit value. Passing the public metadata-cache structure directly on Windows would therefore give native code incorrect field offsets after its 32-bit `long` field. The generator creates `H5AC.WindowsCacheConfig` with the native Windows field widths and fixed trace-file-name buffer, plus conversion methods. The generated `H5F.get_mdc_config` and `H5F.set_mdc_config` forwarders select this bridge on Windows; Unix calls use the shared structure directly.
+On 64-bit legacy runtimes, `CLong` stores a pointer-sized (`IntPtr`) 8-byte value while validating the 32-bit C `long` range on Windows. Passing the public metadata-cache structure directly on legacy Windows would therefore give native code incorrect field offsets after its 32-bit `long` field. The generator creates `H5AC.WindowsCacheConfig` with the native Windows field widths and fixed trace-file-name buffer, plus conversion methods. The generated `H5F.get_mdc_config`, `H5F.set_mdc_config`, `H5P.get_mdc_config` and `H5P.set_mdc_config` forwarders select this bridge on Windows; Unix calls and modern `.NET 8+` calls use the shared structure directly.
 
 The getter initializes only the version field expected as input. It copies the native result back only after success, so unrelated incoming values cannot cause narrowing failures and a native error does not overwrite the caller's structure. The setter converts the full input, including a checked conversion of `epoch_length` to 32 bits. An out-of-range value fails instead of silently truncating.
 
 `CULong` serves the unsigned-long field in the padded object-info layout. Its accessor masks the stored value to 32 bits on Windows, excluding adjacent padding that is not part of the native field's value. This relies on the specific enclosing layout, which the ABI probe checks; it should not be extrapolated to every native unsigned-long field.
 
-Use the supplied typed API methods for these conversions. In particular, the raw `IntPtr` overloads of `H5P.get_mdc_config` and `H5P.set_mdc_config` still require a correctly laid-out native buffer. Manually marshalling the public legacy `cache_config_t` on Windows bypasses the bridge and is incorrect.
+Use the supplied typed `H5F` and `H5P` methods for metadata-cache configurations; manually marshalling the public legacy `cache_config_t` on Windows bypasses `WindowsCacheConfig` and produces the wrong field offsets.
 
 ### UTF-8 strings and memory ownership
 
@@ -168,19 +168,19 @@ Raw byte-array string parameters must include their own terminating zero byte. U
 
 ### Error callbacks containing string fields
 
-A custom parameter marshaler does not solve nested string fields in a native structure on older runtimes. [LegacyErrorWalk](../Sources/HDF.PInvoke/Interop/Legacy/LegacyErrorWalk.cs) therefore handles `H5E.walk` through a native-layout `ErrorInfo` structure whose string fields are `IntPtr` values. During the native callback, it reads that structure, decodes its borrowed UTF-8 strings, constructs the public `H5E.error_t` view and invokes the user's callback.
+Nested string fields in a native callback structure require explicit pointer-layout marshalling for both older runtimes and modern NativeAOT. The shared [ErrorWalk](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs) bridge therefore handles `H5E.walk` on both targets through a blittable `ErrorInfo` structure whose string fields are `IntPtr` values. During the native callback (`[UnmanagedCallersOnly]` on modern .NET and a pinned Cdecl delegate with `UTF8Marshaler` on `.NET Standard 2.0`), it reads that structure, decodes its borrowed UTF-8 strings, constructs the public `H5E.error_t` view and invokes the user's callback.
 
-The bridge keeps its delegate alive until the walk returns. It catches managed exceptions inside the callback, returns a negative native status, then rethrows the captured exception with `ExceptionDispatchInfo` after native control has returned. This exception-handling behavior belongs to this bridge; callers must not assume every callback API provides it.
+The bridge keeps its callback state alive until the walk returns. It catches managed exceptions inside the callback, returns a negative native status, then rethrows the captured exception with `ExceptionDispatchInfo` after native control has returned. `H5D.iterate` uses the same target-split bridge pattern to marshal borrowed coordinate arrays without runtime `SizeParamIndex` reverse-P/Invoke stubs. This exception-handling behavior belongs to these bridges; callers must not assume every callback API provides it.
 
-For the known public `error_t` and `class_t` string fields, generated metadata retains the numeric UTF-8 marshalling value `(UnmanagedType)48`. This preserves the declaration without requiring that enum member in the old reference surface. It does not add runtime marshalling support: actual native calls use the explicit pointer-layout bridges. Other UTF-8 structure fields are rejected until their native path is handled explicitly.
+Public structures with `string` or delegate fields never rely on runtime struct marshalling; the generator rejects any `[MarshalAs(UnmanagedType.LPUTF8Str)]` annotation on a structure field unless replaced with an explicit pointer-layout bridge.
 
 ### Registrations that outlive a call
 
-HDF5 copies a user-defined link registration but retains its comment and callback pointers. Ordinary call-scoped string marshalling and a temporary delegate reference are insufficient: after the call, native code could dereference freed memory or invoke a collected delegate.
+HDF5 copies user-defined link (`H5L.register`) and filter (`H5Z.register`) registrations by value, retaining their UTF-8 comment/name and callback pointers. Ordinary call-scoped string marshalling and a temporary delegate reference are insufficient: after the call, native code could dereference freed memory or invoke a collected delegate.
 
-The shared [LinkClassRegistry](../Sources/HDF.PInvoke/HDF5/LinkClassRegistry.cs), used by both targets, owns a native UTF-8 comment buffer and keeps strong references to the registered delegates. Its fixed-size registration table follows HDF5's bounded link-type IDs and reserves storage before native code can retain a pointer. Successful replacement or unregistration releases the old registration; a failed registration releases only the new temporary allocation. Successful explicit `H5.close()` releases the retained registrations after native shutdown has completed.
+The shared [LinkClassRegistry](../Sources/HDF.PInvoke/HDF5/LinkClassRegistry.cs) and [FilterClassRegistry](../Sources/HDF.PInvoke/HDF5/FilterClassRegistry.cs), used by both targets, pass blittable `IntPtr`-based `ClassInfo` layouts to native HDF5 while owning native UTF-8 string copies and keeping strong references to the registered delegates. Storage is reserved before native code can retain a pointer. Successful replacement or unregistration releases the old registration; a failed registration releases only the new temporary allocation. Successful explicit `H5.close()` releases the retained link and filter registrations after native shutdown has completed.
 
-This is targeted ownership handling for user-defined links. For other callback APIs, retain delegates and associated state for the full lifetime specified by the native API. Serializing loader initialization or storing a function delegate does not automatically retain every user callback passed through it.
+This is targeted ownership handling for user-defined links and filters. For other callback APIs (including `H5P.set_file_image_callbacks`), retain delegates and associated state for the full lifetime specified by the native API. Serializing loader initialization or storing a function delegate does not automatically retain every user callback passed through it.
 
 ## Implementation map and maintenance
 
@@ -190,9 +190,10 @@ This is targeted ownership handling for user-defined links. For other callback A
 | [LegacyBindingGenerator.cs](../Tools/BindingGenerator/LegacyBindingGenerator.cs) | Integrate incremental inputs, generated sources, cancellation and source diagnostics with Roslyn |
 | [LegacyBindings.cs](../Tools/BindingGenerator/LegacyBindings.cs) | Rewrite imports, create delegate caches and generate the Windows cache-configuration bridge |
 | [BindingSource.cs](../Tools/BindingGenerator/BindingSource.cs) | Validate syntax and rewrite UTF-8 attributes with explicit ownership rules |
-| [Interop/Legacy](../Sources/HDF.PInvoke/Interop/Legacy) | Load native handles and provide compatibility types, UTF-8 marshalling and the error-walk bridge |
+| [Interop/Legacy](../Sources/HDF.PInvoke/Interop/Legacy) | Load native handles and provide `CLong`/`CULong` polyfills and UTF-8 marshalling |
+| [ErrorWalk.cs](../Sources/HDF.PInvoke/HDF5/ErrorWalk.cs) | Bridge borrowed UTF-8 error records across native stack frames on both targets |
 | [H5DLLImporter.cs](../Sources/HDF.PInvoke/HDF5/H5DLLImporter.cs) | Resolve exported native globals through the selected core handle |
-| [LinkClassRegistry.cs](../Sources/HDF.PInvoke/HDF5/LinkClassRegistry.cs) | Retain native registration memory and managed callback roots |
+| [LinkClassRegistry.cs](../Sources/HDF.PInvoke/HDF5/LinkClassRegistry.cs) / [FilterClassRegistry.cs](../Sources/HDF.PInvoke/HDF5/FilterClassRegistry.cs) | Retain native registration memory and managed callback roots |
 
 Add or correct ordinary signatures in the shared `HDF5` sources. If a declaration introduces new marshalling semantics, update the generator or add a narrowly scoped bridge, and add a regression that exercises the actual native call. Avoid maintaining a second hand-written list of imports. Inspect generated output when debugging, but verify both targets after changing a shared declaration.
 

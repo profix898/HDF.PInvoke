@@ -12,6 +12,8 @@
     <Description>.NET 8 and .NET Standard 2.0 bindings for HDF5 2.2, with native libraries for Windows and Linux x64/ARM64 and macOS ARM64.</Description>
     <Authors>The HDF Group;HDF.PInvoke contributors</Authors>
     <IsPackable>true</IsPackable>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1570;CS1572;CS1573;CS1574;CS1591</WarningsAsErrors>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -20,8 +22,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ExcludedNativeRid Include="win-x64;win-arm64;linux-x64;linux-arm64;linux-musl-x64;linux-musl-arm64;osx-arm64" Exclude="$([MSBuild]::Unescape('$(RequiredNativeRids)'))" />
-    <NativeRuntime Include="../../Build/Native/runtimes/**/*" Exclude="../../Build/Native/runtimes/LICENSE.txt;../../Build/Native/runtimes/**/Licenses/**;@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
+    <NativeRuntime Include="../../Build/Native/runtimes/**/*" Exclude="../../Build/Native/runtimes/LICENSE.txt;../../Build/Native/runtimes/**/Licenses/**;../../Build/Native/runtimes/**/build-info.json;@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
+    <NativeManifest Include="../../Build/Native/runtimes/**/build-info.json" Exclude="@(ExcludedNativeRid->'../../Build/Native/runtimes/%(Identity)/**/*')" />
     <None Include="@(NativeRuntime)" Link="runtimes/%(RecursiveDir)%(Filename)%(Extension)" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="@(NativeManifest)" Pack="true" PackagePath="manifests/$([System.String]::Copy('%(RecursiveDir)').Replace('\', '/').Replace('/native/', ''))/%(Filename)%(Extension)" Visible="false" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
     <None Include="../../LICENSE.txt" Pack="true" PackagePath="/" />
   </ItemGroup>
@@ -33,7 +37,7 @@
   </Target>
   <!-- NuGet's timestamp check otherwise misses changes to the selected RID/file set. -->
   <Target Name="TrackNativePackageInputs" BeforeTargets="_CalculateInputsOutputsForPack">
-    <WriteLinesToFile File="$(IntermediateOutputPath)native-pack-inputs.txt" Lines="$([MSBuild]::Unescape('$(RequiredNativeRids)'));@(NativeRuntime)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)native-pack-inputs.txt" Lines="$([MSBuild]::Unescape('$(RequiredNativeRids)'));@(NativeRuntime);@(NativeManifest)" Overwrite="true" WriteOnlyWhenDifferent="true" />
     <ItemGroup>
       <NuGetPackInput Include="$(IntermediateOutputPath)native-pack-inputs.txt" />
     </ItemGroup>

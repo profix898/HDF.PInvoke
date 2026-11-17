@@ -340,7 +340,6 @@ namespace HDF.PInvoke
             /// <summary>
             /// Comment for debugging
             /// </summary>
-            [MarshalAs(UnmanagedType.LPUTF8Str)]
             public string comment;
 
             /// <summary>

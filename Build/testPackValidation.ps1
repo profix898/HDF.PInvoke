@@ -18,13 +18,14 @@ $work = Join-Path ([IO.Path]::GetTempPath()) "hdf-package-tests-$([Guid]::NewGui
 $null = New-Item -ItemType Directory $work
 try {
     $prefix = "runtimes/$($RequiredRids[0])/native/"
-    $cases = @('missing-managed', 'missing-legacy', 'missing-library', 'missing-license', 'corrupt-license', 'duplicate-runtime-license', 'extra-documentation', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'wrong-pin', 'unverified-suite', 'extra-managed', 'corrupt-api-docs', 'corrupt-readme', 'wrong-frameworks', 'wrong-license-metadata')
+    $manifestPath = "manifests/$($RequiredRids[0])/build-info.json"
+    $cases = @('missing-managed', 'missing-legacy', 'missing-library', 'missing-manifest', 'missing-license', 'corrupt-license', 'duplicate-runtime-license', 'extra-documentation', 'corrupt-library', 'extra-rid', 'extra-runtime-file', 'extra-manifest', 'wrong-pin', 'unverified-suite', 'extra-managed', 'corrupt-api-docs', 'corrupt-readme', 'wrong-frameworks', 'wrong-license-metadata')
     foreach ($case in $cases) {
         $copy = Join-Path $work "$case.nupkg"
         Copy-Item $Package $copy
         $zip = [IO.Compression.ZipFile]::Open($copy, [IO.Compression.ZipArchiveMode]::Update)
         try {
-            $manifestEntry = $zip.GetEntry("${prefix}build-info.json")
+            $manifestEntry = $zip.GetEntry($manifestPath)
             $reader = [IO.StreamReader]::new($manifestEntry.Open())
             try { $manifest = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
             $library = $prefix + $manifest.files[0].name
@@ -37,6 +38,7 @@ try {
                 'missing-managed' { 'lib/net8.0/HDF.PInvoke.dll' }
                 'missing-legacy' { 'lib/netstandard2.0/HDF.PInvoke.dll' }
                 'missing-library' { $library }
+                'missing-manifest' { $manifestPath }
                 'missing-license' { 'LICENSE.txt' }
                 'corrupt-license' { 'LICENSE.txt' }
                 'duplicate-runtime-license' { "${prefix}Licenses/zlib.txt" }
@@ -44,7 +46,8 @@ try {
                 'corrupt-library' { $library }
                 'extra-rid' { 'runtimes/unexpected/native/fake.so' }
                 'extra-runtime-file' { "${prefix}unverified.so" }
-                default { "${prefix}build-info.json" }
+                'extra-manifest' { "manifests/$($RequiredRids[0])/extra.json" }
+                default { $manifestPath }
             }
             $entry = $zip.GetEntry($target)
             $original = ''

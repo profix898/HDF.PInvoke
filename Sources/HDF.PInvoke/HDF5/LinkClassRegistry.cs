@@ -11,7 +11,7 @@ namespace HDF.PInvoke
     internal static class LinkClassRegistry
     {
         /// <summary>
-        /// Matches the native link-class layout with an explicitly owned comment pointer.
+        /// Matches the native link-class layout with explicitly owned comment and callback pointers.
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct ClassInfo
@@ -32,34 +32,50 @@ namespace HDF.PInvoke
             internal IntPtr comment;
 
             /// <summary>
-            /// Retains the callback invoked when a link is created.
+            /// Points to the callback invoked when a link is created.
             /// </summary>
-            internal H5L.create_func_t create_func;
+            internal IntPtr create_func;
 
             /// <summary>
-            /// Retains the callback invoked when a link is moved.
+            /// Points to the callback invoked when a link is moved.
             /// </summary>
-            internal H5L.move_func_t move_func;
+            internal IntPtr move_func;
 
             /// <summary>
-            /// Retains the callback invoked when a link is copied.
+            /// Points to the callback invoked when a link is copied.
             /// </summary>
-            internal H5L.copy_func_t copy_func;
+            internal IntPtr copy_func;
 
             /// <summary>
-            /// Retains the callback invoked when a link is followed.
+            /// Points to the callback invoked when a link is followed.
             /// </summary>
-            internal H5L.traverse_func_t trav_func;
+            internal IntPtr trav_func;
 
             /// <summary>
-            /// Retains the callback invoked when a link is deleted.
+            /// Points to the callback invoked when a link is deleted.
             /// </summary>
-            internal H5L.delete_func_t del_func;
+            internal IntPtr del_func;
 
             /// <summary>
-            /// Retains the callback invoked to query a link's value.
+            /// Points to the callback invoked to query a link's value.
             /// </summary>
-            internal H5L.query_func_t query_func;
+            internal IntPtr query_func;
+        }
+
+        /// <summary>
+        /// Pairs a native UTF-8 description buffer with the managed delegates rooted for its registration.
+        /// </summary>
+        private struct Registration
+        {
+            /// <summary>
+            /// Points to the owned NUL-terminated UTF-8 comment buffer.
+            /// </summary>
+            internal IntPtr Comment;
+
+            /// <summary>
+            /// Retains managed callback delegates while HDF5 holds their function pointers.
+            /// </summary>
+            internal H5L.class_t Callbacks;
         }
 
         /// <summary>
@@ -78,19 +94,19 @@ namespace HDF.PInvoke
         /// <summary>
         /// Roots each successful registration by link-type identifier without allocating after the native call.
         /// </summary>
-        private static readonly ClassInfo[] Registrations = new ClassInfo[(int)H5L.type_t.MAX + 1];
+        private static readonly Registration[] Registrations = new Registration[(int)H5L.type_t.MAX + 1];
 
         /// <summary>
-        /// Allocates a NUL-terminated UTF-8 description whose lifetime belongs to the registration.
+        /// Allocates a NUL-terminated UTF-8 string buffer whose lifetime belongs to a native registration.
         /// </summary>
-        private static IntPtr AllocateComment(string comment)
+        internal static IntPtr AllocateUtf8(string text)
         {
-            if (comment == null)
+            if (text == null)
             {
                 return IntPtr.Zero;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(comment + "\0");
+            var bytes = Encoding.UTF8.GetBytes(text + "\0");
             var pointer = Marshal.AllocHGlobal(bytes.Length);
 
             try
@@ -114,13 +130,13 @@ namespace HDF.PInvoke
             {
                 version = source.version,
                 id = source.id,
-                comment = AllocateComment(source.comment),
-                create_func = source.create_func,
-                move_func = source.move_func,
-                copy_func = source.copy_func,
-                trav_func = source.trav_func,
-                del_func = source.del_func,
-                query_func = source.query_func
+                comment = AllocateUtf8(source.comment),
+                create_func = source.create_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.create_func_t>(source.create_func),
+                move_func = source.move_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.move_func_t>(source.move_func),
+                copy_func = source.copy_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.copy_func_t>(source.copy_func),
+                trav_func = source.trav_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.traverse_func_t>(source.trav_func),
+                del_func = source.del_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.delete_func_t>(source.del_func),
+                query_func = source.query_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.query_func_t>(source.query_func)
             };
             var retained = false;
 
@@ -129,12 +145,13 @@ namespace HDF.PInvoke
                 lock (Registrations)
                 {
                     var status = RegisterNative(ref native);
+                    GC.KeepAlive(source);
 
                     if (status >= 0)
                     {
                         var index = (int)native.id;
-                        Marshal.FreeHGlobal(Registrations[index].comment);
-                        Registrations[index] = native;
+                        Marshal.FreeHGlobal(Registrations[index].Comment);
+                        Registrations[index] = new Registration { Comment = native.comment, Callbacks = source };
                         retained = true;
                     }
 
@@ -160,7 +177,7 @@ namespace HDF.PInvoke
                 // Native shutdown has finished invoking callbacks before their managed roots are released.
                 foreach (var registration in Registrations)
                 {
-                    Marshal.FreeHGlobal(registration.comment);
+                    Marshal.FreeHGlobal(registration.Comment);
                 }
 
                 Array.Clear(Registrations, 0, Registrations.Length);
@@ -179,7 +196,7 @@ namespace HDF.PInvoke
                 if (status >= 0)
                 {
                     var index = (int)id;
-                    Marshal.FreeHGlobal(Registrations[index].comment);
+                    Marshal.FreeHGlobal(Registrations[index].Comment);
                     Registrations[index] = default;
                 }
 

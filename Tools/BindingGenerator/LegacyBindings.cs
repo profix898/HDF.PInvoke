@@ -64,7 +64,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
     {
         var type = field.Declaration.Type;
 
-        if (type.ToString() == "CLong")
+        if (type.ToString() is "CLong" or "System.Runtime.InteropServices.CLong")
         {
             type = SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.IntKeyword)).WithTriviaFrom(type);
         }
@@ -95,7 +95,7 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                     // Fixed buffers require an element copy; scalar fields can use an object initializer.
                     var plainFields = fields.Where(f => !f.Modifiers.Any(SyntaxKind.FixedKeyword));
                     var toNative = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
-                        .Select(n => $"{n} = " + (n == "epoch_length" ? "checked((int)value.epoch_length.Value)" : $"value.{n}")));
+                        .Select(n => $"{n} = " + (n == "epoch_length" ? "checked((int)value.epoch_length.Value.ToInt64())" : $"value.{n}")));
                     var toManaged = string.Join(",", plainFields.SelectMany(f => f.Declaration.Variables).Select(v => v.Identifier.ValueText)
                         .Select(n => $"{n} = " + (n == "epoch_length" ? "new CLong(value.epoch_length)" : "value." + n)));
                     // Include the terminator slot declared by the native fixed-size filename buffer.
@@ -207,17 +207,9 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
             var parameters = method.ParameterList.WithParameters(SyntaxFactory.SeparatedList(
                 method.ParameterList.Parameters.Select(p => p.WithDefault(null))));
             var declaration = $"/// <summary>Calls the native export {entryPoint.Trim('"')} with the shared declaration's ABI.</summary>\n[UnmanagedFunctionPointer({convention}{pointerOptions})] {returnAttributes} private delegate {method.ReturnType} {suffix}Delegate{parameters};";
-
-            if (entryPoint != "\"H5Ewalk2\"")
-            {
-                members.Add(SyntaxFactory.ParseMemberDeclaration(declaration)!);
-            }
-
+            members.Add(SyntaxFactory.ParseMemberDeclaration(declaration)!);
             // Lazy caches avoid loading HDF5 before Configure or dont_atexit can run.
-            if (entryPoint != "\"H5Ewalk2\"")
-            {
-                members.Add(CreateCache(suffix + "Cache", suffix + "Delegate", library, entryPoint));
-            }
+            members.Add(CreateCache(suffix + "Cache", suffix + "Delegate", library, entryPoint));
 
             // Default values belong on the public API; ref/out/in modifiers must also survive forwarding.
             var actuals = string.Join(", ", method.ParameterList.Parameters.Select(p =>
@@ -242,18 +234,12 @@ sealed class LegacyBindings : CSharpSyntaxRewriter
                 var name = config.Identifier.Text;
                 var windowsArgs = actuals.Replace("ref " + name, "ref native");
                 // A getter consumes only version and must not overwrite caller state when native code fails.
-                var conversion = entryPoint == "\"H5Fget_mdc_config\"" ? $"new H5AC.WindowsCacheConfig {{ version = {name}.version }}" : $"H5AC.WindowsCacheConfig.FromManaged({name})";
-                var copyBack = entryPoint == "\"H5Fget_mdc_config\"" ? $"if (result >= 0) {name} = native.ToManaged();" : string.Empty;
+                var isGetter = entryPoint is "\"H5Fget_mdc_config\"" or "\"H5Pget_mdc_config\"";
+                var conversion = isGetter ? $"new H5AC.WindowsCacheConfig {{ version = {name}.version }}" : $"H5AC.WindowsCacheConfig.FromManaged({name})";
+                var copyBack = isGetter ? $"if (result >= 0) {name} = native.ToManaged();" : string.Empty;
                 var code = $"{{ if (!LegacyNativeLibrary.IsWindows) return {suffix}Cache.Function({actuals}); var native = {conversion}; var result = {suffix}WindowsCache.Function({windowsArgs}); {copyBack} return result; }}";
                 implementation = implementation.WithExpressionBody(null).WithSemicolonToken(default)
                     .WithBody((BlockSyntax)SyntaxFactory.ParseStatement(code));
-            }
-
-            // Error records contain borrowed strings that require the handwritten pointer-layout bridge.
-            if (entryPoint == "\"H5Ewalk2\"")
-            {
-                implementation = implementation.WithExpressionBody(SyntaxFactory.ArrowExpressionClause(
-                                                    SyntaxFactory.ParseExpression($"LegacyErrorWalk.Invoke({actuals})")));
             }
 
             // Removing an attribute list must not discard the method's XML docs or directives.

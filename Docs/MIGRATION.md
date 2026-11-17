@@ -18,8 +18,10 @@ HDF.PInvoke 2.2 is not a guaranteed source-compatible or binary-compatible repla
 | `H5I.free_t` | Add the `IntPtr request` argument required by the native callback. A zero address means synchronous execution with no output storage. Only write through a nonzero address using `Marshal.WriteIntPtr`; do not treat it as an unconditional `ref` parameter. |
 | `H5MM.free_t` | Return `void`, not `IntPtr`. |
 | `H5D.get_num_chunks` | The status result is `int`, not `long`; widening assignment still compiles, but matching delegate signatures must change. |
-| `H5AC.cache_config_t` | The trace filename is a fixed UTF-8 byte buffer, `epoch_length` is `CLong`, `dirty_bytes_threshold` is `IntPtr`, and native boolean fields are bytes. |
-| `H5O.info_t` | The file number is `CULong` and timestamps are signed `long`. Use the target's compatible C integer types when constructing or interpreting these fields. |
+| `H5P.get_mdc_config` / `H5P.set_mdc_config` | Pass `ref H5AC.cache_config_t` instead of a raw `IntPtr` buffer. |
+| `H5AC.cache_config_t` | The trace filename is a fixed UTF-8 byte buffer, `epoch_length` is `System.Runtime.InteropServices.CLong`, `dirty_bytes_threshold` is `IntPtr`, and native boolean fields are bytes. |
+| `H5O.info_t` | The file number is `System.Runtime.InteropServices.CULong` and timestamps are signed `long`. |
+| `H5Z.class_t` | `name` is a UTF-8 `string` instead of `byte*`, and `H5Z.CLASS_T_VERS` defines the structure version. |
 | Explicit native-loading setup | Old `bin32`/`bin64` path constants and `ResolvePathToExternalDependencies()` are removed from both targets. Normal package loading is automatic. Use `NativeDependencies.Configure(absoluteDirectory)` for a private installation before first use, and `H5.open()` when explicit initialization is needed. `NativePathSetting` remains an AppContext key rather than an app.config lookup. |
 
 The ABI corrections prevent incorrect memory access and make the same declarations work on Windows and Unix. Existing compatibility entry points remain where supported; the newly added token-aware object APIs and modern owning references do not require applications to replace their existing reference operations immediately.
@@ -34,6 +36,6 @@ The loader requires the supplied HDF5 2.2.x native libraries. Updating the manag
 
 ## Target and deployment requirements
 
-The package contains `net8.0` and `netstandard2.0` managed assets. Supported .NET Framework deployment uses .NET Framework 4.7.2 or later with the x64 native libraries. Other runtimes must support the selected managed asset, runtime marshalling and a packaged native architecture. Unity and AOT are not validated configurations.
+The package contains `net8.0` and `netstandard2.0` managed assets. Supported .NET Framework deployment uses .NET Framework 4.7.2 or later with the x64 native libraries. On .NET 8 and later, trimming, single-file deployment and NativeAOT (`PublishAot=true`) are supported and validated across all seven packaged runtime identifiers. Unity and IL2CPP are not validated configurations.
 
 See [README.md](../README.md) for the platform matrix and file-compatibility example, [LEGACY.md](LEGACY.md) for legacy deployment, and [API_COVERAGE.md](API_COVERAGE.md) for current and superseded native entry points.

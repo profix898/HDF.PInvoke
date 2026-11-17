@@ -63,9 +63,9 @@ public sealed class TransformationTests
         output = BindingSource.Generate(getter, out _);
         Require(!output.Contains("FromManaged(config)") && output.Contains("version = config.version") && output.Contains("if (result >= 0)"), "Preserve getter input and failure semantics");
 
-        var bridge = "class H5E { [DllImport(Constants.DLLFileName, EntryPoint = \"H5Ewalk2\", CallingConvention = CallingConvention.Cdecl)] public static extern int Walk(int value); }";
-        output = BindingSource.Generate(bridge, out _);
-        Require(output.Contains("LegacyErrorWalk.Invoke") && !output.Contains("Delegate("), "Avoid unused bridge delegates");
+        var faplGetter = "class H5P { [DllImport(Constants.DLLFileName, EntryPoint = \"H5Pget_mdc_config\", CallingConvention = CallingConvention.Cdecl)] public static extern int Get(long plist, ref H5AC.cache_config_t config); }";
+        output = BindingSource.Generate(faplGetter, out _);
+        Require(!output.Contains("FromManaged(config)") && output.Contains("version = config.version") && output.Contains("if (result >= 0)"), "Preserve FAPL getter input and failure semantics");
 
         // Read the generated declaration to check parameter attributes independently of text formatting.
         var method = CSharpSyntaxTree.ParseText(BindingSource.Generate("class H5 { " + declaration + " }", out _)).GetRoot()

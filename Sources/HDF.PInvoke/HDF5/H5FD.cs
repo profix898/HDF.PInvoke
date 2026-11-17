@@ -195,5 +195,47 @@ namespace HDF.PInvoke
             /// </summary>
             public IntPtr udata;
         }
+
+        /// <summary>
+        /// Matches the native <c>H5FD_file_image_callbacks_t</c> layout using blittable function pointers.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct NativeCallbacks
+        {
+            /// <summary>
+            /// Points to the callback used to allocate file-image buffers.
+            /// </summary>
+            internal IntPtr image_malloc;
+
+            /// <summary>
+            /// Points to the callback used to copy file-image buffers.
+            /// </summary>
+            internal IntPtr image_memcpy;
+
+            /// <summary>
+            /// Points to the callback used to resize file-image buffers.
+            /// </summary>
+            internal IntPtr image_realloc;
+
+            /// <summary>
+            /// Points to the callback used to release file-image buffers.
+            /// </summary>
+            internal IntPtr image_free;
+
+            /// <summary>
+            /// Points to the callback used to copy the user-data context.
+            /// </summary>
+            internal IntPtr udata_copy;
+
+            /// <summary>
+            /// Points to the callback used to release the user-data context.
+            /// </summary>
+            internal IntPtr udata_free;
+
+            /// <summary>
+            /// Holds the opaque user-data pointer passed to the file-image callbacks.
+            /// </summary>
+            internal IntPtr udata;
+        }
     }
 }

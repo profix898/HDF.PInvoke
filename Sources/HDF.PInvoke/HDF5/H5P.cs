@@ -957,18 +957,13 @@ namespace HDF.PInvoke
         public static extern herr_t get_fapl_core
             (hid_t fapl_id, ref size_t increment, ref hbool_t backing_store);
 
+#if NETSTANDARD2_0
         /// <summary>
-        /// Retrieves direct I/O driver settings.
-        /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetFaplDirect
+        /// Invokes the optional direct-I/O property getter when legacy delegate marshalling is active.
         /// </summary>
-        /// <param name="fapl_id">File access property list identifier</param>
-        /// <param name="alignment">Required memory alignment boundary</param>
-        /// <param name="block_size">File system block size</param>
-        /// <param name="cbuf_size">Copy buffer size</param>
-        /// <returns>Returns a non-negative value if successful; otherwise
-        /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t get_fapl_direct_delegate(hid_t fapl_id, ref size_t alignment, ref size_t block_size, ref size_t cbuf_size);
+#endif
 
         /// <summary>
         /// Gets the direct-I/O alignment settings from a file-access property list.
@@ -979,8 +974,19 @@ namespace HDF.PInvoke
         /// <param name="cbuf_size">The conversion buffer size in bytes.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         /// <exception cref="PlatformNotSupportedException">The loaded native library does not provide this driver.</exception>
-        public static herr_t get_fapl_direct(hid_t fapl_id, ref size_t alignment, ref size_t block_size, ref size_t cbuf_size) =>
-            NativeDependencies.GetOptionalFunction<get_fapl_direct_delegate>("H5Pget_fapl_direct")(fapl_id, ref alignment, ref block_size, ref cbuf_size);
+        public static herr_t get_fapl_direct(hid_t fapl_id, ref size_t alignment, ref size_t block_size, ref size_t cbuf_size)
+        {
+#if NETSTANDARD2_0
+            return NativeDependencies.GetOptionalFunction<get_fapl_direct_delegate>("H5Pget_fapl_direct")(fapl_id, ref alignment, ref block_size, ref cbuf_size);
+#else
+            var function = (delegate* unmanaged[Cdecl]<hid_t, size_t*, size_t*, size_t*, herr_t>)NativeDependencies.GetOptionalExport("H5Pget_fapl_direct");
+
+            fixed (size_t* alignmentPtr = &alignment, blockSizePtr = &block_size, cbufSizePtr = &cbuf_size)
+            {
+                return function(fapl_id, alignmentPtr, blockSizePtr, cbufSizePtr);
+            }
+#endif
+        }
 
         /// <summary>
         /// Returns file access property list information.
@@ -1045,12 +1051,39 @@ namespace HDF.PInvoke
         /// returns a negative value.</returns>
         /// <remarks>Struct fields must be initialized to <code>NULL</code>
         /// before the call is made.</remarks>
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t get_file_image_callbacks
+            (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr)
+        {
+            var native = default(H5FD.NativeCallbacks);
+            var result = get_file_image_callbacks_native(fapl_id, ref native);
+
+            if (result >= 0)
+            {
+                callbacks_ptr = new H5FD.file_image_callbacks_t
+                {
+                    image_malloc = native.image_malloc == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.image_malloc_t>(native.image_malloc),
+                    image_memcpy = native.image_memcpy == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.image_memcpy_t>(native.image_memcpy),
+                    image_realloc = native.image_realloc == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.image_realloc_t>(native.image_realloc),
+                    image_free = native.image_free == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.image_free_t>(native.image_free),
+                    udata_copy = native.udata_copy == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.udata_copy_t>(native.udata_copy),
+                    udata_free = native.udata_free == IntPtr.Zero ? null : Marshal.GetDelegateForFunctionPointer<H5FD.udata_free_t>(native.udata_free),
+                    udata = native.udata
+                };
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Invokes the native <c>H5Pget_file_image_callbacks</c> entry point using a blittable callback table.
+        /// </summary>
         [DllImport(Constants.DLLFileName,
             EntryPoint = "H5Pget_file_image_callbacks",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t get_file_image_callbacks
-            (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr);
+        private static extern herr_t get_file_image_callbacks_native
+            (hid_t fapl_id, ref H5FD.NativeCallbacks callbacks_ptr);
 
         /// <summary>
         /// Retrieves the file space management strategy and/or free-space
@@ -1381,17 +1414,16 @@ namespace HDF.PInvoke
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMdcConfig
         /// </summary>
         /// <param name="plist_id">Identifier of the file access property list.</param>
-        /// <param name="config_ptr">Pointer to the instance of
+        /// <param name="config_ptr">Reference to the instance of
         /// <code>H5AC.cache_config_t</code> in which the current metadata
         /// cache configuration is to be reported.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        /// <remarks>The pointer must use the native platform layout. On legacy Windows, the public cache_config_t contains a wider CLong representation and cannot be marshalled directly to this pointer.</remarks>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pget_mdc_config",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t get_mdc_config
-            (hid_t plist_id, IntPtr config_ptr);
+            (hid_t plist_id, ref H5AC.cache_config_t config_ptr);
 
         /// <summary>
         /// Retrieves the metadata cache image configuration values for a file
@@ -2726,18 +2758,13 @@ namespace HDF.PInvoke
         public static extern herr_t set_fapl_family
             (hid_t fapl_id, hsize_t memb_size, hid_t memb_fapl_id);
 
+#if NETSTANDARD2_0
         /// <summary>
-        /// Sets up use of the direct I/O driver.
-        /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplDirect
+        /// Invokes the optional direct-I/O property setter when legacy delegate marshalling is active.
         /// </summary>
-        /// <param name="fapl_id">File access property list identifier</param>
-        /// <param name="alignment">Required memory alignment boundary</param>
-        /// <param name="block_size">File system block size</param>
-        /// <param name="cbuf_size">Copy buffer size</param>
-        /// <returns>Returns a non-negative value if successful; otherwise
-        /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t set_fapl_direct_delegate(hid_t fapl_id, size_t alignment, size_t block_size, size_t cbuf_size);
+#endif
 
         /// <summary>
         /// Configures a file-access property list to use the optional direct-I/O driver.
@@ -2748,8 +2775,15 @@ namespace HDF.PInvoke
         /// <param name="cbuf_size">The conversion buffer size in bytes.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         /// <exception cref="PlatformNotSupportedException">The loaded native library does not provide this driver.</exception>
-        public static herr_t set_fapl_direct(hid_t fapl_id, size_t alignment, size_t block_size, size_t cbuf_size) =>
-            NativeDependencies.GetOptionalFunction<set_fapl_direct_delegate>("H5Pset_fapl_direct")(fapl_id, alignment, block_size, cbuf_size);
+        public static herr_t set_fapl_direct(hid_t fapl_id, size_t alignment, size_t block_size, size_t cbuf_size)
+        {
+#if NETSTANDARD2_0
+            return NativeDependencies.GetOptionalFunction<set_fapl_direct_delegate>("H5Pset_fapl_direct")(fapl_id, alignment, block_size, cbuf_size);
+#else
+            var function = (delegate* unmanaged[Cdecl]<hid_t, size_t, size_t, size_t, herr_t>)NativeDependencies.GetOptionalExport("H5Pset_fapl_direct");
+            return function(fapl_id, alignment, block_size, cbuf_size);
+#endif
+        }
 
         /// <summary>
         /// Sets up the logging virtual file driver (<code>H5FD_LOG</code>) for
@@ -2817,15 +2851,13 @@ namespace HDF.PInvoke
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_fapl_stdio(hid_t fapl_id);
 
+#if NETSTANDARD2_0
         /// <summary>
-        /// Sets the Windows I/O driver.
-        /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplWindows
+        /// Invokes the optional Windows file-driver setter when legacy delegate marshalling is active.
         /// </summary>
-        /// <param name="fapl_id">File access property list identifier</param>
-        /// <returns>Returns a non-negative value if successful; otherwise
-        /// returns a negative value.</returns>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate herr_t set_fapl_windows_delegate(hid_t fapl_id);
+#endif
 
         /// <summary>
         /// Configures a file-access property list to use the optional Windows file driver.
@@ -2833,8 +2865,15 @@ namespace HDF.PInvoke
         /// <param name="fapl_id">The file-access property-list identifier.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
         /// <exception cref="PlatformNotSupportedException">The loaded native library does not provide this driver.</exception>
-        public static herr_t set_fapl_windows(hid_t fapl_id) =>
-            NativeDependencies.GetOptionalFunction<set_fapl_windows_delegate>("H5Pset_fapl_windows")(fapl_id);
+        public static herr_t set_fapl_windows(hid_t fapl_id)
+        {
+#if NETSTANDARD2_0
+            return NativeDependencies.GetOptionalFunction<set_fapl_windows_delegate>("H5Pset_fapl_windows")(fapl_id);
+#else
+            var function = (delegate* unmanaged[Cdecl]<hid_t, herr_t>)NativeDependencies.GetOptionalExport("H5Pset_fapl_windows");
+            return function(fapl_id);
+#endif
+        }
 
         /// <summary>
         /// Sets the file close degree.
@@ -2876,12 +2915,35 @@ namespace HDF.PInvoke
         /// <code>H5FD.file_image_callbacks_t</code> structure.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
+        /// <remarks>Keep any supplied callback delegates alive for as long as the property list, its copies, or files opened with it may invoke them.</remarks>
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t set_file_image_callbacks
+            (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr)
+        {
+            var native = new H5FD.NativeCallbacks
+            {
+                image_malloc = callbacks_ptr.image_malloc == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.image_malloc_t>(callbacks_ptr.image_malloc),
+                image_memcpy = callbacks_ptr.image_memcpy == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.image_memcpy_t>(callbacks_ptr.image_memcpy),
+                image_realloc = callbacks_ptr.image_realloc == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.image_realloc_t>(callbacks_ptr.image_realloc),
+                image_free = callbacks_ptr.image_free == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.image_free_t>(callbacks_ptr.image_free),
+                udata_copy = callbacks_ptr.udata_copy == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.udata_copy_t>(callbacks_ptr.udata_copy),
+                udata_free = callbacks_ptr.udata_free == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5FD.udata_free_t>(callbacks_ptr.udata_free),
+                udata = callbacks_ptr.udata
+            };
+            var result = set_file_image_callbacks_native(fapl_id, ref native);
+            GC.KeepAlive(callbacks_ptr);
+            return result;
+        }
+
+        /// <summary>
+        /// Invokes the native <c>H5Pset_file_image_callbacks</c> entry point using a blittable callback table.
+        /// </summary>
         [DllImport(Constants.DLLFileName,
             EntryPoint = "H5Pset_file_image_callbacks",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t set_file_image_callbacks
-            (hid_t fapl_id, ref H5FD.file_image_callbacks_t callbacks_ptr);
+        private static extern herr_t set_file_image_callbacks_native
+            (hid_t fapl_id, ref H5FD.NativeCallbacks callbacks_ptr);
 
         /// <summary>
         /// Sets the file space management strategy and/or free-space section
@@ -3172,17 +3234,16 @@ namespace HDF.PInvoke
         /// See https://www.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetMdcConfig
         /// </summary>
         /// <param name="plist_id">Identifier of the file access property list.</param>
-        /// <param name="config_ptr">Pointer to the instance of
+        /// <param name="config_ptr">Reference to the instance of
         /// <code>H5AC.cache_config_t</code> containing the desired
         /// configuration.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        /// <remarks>The pointer must use the native platform layout. On legacy Windows, the public cache_config_t contains a wider CLong representation and cannot be marshalled directly to this pointer.</remarks>
         [DllImport(Constants.DLLFileName, EntryPoint = "H5Pset_mdc_config",
             CallingConvention = CallingConvention.Cdecl),
         SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
         public static extern herr_t set_mdc_config
-            (hid_t plist_id, IntPtr config_ptr);
+            (hid_t plist_id, ref H5AC.cache_config_t config_ptr);
 
         /// <summary>
         /// Sets the metadata cache image option for a file access property list.

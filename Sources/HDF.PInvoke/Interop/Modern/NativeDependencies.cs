@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: TypeForwardedTo(typeof(CLong))]
+[assembly: TypeForwardedTo(typeof(CULong))]
 
 namespace HDF.PInvoke
 {
@@ -211,8 +215,11 @@ namespace HDF.PInvoke
                         // This opt-out must precede even the version query, which initializes HDF5.
                         if (disableAutomaticShutdown)
                         {
-                            shutdownStatus = Marshal.GetDelegateForFunctionPointer<DisableAtExit>(
-                                                                                        NativeLibrary.GetExport(candidate, "H5dont_atexit"))();
+                            unsafe
+                            {
+                                var disableAtExit = (delegate* unmanaged[Cdecl]<int>)NativeLibrary.GetExport(candidate, "H5dont_atexit");
+                                shutdownStatus = disableAtExit();
+                            }
                         }
 
                         ValidateVersion(candidate);
@@ -247,6 +254,8 @@ namespace HDF.PInvoke
         /// <summary>
         /// Enumerates explicit and packaged native directories in deterministic precedence order.
         /// </summary>
+        [UnconditionalSuppressMessage("SingleFile", "IL3000:Avoid accessing Assembly file path when publishing as a single file",
+            Justification = "Empty Location in single-file and NativeAOT deployments falls back to AppContext.BaseDirectory and NativeLibrary.Load.")]
         private static IEnumerable<string> ProbeDirectories(string rid)
         {
             var assemblyDirectory = Path.GetDirectoryName(typeof(NativeDependencies).Assembly.Location);
@@ -270,16 +279,16 @@ namespace HDF.PInvoke
         }
 
         /// <summary>
-        /// Returns a typed delegate for an optional core export, throwing when the native build omits it.
+        /// Returns the exported address for an optional core function, throwing when the native build omits it.
         /// </summary>
-        internal static T GetOptionalFunction<T>(string symbol) where T : Delegate
+        internal static IntPtr GetOptionalExport(string symbol)
         {
             if (!NativeLibrary.TryGetExport(GetLibraryHandle(false), symbol, out var address))
             {
                 throw new PlatformNotSupportedException($"The loaded HDF5 build does not support {symbol} on {RuntimeIdentifier}.");
             }
 
-            return Marshal.GetDelegateForFunctionPointer<T>(address);
+            return address;
         }
 
         /// <summary>
@@ -314,25 +323,14 @@ namespace HDF.PInvoke
         }
 
         /// <summary>
-        /// Calls H5dont_atexit before any operation that initializes HDF5.
-        /// </summary>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int DisableAtExit();
-
-        /// <summary>
-        /// Reads the version components exported by the selected core library.
-        /// </summary>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int GetVersion(out uint major, out uint minor, out uint release);
-
-        /// <summary>
         /// Rejects native libraries outside the supported HDF5 2.2 ABI series.
         /// </summary>
-        private static void ValidateVersion(IntPtr handle)
+        private static unsafe void ValidateVersion(IntPtr handle)
         {
-            var getVersion = Marshal.GetDelegateForFunctionPointer<GetVersion>(NativeLibrary.GetExport(handle, "H5get_libversion"));
+            var getVersion = (delegate* unmanaged[Cdecl]<uint*, uint*, uint*, int>)NativeLibrary.GetExport(handle, "H5get_libversion");
+            uint major = 0, minor = 0, release = 0;
 
-            if (getVersion(out var major, out var minor, out var release) < 0 || major != 2 || minor != 2)
+            if (getVersion(&major, &minor, &release) < 0 || major != 2 || minor != 2)
             {
                 throw new NotSupportedException($"This binding requires HDF5 2.2.x; the loaded native library reports {major}.{minor}.{release}.");
             }

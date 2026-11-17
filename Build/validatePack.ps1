@@ -60,9 +60,12 @@ try {
     foreach ($name in $entries.Keys | Where-Object { $_ -match '^[^/]+\.md$' -and $_ -ne 'README.md' }) { throw "Unexpected package documentation: $name" }
     $actualRids = @($entries.Keys | Where-Object { $_.StartsWith('runtimes/') } | ForEach-Object { $_.Split('/')[1] } | Sort-Object -Unique)
     if (@(Compare-Object $RequiredRids $actualRids).Count -ne 0) { throw "Package runtime set differs: expected $RequiredRids; found $actualRids" }
+    $actualManifestRids = @($entries.Keys | Where-Object { $_.StartsWith('manifests/') } | ForEach-Object { $_.Split('/')[1] } | Sort-Object -Unique)
+    if (@(Compare-Object $RequiredRids $actualManifestRids).Count -ne 0) { throw "Package manifest set differs: expected $RequiredRids; found $actualManifestRids" }
     foreach ($rid in $RequiredRids) {
         $prefix = "runtimes/$rid/native/"
-        $manifest = ReadEntry "${prefix}build-info.json" | ConvertFrom-Json
+        $manifestPath = "manifests/$rid/build-info.json"
+        $manifest = ReadEntry $manifestPath | ConvertFrom-Json
         if ($manifest.rid -ne $rid -or $manifest.hdf5Version -ne $pins.Project.PropertyGroup.Hdf5Version -or
             $manifest.hdf5Revision -ne $pins.Project.PropertyGroup.Hdf5Revision -or $manifest.zlibRevision -ne $pins.Project.PropertyGroup.ZlibRevision) { throw "Wrong source pin: $rid" }
         if ($manifest.upstreamTests.passed -ne $true -or $manifest.upstreamTests.expressLevel -notin @(0, 1)) { throw "Unverified native suite: $rid" }
@@ -70,8 +73,7 @@ try {
         $libraries = if ($rid.StartsWith('win-')) { @('hdf5.dll', 'hdf5_hl.dll') }
         elseif ($rid.StartsWith('linux-')) { @('libhdf5.so', 'libhdf5_hl.so') }
         else { @('libhdf5.dylib', 'libhdf5_hl.dylib') }
-        $allowed = @("${prefix}build-info.json")
-        foreach ($name in $allowed) { $null = RequireEntry $name }
+        $allowed = @()
         foreach ($name in $libraries) { if ($name -notin $manifest.files.name) { throw "Required library absent from manifest: $rid/$name" } }
         $seen = @{}
         foreach ($file in $manifest.files) {
@@ -85,6 +87,9 @@ try {
         }
         foreach ($name in $entries.Keys | Where-Object { $_.StartsWith("runtimes/$rid/") }) {
             if ($name -notin $allowed) { throw "Unverified runtime entry: $name" }
+        }
+        foreach ($name in $entries.Keys | Where-Object { $_.StartsWith("manifests/$rid/") }) {
+            if ($name -ne $manifestPath) { throw "Unverified manifest entry: $name" }
         }
     }
     Write-Host "PASS: NuGet archive contains verified managed assets and exactly $($RequiredRids.Count) native runtimes"

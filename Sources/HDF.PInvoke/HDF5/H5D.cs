@@ -340,13 +340,11 @@ namespace HDF.PInvoke
         /// iterator to immediately return that positive value, indicating
         /// short-circuit success. A negative value causes the iterator to
         /// immediately return that value, indicating failure.</returns>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t operator_t
         (
         IntPtr elem,
         hid_t type_id,
         uint ndim,
-        [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)]
         hsize_t[] point,
         IntPtr op_data
         );
@@ -764,12 +762,117 @@ namespace HDF.PInvoke
         /// <returns>Returns the return value of the last operator if it was
         /// non-zero, or zero if all elements have been processed. Otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Diterate",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t iterate
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t iterate
             (IntPtr buf, hid_t type_id, hid_t space_id,
-            operator_t op, IntPtr op_data);
+            operator_t op, IntPtr op_data)
+        {
+            if (op == null)
+            {
+                return iterate_native(buf, type_id, space_id, IntPtr.Zero, op_data);
+            }
+
+#if NETSTANDARD2_0
+            System.Exception failure = null;
+            IterateNativeCallback bridge = (elem, elemType, ndim, point, state) =>
+            {
+                try
+                {
+                    var coordinates = new hsize_t[ndim];
+                    var source = (hsize_t*)point;
+
+                    for (uint i = 0; i < ndim; i++)
+                    {
+                        coordinates[i] = source[i];
+                    }
+
+                    return op(elem, elemType, ndim, coordinates, state);
+                }
+                catch (System.Exception error)
+                {
+                    failure = error;
+                    return -1;
+                }
+            };
+            var result = iterate_native(buf, type_id, space_id, Marshal.GetFunctionPointerForDelegate<IterateNativeCallback>(bridge), op_data);
+            GC.KeepAlive(bridge);
+
+            if (failure != null)
+            {
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(failure).Throw();
+            }
+
+            return result;
+#else
+            var context = new IterateState { Callback = op, OpData = op_data };
+            var handle = GCHandle.Alloc(context);
+            herr_t result;
+
+            try
+            {
+                var callbackPtr = (IntPtr)(delegate* unmanaged[Cdecl]<IntPtr, hid_t, uint, hsize_t*, IntPtr, herr_t>)&IterateCallback;
+                result = iterate_native(buf, type_id, space_id, callbackPtr, GCHandle.ToIntPtr(handle));
+            }
+            finally
+            {
+                handle.Free();
+            }
+
+            if (context.Failure != null)
+            {
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(context.Failure).Throw();
+            }
+
+            return result;
+#endif
+        }
+
+#if NETSTANDARD2_0
+        /// <summary>
+        /// Receives borrowed element coordinates as an unmanaged pointer during legacy dataset iteration.
+        /// </summary>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate herr_t IterateNativeCallback(IntPtr elem, hid_t type_id, uint ndim, IntPtr point, IntPtr op_data);
+#else
+        /// <summary>
+        /// Holds caller state for the static unmanaged dataset-iteration callback bridge.
+        /// </summary>
+        private sealed class IterateState
+        {
+            internal operator_t Callback;
+            internal IntPtr OpData;
+            internal System.Exception Failure;
+        }
+
+        /// <summary>
+        /// Marshals native coordinate arrays explicitly so dataset iteration works under NativeAOT without runtime SizeParamIndex marshalling.
+        /// </summary>
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+        private static herr_t IterateCallback(IntPtr elem, hid_t type_id, uint ndim, hsize_t* point, IntPtr contextPtr)
+        {
+            var context = (IterateState)GCHandle.FromIntPtr(contextPtr).Target;
+
+            try
+            {
+                var coordinates = ndim == 0 ? Array.Empty<hsize_t>() : new ReadOnlySpan<hsize_t>(point, checked((int)ndim)).ToArray();
+                return context.Callback(elem, type_id, ndim, coordinates, context.OpData);
+            }
+            catch (System.Exception error)
+            {
+                context.Failure = error;
+                return -1;
+            }
+        }
+#endif
+
+        /// <summary>
+        /// Invokes the native <c>H5Diterate</c> entry point with a pointer-sized callback address.
+        /// </summary>
+        [DllImport(Constants.DLLFileName, EntryPoint = "H5Diterate", CallingConvention = CallingConvention.Cdecl),
+        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        private static extern herr_t iterate_native
+            (IntPtr buf, hid_t type_id, hid_t space_id,
+            IntPtr op, IntPtr op_data);
 
         /// <summary>
         /// Opens an existing dataset.

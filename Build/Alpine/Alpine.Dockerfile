@@ -1,6 +1,6 @@
 # SDK version matches global.json's feature band; the tag fixes the Alpine baseline.
 FROM mcr.microsoft.com/dotnet/sdk:10.0.403-alpine3.24
-RUN apk add --no-cache build-base cmake ninja bash jq git
+RUN apk add --no-cache build-base clang zlib-dev cmake ninja bash jq git
 # .NET named mutexes require the executing UID to have a passwd entry.
 ARG BUILD_UID=1000
 ARG BUILD_GID=1000

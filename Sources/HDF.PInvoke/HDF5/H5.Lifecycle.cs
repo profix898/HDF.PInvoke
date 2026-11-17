@@ -23,6 +23,15 @@ namespace HDF.PInvoke
                 throw new ArgumentNullException(nameof(callback));
             }
 
+#if !NETSTANDARD2_0
+            if (typeof(H5).Assembly.IsCollectible ||
+                (callback.Target != null && callback.Target.GetType().Assembly.IsCollectible) ||
+                (System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported && callback.Method.IsCollectible))
+            {
+                throw new InvalidOperationException("H5.atclose callbacks cannot be registered from a collectible AssemblyLoadContext because native HDF5 cannot unregister them before unload.");
+            }
+#endif
+
             lock (CloseCallbacks)
             {
                 CloseCallbacks.Add(callback);

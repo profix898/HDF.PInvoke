@@ -76,10 +76,10 @@ namespace HDF.PInvoke
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return Marshal.PtrToStructure<info2_t>(pointer);
+                return *(info2_t*)pointer;
             }
 
-            var value = Marshal.PtrToStructure<WindowsInfo2>(pointer);
+            var value = *(WindowsInfo2*)pointer;
             return new info2_t { fileno = value.fileno, token = value.token, type = value.type, rc = value.rc, atime = value.atime, mtime = value.mtime, ctime = value.ctime, btime = value.btime, num_attrs = value.num_attrs };
         }
 

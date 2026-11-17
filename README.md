@@ -6,8 +6,6 @@
 
 Low-level C# bindings for HDF5, with native libraries included for supported desktop platforms. The 2.x wrapper targets **.NET 8+ and .NET Standard 2.0** and **native HDF5 2.2.x**.
 
-CI produces `2.2.0` package artifacts but does not publish them to NuGet.org. Configure a package feed containing the built package before using the installation command below.
-
 ## Quick start
 
 Create a .NET 8 or later application, then add the **HDF.PInvoke** package:
@@ -38,7 +36,7 @@ finally
 
 `ACC_TRUNC` replaces an existing file of the same name. Most HDF5 functions report failure through a negative return value; check results and close the resources you create. This package exposes the native API, rather than an object-oriented data model or automatic resource management.
 
-For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`. CI tests a net472 consumer on the installed .NET Framework 4.8 runtime. See [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) for legacy deployment and runtime compatibility. Standalone Mono 6.8 on Linux x64 is locally validated; see the legacy guide for the test procedure and scope. Unity and AOT runtimes are outside the validated configurations.
+On .NET 8 and later, trimming, single-file deployment and NativeAOT (`PublishAot=true`) are supported across all packaged runtime identifiers. For .NET Framework, use an SDK-style project with PackageReference, target .NET Framework 4.7.2 or later, select x64, and publish with `-r win-x64`; see [LEGACY.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/LEGACY.md) for .NET Framework and standalone Mono deployment. Unity and IL2CPP are not supported.
 
 ## Supported platforms
 
@@ -49,7 +47,7 @@ For .NET Framework, use an SDK-style project with PackageReference, target .NET 
 | Alpine Linux | `linux-musl-x64`, `linux-musl-arm64` | Alpine 3.24/musl build baseline |
 | macOS | `osx-arm64` | macOS 13 or later |
 
-macOS x64, 32-bit processes, iOS and Android are not supported by this package. Alpine/musl x64 and ARM64 are included in the default CI and package matrix. Alpine uses native-architecture containers rather than glibc compatibility packages.
+macOS x64, 32-bit processes, iOS and Android are not supported by this package.
 
 The native build includes the C core, high-level APIs and zlib/Deflate compression. **Calls must be serialized:** this build is not thread-safe. MPI and SZIP/libaec are not included. Close individual resources; avoid calling `H5.close()` while other code still uses the library.
 
@@ -59,7 +57,7 @@ The bundled core/high-level library is not thread-safe: serialize all HDF5 calls
 
 **Single-writer/multiple-reader (SWMR) is available in this build.** It coordinates one writer process and multiple reader processes accessing the same file. Create groups/datasets before starting SWMR writing, use 1.10-or-newer format bounds, call `H5F.start_swmr_write`, open readers with `H5F.ACC_SWMR_READ`, and use writer flushes/reader refreshes to publish and observe changes. SWMR has operation/datatype restrictions and requires appropriate filesystem write semantics. It does not make concurrent calls within one process safe. See the [upstream SWMR guide](https://portal.hdfgroup.org/documentation/hdf5/latest/_s_w_m_r_t_n.html).
 
-**zlib/Deflate is included**, statically linked into native HDF5. SZIP is a separate optional filter; its open-source implementation is libaec. SZIP/libaec is not currently bundled, so datasets compressed with that filter need a compatible build or filter implementation before their data can be read. See [HDF5 compression documentation](https://support.hdfgroup.org/documentation/hdf5/latest/_comp_t_s.html).
+**zlib/Deflate is included**, statically linked into native HDF5. SZIP is a separate optional filter; its open-source implementation is libaec. SZIP/libaec is not bundled, so datasets compressed with that filter need a compatible build or filter implementation before their data can be read. See [HDF5 compression documentation](https://support.hdfgroup.org/documentation/hdf5/latest/_comp_t_s.html).
 
 ## Versioning and file compatibility
 
@@ -100,7 +98,7 @@ Version 2.2 is not a guaranteed source-compatible replacement. See the [migratio
 - **Recompile consumers.** Version 2 is not a binary replacement for the 1.x assembly. The package provides net8.0 and netstandard2.0 assets; .NET Framework consumers use the latter.
 - **Use the supplied HDF5 2.2.x libraries.** The loader rejects other native release families. Old `bin32`/`bin64` deployments and app.config configuration are removed.
 - **Remove the old explicit loading call.** `NativeDependencies.ResolvePathToExternalDependencies()` is removed from both targets. Normal loading is automatic; use `Configure(path)` for a private native directory and `H5.open()` for explicit initialization.
-- **Review interop declarations in calling code.** Native booleans are `byte` (0 or 1), IDs are 64-bit, and platform-dependent C fields use `CLong`/`CULong`. Several structures, enums and callback signatures were corrected.
+- **Review interop declarations in calling code.** Native booleans are `byte` (0 or 1), IDs are 64-bit, and platform-dependent C fields use `System.Runtime.InteropServices.CLong`/`CULong`. Several structures, enums and callback signatures were corrected.
 - **Strings are UTF-8 across platforms.** Buffer lengths are byte counts. Raw `byte[]` name arguments remain C buffers and need a NUL terminator, such as `Encoding.UTF8.GetBytes(name + "\0")`. Keep callbacks alive for as long as native code may call them.
 - **Optional native features are checked.** Unavailable driver APIs throw `PlatformNotSupportedException`.
 - **Platform scope changed.** The seven runtime identifiers listed above are packaged by default. Current application APIs are catalogued in [API_COVERAGE.md](https://github.com/profix898/HDF.PInvoke/blob/master/Docs/API_COVERAGE.md); MPI, map operations and driver/connector-author interfaces are outside the packaged application surface.

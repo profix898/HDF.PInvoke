@@ -79,14 +79,24 @@ static class Program
                         typeName = "HDF.PInvoke.H5AC+WindowsCacheConfig";
                     }
 
-                    if (legacy && typeName == "HDF.PInvoke.H5E+error_t")
+                    if (typeName == "HDF.PInvoke.H5E+error_t")
                     {
-                        typeName = "HDF.PInvoke.LegacyErrorWalk+ErrorInfo";
+                        typeName = "HDF.PInvoke.ErrorWalk+ErrorInfo";
                     }
 
                     if (typeName == "HDF.PInvoke.H5L+class_t")
                     {
                         typeName = "HDF.PInvoke.LinkClassRegistry+ClassInfo";
+                    }
+
+                    if (typeName == "HDF.PInvoke.H5Z+class_t")
+                    {
+                        typeName = "HDF.PInvoke.FilterClassRegistry+ClassInfo";
+                    }
+
+                    if (typeName == "HDF.PInvoke.H5FD+file_image_callbacks_t")
+                    {
+                        typeName = "HDF.PInvoke.H5FD+NativeCallbacks";
                     }
 
                     var type = typeof(H5).Assembly.GetType(typeName, throwOnError: true);

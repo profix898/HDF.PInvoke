@@ -40,7 +40,13 @@ trap cleanup EXIT
 prop() { sed -n "s:.*<$1>\(.*\)</$1>.*:\1:p" "$2" | tr -d '\r'; }
 if [[ "$phase" == consumer ]]; then
     version=$(prop Version Sources/HDF.PInvoke/HDF.PInvoke.csproj)
+    # Container mount is fixed at /src, so no arbitrary XML path interpolation.
+    cat >"$work/NuGet.Config" <<'EOF'
+<configuration><packageSources><clear /><add key="local" value="/src/Build/Artifacts/packages" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources><packageSourceMapping><packageSource key="local"><package pattern="HDF.PInvoke" /></packageSource><packageSource key="nuget"><package pattern="*" /></packageSource></packageSourceMapping></configuration>
+EOF
     for variant in net8.0 net10.0 legacy; do
+        dir="$work/src-$variant"
+        mkdir -p "$dir"
         framework=$variant
         reference="<PackageReference Include=\"HDF.PInvoke\" Version=\"$version\" />"
         export HDF5_EXPECTED_BINDING=modern
@@ -51,7 +57,7 @@ if [[ "$phase" == consumer ]]; then
             export HDF5_EXPECTED_BINDING=legacy
             reference="<PackageReference Include=\"HDF.PInvoke\" Version=\"$version\" GeneratePathProperty=\"true\" ExcludeAssets=\"compile;runtime\" /><Reference Include=\"HDF.PInvoke\"><HintPath>\$(PkgHDF_PInvoke)/lib/netstandard2.0/HDF.PInvoke.dll</HintPath></Reference>"
         fi
-        cat >"$work/Consumer.csproj" <<EOF
+        cat >"$dir/Consumer.csproj" <<EOF
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblySearchPaths>{HintPathFromItem};{RawFileName}</AssemblySearchPaths>
@@ -63,18 +69,66 @@ if [[ "$phase" == consumer ]]; then
   <ItemGroup>$reference</ItemGroup>
 </Project>
 EOF
-        cp "$root"/Tests/HDF.PInvoke.Smoke/{Program.cs,LoaderScenarios.cs} "$work/"
-        # Container mount is fixed at /src, so no arbitrary XML path interpolation.
-        cat >"$work/NuGet.Config" <<'EOF'
-<configuration><packageSources><clear /><add key="local" value="/src/Build/Artifacts/packages" /><add key="nuget" value="https://api.nuget.org/v3/index.json" /></packageSources><packageSourceMapping><packageSource key="local"><package pattern="HDF.PInvoke" /></packageSource><packageSource key="nuget"><package pattern="*" /></packageSource></packageSourceMapping></configuration>
-EOF
-        cd "$work"
+        cp "$root"/Tests/HDF.PInvoke.Smoke/{Program.cs,LoaderScenarios.cs} "$dir/"
+        cp "$work/NuGet.Config" "$dir/NuGet.Config"
+        cd "$dir"
         dotnet restore Consumer.csproj -r "$rid" --packages "$work/packages"
         dotnet publish Consumer.csproj -c Release -r "$rid" --self-contained "$self_contained" --no-restore -o "$work/$variant"
+        if find "$work/$variant" -name 'build-info.json' | grep -q .; then
+            echo 'Package manifest leaked into publish output.' >&2
+            exit 1
+        fi
         chmod -R a-w "$work/$variant"
         cd /tmp
         for mode in --auto --recover-loader --registered-close --context --dont-atexit --late-dont-atexit --configure-first --concurrent-first; do
             dotnet "$work/$variant/Consumer.dll" "$mode"
+        done
+    done
+    unset HDF5_EXPECTED_BINDING
+    for framework in net8.0 net10.0; do
+        aot_dir="$work/src-aot-$framework"
+        aot_out="$work/aot-$framework"
+        mkdir -p "$aot_dir/BridgeLib"
+        cat >"$aot_dir/BridgeLib/BridgeLib.csproj" <<EOF
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup><PackageReference Include="HDF.PInvoke" Version="$version" /></ItemGroup>
+</Project>
+EOF
+        cp "$root/Tests/PackageConsumer/TransitiveBridge.cs" "$aot_dir/BridgeLib/TransitiveBridge.cs"
+        cat >"$aot_dir/Consumer.csproj" <<EOF
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$framework</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <PublishAot>true</PublishAot>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="BridgeLib/**/*.cs" />
+    <PackageReference Include="HDF.PInvoke" Version="$version" />
+    <ProjectReference Include="BridgeLib/BridgeLib.csproj" />
+  </ItemGroup>
+</Project>
+EOF
+        cp "$root/Tests/PackageConsumer/AotProgram.cs" "$aot_dir/Program.cs"
+        cp "$work/NuGet.Config" "$aot_dir/NuGet.Config"
+        cd "$aot_dir"
+        dotnet restore Consumer.csproj -r "$rid" --packages "$work/packages"
+        dotnet publish Consumer.csproj -c Release -r "$rid" --no-restore -o "$aot_out"
+        if find "$aot_out" -name 'build-info.json' | grep -q .; then
+            echo 'Package manifest leaked into NativeAOT publish output.' >&2
+            exit 1
+        fi
+        chmod -R a-w "$aot_out"
+        cd /tmp
+        "$aot_out/Consumer"
+        for mode in --dont-atexit --recover-loader --configure-first --missing-direct --registered-close; do
+            "$aot_out/Consumer" "$mode"
         done
     done
     exit 0

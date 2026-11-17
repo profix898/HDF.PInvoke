@@ -136,6 +136,11 @@ namespace HDF.PInvoke
         }
 
         /// <summary>
+        /// Current version of the <see cref="class_t"/> structure.
+        /// </summary>
+        public const int CLASS_T_VERS = 1;
+
+        /// <summary>
         /// Reports that the filter supports encoding data.
         /// </summary>
         public const uint CONFIG_ENCODE_ENABLED = 0x0001u;
@@ -247,9 +252,9 @@ namespace HDF.PInvoke
             public uint decoder_present;
 
             /// <summary>
-            /// Comment for debugging
+            /// Filter name for debugging and inspection, encoded as UTF-8 on registration.
             /// </summary>
-            public byte* name;
+            public string name;
 
             /// <summary>
             /// The "can apply" callback for a filter
@@ -302,10 +307,8 @@ namespace HDF.PInvoke
         /// containing filter-definition information.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zregister",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t register(ref class_t filter_class);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t register(ref class_t filter_class) => FilterClassRegistry.Register(ref filter_class);
 
         /// <summary>
         /// Unregisters a filter.
@@ -314,9 +317,7 @@ namespace HDF.PInvoke
         /// <param name="filter">Identifier of the filter to be unregistered.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Zunregister",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t unregister(filter_t filter);
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t unregister(filter_t filter) => FilterClassRegistry.Unregister(filter);
     }
 }

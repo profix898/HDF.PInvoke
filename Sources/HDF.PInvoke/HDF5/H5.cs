@@ -169,7 +169,7 @@ namespace HDF.PInvoke
         /// Returns a non-negative value if successful; otherwise returns a
         /// negative value.
         /// </returns>
-        /// <remarks>Also releases managed roots for user-defined link registrations after native shutdown succeeds. Coordinate shutdown with every user of HDF5 in the process.</remarks>
+        /// <remarks>Also releases managed roots for user-defined link and filter registrations after native shutdown succeeds. Coordinate shutdown with every user of HDF5 in the process.</remarks>
         public static herr_t close()
         {
             var status = CloseNative();
@@ -177,6 +177,7 @@ namespace HDF.PInvoke
             if (status >= 0)
             {
                 LinkClassRegistry.Clear();
+                FilterClassRegistry.Clear();
 
                 lock (CloseCallbacks)
                 {

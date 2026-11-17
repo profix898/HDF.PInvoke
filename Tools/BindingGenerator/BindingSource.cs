@@ -130,28 +130,17 @@ internal static class BindingSource
                 throw new BindingGenerationException("Unexpected UTF-8 marshalling options.", node.GetLocation());
             }
 
-            string replacement;
-
             if (node.Ancestors().OfType<FieldDeclarationSyntax>().Any())
             {
                 var structure = node.Ancestors().OfType<StructDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText;
-
-                if (structure is not ("error_t" or "class_t"))
-                {
-                    throw new BindingGenerationException($"UTF-8 field in {structure} needs an explicit native-layout bridge.", node.GetLocation());
-                }
-
-                // These public structures are descriptive; native calls use explicit pointer layouts.
-                replacement = "((UnmanagedType)48)";
+                throw new BindingGenerationException($"UTF-8 field in {structure} needs an explicit native-layout bridge.", node.GetLocation());
             }
-            else
-            {
-                var callback = node.Ancestors().OfType<DelegateDeclarationSyntax>().FirstOrDefault();
-                // Generated __Legacy delegates own input buffers; user callbacks borrow HDF5 memory.
-                var borrowed = callback != null && !callback.Identifier.ValueText.StartsWith("__Legacy", StringComparison.Ordinal);
-                replacement = "(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler)" +
-                    (borrowed ? ", MarshalCookie = \"borrowed\")" : ")");
-            }
+
+            var callback = node.Ancestors().OfType<DelegateDeclarationSyntax>().FirstOrDefault();
+            // Generated __Legacy delegates own input buffers; user callbacks borrow HDF5 memory.
+            var borrowed = callback != null && !callback.Identifier.ValueText.StartsWith("__Legacy", StringComparison.Ordinal);
+            var replacement = "(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler)" +
+                (borrowed ? ", MarshalCookie = \"borrowed\")" : ")");
 
             // Change only attribute syntax; documentation and string literals remain untouched.
             return node.WithArgumentList(SyntaxFactory.ParseAttributeArgumentList(replacement));

@@ -2,22 +2,13 @@
 
 ## 2.2.0
 
-- Corrected `H5I.free_t` to expose optional asynchronous-request output storage as `IntPtr`, so synchronous cleanup can safely pass a null address.
-- Removed `NativeDependencies.ResolvePathToExternalDependencies()` from both managed targets. Use automatic package loading, `Configure(path)` for private libraries, or `H5.open()` for explicit initialization.
-- Expanded HDF5 2.2 application API coverage with multi-dataset I/O, modern references/tokens, selection utilities, VOL discovery, event sets and high-level dataset, dimension-scale, packet-table, image and table operations.
-- Added cross-platform ABI probes and modern, .NET Standard, .NET Framework and Mono regression coverage for the new declarations and callback lifetimes.
-- Made generated legacy member names unique across partial binding classes while preserving deterministic source generation.
-- Added source-migration guidance and grouped API coverage, runtime integration and contributor documentation under Docs.
-- Package version is 2.2.0; assembly and file versions are 2.2.0.0. Native HDF5 is 2.2.0.
-- Managed targets are net8.0 and netstandard2.0, with separate build-selected modern and legacy loaders and shared binding declarations. Legacy validation includes net472 on .NET Framework 4.8 and Linux x64 Mono 6.8. Unity is not yet validated.
-- Unified native loading for function imports and exported globals, with process-RID assets and explicit private-directory configuration.
-- HDF5 2.2.x is required. Updated native boolean widths, C long fields, callbacks, enums and versioned entry points.
-- Windows/Linux x64 and ARM64 plus macOS ARM64.
-- Removed Paket, old native binaries and HDF5 1.8 conditional compilation.
-- Breaking interop corrections: `H5T.find` returns conversion data through `out IntPtr`; append/filter callbacks expose native arrays as `IntPtr`; external-link callbacks use UTF-8 strings; `H5MM.free_t` returns `void`; page-buffer statistics take five `uint[]` outputs of at least two elements; chunk-count status returns `int`.
-- Retained registered link comments and callbacks for their native lifetime, and preserved Windows legacy metadata-cache getter inputs on failure.
-- Corrected error-detection and identifier-type reference-count entry points, and allowed `H5.dont_atexit()` before initialization.
-- Added wrapper regressions, exact runtime selection, finished-archive validation, and core/high-level compressed data round-trips in clean package consumers. CI exposes the final NuGet artifact only after all seven consumers pass, including glibc and musl Linux.
+- Wrapped native HDF5 2.2.0 with statically linked zlib/Deflate across `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `linux-musl-x64`, `linux-musl-arm64` and `osx-arm64`; removed Paket, legacy `bin32`/`bin64` deployments, `app.config` probing and HDF5 1.8 conditional compilation.
+- Multi-targeted `net8.0` and `netstandard2.0` from shared declarations, supporting modern .NET (including trimming, single-file deployment and `PublishAot=true` NativeAOT), .NET Framework 4.7.2+ and standalone Mono.
+- Unified native loading across function imports and exported globals (`H5P`, `H5T`, `H5E`) with automatic RID probing, `NativeDependencies.Configure(path)` for private installations, and `H5.dont_atexit()` ordering before native initialization; removed `NativeDependencies.ResolvePathToExternalDependencies()`.
+- Expanded HDF5 2.2 application API coverage across multi-dataset and direct-chunk I/O, modern owning references, token-aware object/link APIs, advanced selection utilities, VOL connector discovery, event sets (`H5ES`) and asynchronous entry points, rooted `H5.atclose` callbacks, and the `H5DO`, `H5DS`, `H5IM`, `H5LD`, `H5LT`, `H5PL`, `H5PT` and `H5TB` high-level families.
+- Corrected ABI and marshalling contracts relative to 1.10.x: 1-byte `hbool_t` values, UTF-8 string marshalling, `System.Runtime.InteropServices.CLong`/`CULong` C integer fields (type-forwarded on `net8.0` and polyfilled in `netstandard2.0`), typed `ref H5AC.cache_config_t` parameters on `H5P.get_mdc_config`/`set_mdc_config`, managed `string` filter names on `H5Z.class_t`, `out IntPtr` on `H5T.find`, pointer-based `H5D.append_cb_t`/`H5Z.func_t`/`H5I.free_t` callbacks, `void`-returning `H5MM.free_t`, validated five-array `H5F.get_page_buffering_stats` outputs, and `int` status on `H5D.get_num_chunks`.
+- Added blittable bridges and lifetime management for callback and registration structures (`H5E.walk`, `H5D.iterate`, `H5L.register`/`unregister`, `H5Z.register`/`unregister` and `H5P.get/set_file_image_callbacks`), retaining registered link and filter strings and delegates until replacement, unregistration or `H5.close()`.
+- Added header-derived ABI layout probes, compiler-hosted legacy binding generation with diagnostics (`HDFGEN001`–`HDFGEN003`), package archive validation, and clean JIT, NativeAOT and .NET Framework package-consumer verification.
 
 ## 1.10.11
 

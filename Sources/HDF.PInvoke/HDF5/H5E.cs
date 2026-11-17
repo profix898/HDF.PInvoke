@@ -83,19 +83,16 @@ namespace HDF.PInvoke
             /// <summary>
             /// function in which error occurred
             /// </summary>
-            [MarshalAs(UnmanagedType.LPUTF8Str)]
             public string func_name;
 
             /// <summary>
             /// file in which error occurred
             /// </summary>
-            [MarshalAs(UnmanagedType.LPUTF8Str)]
             public string file_name;
 
             /// <summary>
             /// optional supplied description
             /// </summary>
-            [MarshalAs(UnmanagedType.LPUTF8Str)]
             public string desc;
         };
 
@@ -124,11 +121,10 @@ namespace HDF.PInvoke
         /// expected by the user-defined function.</param>
         /// <returns>Returns a non-negative value if successful; otherwise
         /// returns a negative value.</returns>
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate herr_t walk_t
         (
         uint n,
-        [In] ref error_t err_desc,
+        ref error_t err_desc,
         IntPtr client_data
         );
 
@@ -488,11 +484,9 @@ namespace HDF.PInvoke
         /// <param name="client_data">Data to be passed with
         /// <paramref name="func"/>.</param>
         /// <returns>A nonnegative value on success, or a negative value on failure.</returns>
-        [DllImport(Constants.DLLFileName, EntryPoint = "H5Ewalk2",
-            CallingConvention = CallingConvention.Cdecl),
-        SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
-        public static extern herr_t walk
+        [SuppressUnmanagedCodeSecurity, SecuritySafeCritical]
+        public static herr_t walk
             (hid_t estack_id, direction_t direction, walk_t func,
-            IntPtr client_data);
+            IntPtr client_data) => ErrorWalk.Invoke(estack_id, direction, func, client_data);
     }
 }
