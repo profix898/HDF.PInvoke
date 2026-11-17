@@ -75,6 +75,11 @@ namespace HDF.PInvoke
         public static int set_fill_value<T>(long plist_id, long type_id, in T value)
             where T : unmanaged
         {
+            if (!SpanValidation.Scalar<T>(type_id, nameof(value)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = &value)
             {
                 return set_fill_value(plist_id, type_id, (IntPtr)ptr);
@@ -93,6 +98,10 @@ namespace HDF.PInvoke
             where T : unmanaged
         {
             value = default;
+            if (!SpanValidation.Scalar<T>(type_id, nameof(value)))
+            {
+                return -1;
+            }
 
             fixed (T* ptr = &value)
             {
@@ -135,6 +144,7 @@ namespace HDF.PInvoke
         /// <summary>
         /// Decodes a serialized property list from a read-only byte span; close the returned identifier with <see cref="close"/>.
         /// </summary>
+        /// <remarks>The native decoder has no length argument. Supply only complete, trusted encoded data.</remarks>
         /// <param name="buffer">Serialized property list bytes produced by <see cref="encode2(long, Span{byte}, out UIntPtr, long)"/>.</param>
         /// <returns>A property list identifier if successful; otherwise a negative value.</returns>
         public static long decode(ReadOnlySpan<byte> buffer)
@@ -172,6 +182,11 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int set_dataset_io_hyperslab_selection(long transfer, uint rank, H5S.seloper_t operation, ReadOnlySpan<ulong> start, ReadOnlySpan<ulong> stride, ReadOnlySpan<ulong> count, ReadOnlySpan<ulong> block = default)
         {
+            SpanValidation.Capacity(start.Length, rank, nameof(start));
+            SpanValidation.Capacity(stride.Length, rank, nameof(stride), true);
+            SpanValidation.Capacity(count.Length, rank, nameof(count));
+            SpanValidation.Capacity(block.Length, rank, nameof(block), true);
+
             fixed (ulong* startPtr = start, stridePtr = stride, countPtr = count, blockPtr = block)
             {
                 return set_dataset_io_hyperslab_selection(transfer, rank, operation, (IntPtr)startPtr, (IntPtr)stridePtr, (IntPtr)countPtr, (IntPtr)blockPtr);

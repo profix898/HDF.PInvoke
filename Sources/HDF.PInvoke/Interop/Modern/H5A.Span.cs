@@ -15,6 +15,11 @@ namespace HDF.PInvoke
         public static int read<T>(long attr_id, long type_id, Span<T> buf)
             where T : unmanaged
         {
+            if (!SpanValidation.Attribute<T>(attr_id, type_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = buf)
             {
                 return read(attr_id, type_id, (IntPtr)ptr);
@@ -32,6 +37,11 @@ namespace HDF.PInvoke
         public static int write<T>(long attr_id, long type_id, ReadOnlySpan<T> buf)
             where T : unmanaged
         {
+            if (!SpanValidation.Attribute<T>(attr_id, type_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = buf)
             {
                 return write(attr_id, type_id, (IntPtr)ptr);

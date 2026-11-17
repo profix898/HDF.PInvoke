@@ -9,8 +9,10 @@ namespace HDF.PInvoke
     /// </summary>
     internal static class Utf8String
     {
+        /// <summary>Reserves stack storage for short UTF-8 results including their terminator.</summary>
         private const int StackCapacity = 256;
 
+        /// <summary>Invokes a byte-counted getter with caller-owned output storage.</summary>
         internal delegate IntPtr Query<in TState>(TState state, Span<byte> buffer);
 
         /// <summary>
@@ -36,34 +38,38 @@ namespace HDF.PInvoke
                 return Encoding.UTF8.GetString(stack.Slice(0, (int)length));
             }
 
-            if (length >= int.MaxValue)
+            // A getter may report a larger value on retry; never silently return a truncated string.
+            while (true)
             {
-                throw new OverflowException("Native UTF-8 string exceeds maximum managed string capacity.");
-            }
-
-            var required = (int)length + 1;
-            var rented = ArrayPool<byte>.Shared.Rent(required);
-
-            try
-            {
-                var span = rented.AsSpan(0, required);
-                var actual = query(state, span).ToInt64();
-
-                if (actual < 0)
+                if (length >= int.MaxValue)
                 {
-                    return null;
+                    throw new OverflowException("Native UTF-8 string exceeds maximum managed string capacity.");
                 }
 
-                if (actual == 0)
+                var required = checked((int)length + 1);
+                var rented = ArrayPool<byte>.Shared.Rent(required);
+                try
                 {
-                    return string.Empty;
+                    var span = rented.AsSpan(0, required);
+                    var actual = query(state, span).ToInt64();
+                    if (actual < 0)
+                    {
+                        return null;
+                    }
+                    if (actual == 0)
+                    {
+                        return string.Empty;
+                    }
+                    if (actual < required)
+                    {
+                        return Encoding.UTF8.GetString(span.Slice(0, (int)actual));
+                    }
+                    length = actual;
                 }
-
-                return Encoding.UTF8.GetString(span.Slice(0, Math.Min((int)actual, required - 1)));
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(rented);
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(rented);
+                }
             }
         }
     }

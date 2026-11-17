@@ -67,6 +67,14 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_simple_extent_dims(long space_id, Span<ulong> dims, Span<ulong> maxdims = default)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(dims.Length, (ulong)rank, nameof(dims), true);
+            SpanValidation.Capacity(maxdims.Length, (ulong)rank, nameof(maxdims), true);
+
             fixed (ulong* dimsPtr = dims, maxPtr = maxdims)
             {
                 return get_simple_extent_dims(space_id, dimsPtr, maxPtr);
@@ -86,6 +94,16 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int select_hyperslab(long space_id, seloper_t op, ReadOnlySpan<ulong> start, ReadOnlySpan<ulong> stride, ReadOnlySpan<ulong> count, ReadOnlySpan<ulong> block = default)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(start.Length, (ulong)rank, nameof(start));
+            SpanValidation.Capacity(stride.Length, (ulong)rank, nameof(stride), true);
+            SpanValidation.Capacity(count.Length, (ulong)rank, nameof(count));
+            SpanValidation.Capacity(block.Length, (ulong)rank, nameof(block), true);
+
             fixed (ulong* startPtr = start, stridePtr = stride, countPtr = count, blockPtr = block)
             {
                 return select_hyperslab(space_id, op, startPtr, stridePtr, countPtr, blockPtr);
@@ -104,6 +122,16 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int H5Sget_regular_hyperslab(long space_id, Span<ulong> start, Span<ulong> stride, Span<ulong> count, Span<ulong> block)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(start.Length, (ulong)rank, nameof(start), true);
+            SpanValidation.Capacity(stride.Length, (ulong)rank, nameof(stride), true);
+            SpanValidation.Capacity(count.Length, (ulong)rank, nameof(count), true);
+            SpanValidation.Capacity(block.Length, (ulong)rank, nameof(block), true);
+
             fixed (ulong* startPtr = start, stridePtr = stride, countPtr = count, blockPtr = block)
             {
                 return get_regular_hyperslab_native(space_id, startPtr, stridePtr, countPtr, blockPtr);
@@ -120,6 +148,14 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_select_bounds(long space_id, Span<ulong> start, Span<ulong> end)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(start.Length, (ulong)rank, nameof(start));
+            SpanValidation.Capacity(end.Length, (ulong)rank, nameof(end));
+
             fixed (ulong* startPtr = start, endPtr = end)
             {
                 return get_select_bounds_native(space_id, startPtr, endPtr);
@@ -137,6 +173,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int select_elements(long space_id, seloper_t op, IntPtr num_elements, ReadOnlySpan<ulong> coord)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(coord.Length, checked((ulong)num_elements.ToInt64() * (ulong)rank), nameof(coord));
+
             fixed (ulong* coordPtr = coord)
             {
                 return select_elements_native(space_id, op, num_elements, coordPtr);
@@ -154,6 +197,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_select_elem_pointlist(long space_id, ulong startpoint, ulong numpoints, Span<ulong> buf)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(buf.Length, checked(numpoints * (ulong)rank), nameof(buf));
+
             fixed (ulong* bufPtr = buf)
             {
                 return get_select_elem_pointlist_native(space_id, startpoint, numpoints, bufPtr);
@@ -171,6 +221,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_select_hyper_blocklist(long space_id, ulong startblock, ulong numblocks, Span<ulong> buf)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(buf.Length, checked(2ul * numblocks * (ulong)rank), nameof(buf));
+
             fixed (ulong* bufPtr = buf)
             {
                 return get_select_hyper_blocklist_native(space_id, startblock, numblocks, bufPtr);
@@ -186,6 +243,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int offset_simple(long space_id, ReadOnlySpan<long> offset)
         {
+            var rank = H5S.get_simple_extent_ndims(space_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset), true);
+
             fixed (long* offsetPtr = offset)
             {
                 return offset_simple_native(space_id, offsetPtr);
@@ -195,6 +259,7 @@ namespace HDF.PInvoke
         /// <summary>
         /// Decodes a binary dataspace description from a read-only byte span.
         /// </summary>
+        /// <remarks>The native decoder has no length argument. Supply only complete, trusted encoded data.</remarks>
         /// <param name="buf">Encoded dataspace bytes.</param>
         /// <returns>A new dataspace identifier if successful; otherwise a negative value.</returns>
         [OverloadResolutionPriority(1)]

@@ -102,10 +102,11 @@ namespace HDF.PInvoke
                 id = source.id,
                 encoder_present = source.encoder_present,
                 decoder_present = source.decoder_present,
-                name = LinkClassRegistry.AllocateUtf8(source.name),
                 can_apply = source.can_apply == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5Z.can_apply_func_t>(source.can_apply),
                 set_local = source.set_local == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5Z.set_local_func_t>(source.set_local),
-                filter = source.filter == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5Z.func_t>(source.filter)
+                filter = source.filter == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5Z.func_t>(source.filter),
+                // Allocate owned text only after callback conversion has succeeded.
+                name = LinkClassRegistry.AllocateUtf8(source.name)
             };
             var retained = false;
 

@@ -43,6 +43,8 @@
     </ItemGroup>
   </Target>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <!-- Keep locked restores stable across SDK servicing releases. -->
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" PrivateAssets="all" />
     <Compile Remove="Interop/Legacy/**/*.cs" />
   </ItemGroup>
   <!-- The modern target compiles the declarations directly; only legacy treats them as generator inputs. -->

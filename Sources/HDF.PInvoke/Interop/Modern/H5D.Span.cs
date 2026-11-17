@@ -32,6 +32,11 @@ namespace HDF.PInvoke
         public static int read<T>(long dset_id, long mem_type_id, long mem_space_id, long file_space_id, long plist_id, Span<T> buf)
             where T : unmanaged
         {
+            if (!SpanValidation.Dataset<T>(dset_id, mem_type_id, mem_space_id, file_space_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = buf)
             {
                 return read(dset_id, mem_type_id, mem_space_id, file_space_id, plist_id, (IntPtr)ptr);
@@ -52,6 +57,11 @@ namespace HDF.PInvoke
         public static int write<T>(long dset_id, long mem_type_id, long mem_space_id, long file_space_id, long plist_id, ReadOnlySpan<T> buf)
             where T : unmanaged
         {
+            if (!SpanValidation.Dataset<T>(dset_id, mem_type_id, mem_space_id, file_space_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = buf)
             {
                 return write(dset_id, mem_type_id, mem_space_id, file_space_id, plist_id, (IntPtr)ptr);
@@ -73,6 +83,11 @@ namespace HDF.PInvoke
             where TFill : unmanaged
             where TElement : unmanaged
         {
+            if (!SpanValidation.Scalar<TFill>(fill_type_id, nameof(fill_value)) || !SpanValidation.Selection<TElement>(buf_type_id, space_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (TFill* fillPtr = &fill_value)
             fixed (TElement* bufPtr = buf)
             {
@@ -91,6 +106,11 @@ namespace HDF.PInvoke
         public static int fill<TElement>(Span<TElement> buf, long buf_type_id, long space_id)
             where TElement : unmanaged
         {
+            if (!SpanValidation.Selection<TElement>(buf_type_id, space_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (TElement* bufPtr = buf)
             {
                 return fill(IntPtr.Zero, buf_type_id, (IntPtr)bufPtr, buf_type_id, space_id);
@@ -109,6 +129,15 @@ namespace HDF.PInvoke
         public static int iterate<T>(Span<T> buf, long type_id, long space_id, span_operator_t<T> op)
             where T : unmanaged
         {
+            if (H5T.get_size(type_id).ToInt64() != sizeof(T))
+            {
+                throw new ArgumentException("Iteration requires T to match the native element size.", nameof(type_id));
+            }
+            if (!SpanValidation.Selection<T>(type_id, space_id, buf.Length, nameof(buf)))
+            {
+                return -1;
+            }
+
             fixed (T* bufPtr = buf)
             {
                 if (op == null)
@@ -199,15 +228,13 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int read_chunk(long dset_id, long dxpl_id, ReadOnlySpan<ulong> offset, ref uint filter_mask, Span<byte> buf)
         {
+
             if (offset.IsEmpty)
             {
                 throw new ArgumentException("Chunk offset coordinates must not be empty.", nameof(offset));
             }
 
-            fixed (byte* bufPtr = buf)
-            {
-                return read_chunk(dset_id, dxpl_id, ref MemoryMarshal.GetReference(offset), ref filter_mask, (IntPtr)bufPtr);
-            }
+            return read_chunk2(dset_id, dxpl_id, offset, out filter_mask, buf, out _);
         }
 
         /// <summary>
@@ -222,6 +249,15 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int read_chunk2(long dataset, long transfer, ReadOnlySpan<ulong> offset, out uint filters, Span<byte> buffer, out UIntPtr bufferSize)
         {
+            filters = 0;
+            bufferSize = UIntPtr.Zero;
+            var rank = SpanValidation.DatasetRank(dataset);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset));
+
             bufferSize = (nuint)buffer.Length;
 
             fixed (ulong* offsetPtr = offset)
@@ -242,6 +278,13 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int write_chunk(long dset_id, long dxpl_id, uint filter_mask, ReadOnlySpan<ulong> offset, ReadOnlySpan<byte> data)
         {
+            var rank = SpanValidation.DatasetRank(dset_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset));
+
             if (offset.IsEmpty)
             {
                 throw new ArgumentException("Chunk offset coordinates must not be empty.", nameof(offset));
@@ -267,6 +310,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_chunk_info(long dset_id, long fspace_id, ulong index, Span<ulong> offset, ref uint filter_mask, ref ulong addr, ref ulong size)
         {
+            var rank = SpanValidation.DatasetRank(dset_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset), true);
+
             fixed (ulong* offsetPtr = offset)
             {
                 return get_chunk_info(dset_id, fspace_id, index, offsetPtr, ref filter_mask, ref addr, ref size);
@@ -285,6 +335,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_chunk_info_by_coord(long dset_id, ReadOnlySpan<ulong> offset, ref uint filter_mask, ref ulong addr, ref ulong size)
         {
+            var rank = SpanValidation.DatasetRank(dset_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset));
+
             fixed (ulong* offsetPtr = offset)
             {
                 return get_chunk_info_by_coord(dset_id, offsetPtr, ref filter_mask, ref addr, ref size);
@@ -301,6 +358,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_chunk_storage_size(long dset_id, ReadOnlySpan<ulong> offset, ref ulong chunk_bytes)
         {
+            var rank = SpanValidation.DatasetRank(dset_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(offset.Length, (ulong)rank, nameof(offset));
+
             fixed (ulong* offsetPtr = offset)
             {
                 return get_chunk_storage_size(dset_id, offsetPtr, ref chunk_bytes);
@@ -316,12 +380,21 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int set_extent(long dset_id, ReadOnlySpan<ulong> size)
         {
+            var rank = SpanValidation.DatasetRank(dset_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            // Empty input remains a null pointer so native error handling is preserved.
+            SpanValidation.Capacity(size.Length, (ulong)rank, nameof(size), true);
+
             fixed (ulong* sizePtr = size)
             {
                 return set_extent(dset_id, sizePtr);
             }
         }
 
+        /// <summary>Checks matching dataset, type, selection and buffer metadata.</summary>
         private static void ValidateMultiSpan(ReadOnlySpan<long> datasets, ReadOnlySpan<long> memoryTypes, ReadOnlySpan<long> memorySpaces, ReadOnlySpan<long> fileSpaces, ReadOnlySpan<IntPtr> buffers)
         {
             if (datasets.IsEmpty || memoryTypes.Length != datasets.Length || memorySpaces.Length != datasets.Length || fileSpaces.Length != datasets.Length || buffers.Length != datasets.Length)
@@ -330,17 +403,23 @@ namespace HDF.PInvoke
             }
         }
 
+        /// <summary>Roots callback state for one synchronous native iteration.</summary>
         private struct SpanIterateContext
         {
+            /// <summary>Keeps the typed callback alive until native iteration returns.</summary>
             internal GCHandle CallbackHandle;
+            /// <summary>Retains the first exception for rethrow after native code returns.</summary>
             internal GCHandle FailureHandle;
+            /// <summary>Dispatches to the closed generic callback without reflection.</summary>
             internal delegate*<object, IntPtr, long, ReadOnlySpan<ulong>, int> Invoker;
         }
 
+        /// <summary>Projects a native address into the unmanaged element type.</summary>
         private static int InvokeSpanOperator<T>(object callback, IntPtr elem, long typeId, ReadOnlySpan<ulong> point)
-            where T : unmanaged =>
-            ((span_operator_t<T>)callback)(ref *(T*)elem, typeId, point);
+                    where T : unmanaged =>
+                    ((span_operator_t<T>)callback)(ref *(T*)elem, typeId, point);
 
+        /// <summary>Contains managed exceptions while bridging native iteration callbacks.</summary>
         [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
         private static int SpanIterateCallback(IntPtr elem, long typeId, uint ndim, ulong* point, IntPtr contextPtr)
         {

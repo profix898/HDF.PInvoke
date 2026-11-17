@@ -405,6 +405,22 @@ namespace UnitTests
             }
         }
 
+        /// <summary>Rejects collectible methods hidden before a noncollectible multicast callback target.</summary>
+        [TestMethod]
+        public void AtCloseChecksEveryMulticastTarget()
+        {
+            var assembly = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(
+                new AssemblyName("CollectibleCloseCallback"), System.Reflection.Emit.AssemblyBuilderAccess.RunAndCollect);
+            var type = assembly.DefineDynamicModule("Callbacks").DefineType("Callbacks", TypeAttributes.Public);
+            var method = type.DefineMethod("Close", MethodAttributes.Public | MethodAttributes.Static, typeof(void), new[] { typeof(IntPtr) });
+            method.GetILGenerator().Emit(System.Reflection.Emit.OpCodes.Ret);
+            var callback = (H5.atclose_t)type.CreateType().GetMethod("Close").CreateDelegate(typeof(H5.atclose_t));
+            callback += IgnoreAtClose;
+            Assert.ThrowsExactly<InvalidOperationException>(() => H5.atclose(callback, IntPtr.Zero));
+            GC.KeepAlive(assembly);
+        }
+
+        /// <summary>Provides a noncollectible no-op close callback for lifetime rejection tests.</summary>
         private static void IgnoreAtClose(IntPtr state)
         {
         }

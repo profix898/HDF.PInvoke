@@ -139,13 +139,14 @@ namespace HDF.PInvoke
             {
                 version = source.version,
                 id = source.id,
-                comment = AllocateUtf8(source.comment),
                 create_func = source.create_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.create_func_t>(source.create_func),
                 move_func = source.move_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.move_func_t>(source.move_func),
                 copy_func = source.copy_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.copy_func_t>(source.copy_func),
                 trav_func = source.trav_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.traverse_func_t>(source.trav_func),
                 del_func = source.del_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.delete_func_t>(source.del_func),
-                query_func = source.query_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.query_func_t>(source.query_func)
+                query_func = source.query_func == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate<H5L.query_func_t>(source.query_func),
+                // Allocate owned text only after callback conversion has succeeded.
+                comment = AllocateUtf8(source.comment)
             };
             var retained = false;
 

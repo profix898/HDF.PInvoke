@@ -39,6 +39,12 @@ namespace HDF.PInvoke
         /// </summary>
         public const int ALL = 0;
 
+        /// <summary>Uses contiguous packed memory for the selected file elements.</summary>
+        public const int BLOCK = 1;
+
+        /// <summary>Uses the file selection configured on the dataset transfer property list.</summary>
+        public const int PLIST = 2;
+
         /// <summary>
         /// The maximum-dimension sentinel allowing a dataspace dimension to grow without a fixed bound.
         /// </summary>

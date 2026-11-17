@@ -2,6 +2,9 @@
 
 ## 2.2.0
 
+- Check every multicast shutdown callback target when rejecting collectible assemblies.
+- Validate modern span buffer capacities, native datatype widths, sparse memory selections and coordinate ranks before native access; retain pointer overloads for explicitly managed buffers.
+- Retry growing UTF-8 string getters without truncation and avoid leaking registration text when callback conversion fails.
 - Wrapped native HDF5 2.2.0 with statically linked zlib/Deflate across `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `linux-musl-x64`, `linux-musl-arm64` and `osx-arm64`; removed Paket, legacy `bin32`/`bin64` deployments, `app.config` probing and HDF5 1.8 conditional compilation.
 - Multi-targeted `net8.0` and `netstandard2.0` from shared `[LibraryImport]` declarations, supporting modern .NET (`[assembly: DisableRuntimeMarshalling]`, source-generated P/Invoke stubs, stack-buffered UTF-8 marshalling, zero-cleared pooled `StringBuilder` decoding, zero-copy `Span<T>`/`ReadOnlySpan<T>` overloads, truncation-free UTF-8 `string` getters, trimming, single-file deployment and `PublishAot=true` NativeAOT), .NET Framework 4.7.2+ and standalone Mono.
 - Unified native loading across function imports and exported globals (`H5P`, `H5T`, `H5E`) with automatic RID probing, unversioned Unix/macOS shared-library SONAMEs, `NativeDependencies.Configure(path)` for private installations, and `H5.dont_atexit()` ordering before native initialization; removed `NativeDependencies.ResolvePathToExternalDependencies()`.

@@ -18,6 +18,40 @@ namespace HDF.PInvoke
         public static int append<T>(long dset_id, long dxpl_id, uint axis, IntPtr num_elem, long memtype, ReadOnlySpan<T> buffer)
             where T : unmanaged
         {
+            var space = H5D.get_space(dset_id);
+            if (space < 0)
+            {
+                return -1;
+            }
+            try
+            {
+                var rank = H5S.get_simple_extent_ndims(space);
+                if (rank < 0 || rank > 32 || axis >= (uint)rank)
+                {
+                    return -1;
+                }
+                Span<ulong> dimensions = stackalloc ulong[rank];
+                if (H5S.get_simple_extent_dims(space, dimensions) < 0)
+                {
+                    return -1;
+                }
+                var required = checked((ulong)num_elem.ToInt64());
+                for (var dimension = 0; dimension < rank; dimension++)
+                {
+                    if ((uint)dimension != axis)
+                    {
+                        required = checked(required * dimensions[dimension]);
+                    }
+                }
+                if (!SpanValidation.Packed<T>(memtype, required, buffer.Length, nameof(buffer)))
+                {
+                    return -1;
+                }
+            }
+            finally
+            {
+                H5S.close(space);
+            }
             fixed (T* ptr = buffer)
             {
                 return append(dset_id, dxpl_id, axis, num_elem, memtype, (IntPtr)ptr);
@@ -47,9 +81,9 @@ namespace HDF.PInvoke
                 required = checked(required * dim);
             }
 
-            if ((ulong)buffer.Length < required)
+            if (!SpanValidation.Packed<T>(type, required, buffer.Length, nameof(buffer)))
             {
-                throw new ArgumentException("Source span contains fewer elements than the product of dimensions.", nameof(buffer));
+                return -1;
             }
 
             fixed (ulong* dimsPtr = dimensions)
@@ -71,9 +105,18 @@ namespace HDF.PInvoke
         public static int read_dataset<T>(long location, string name, long type, Span<T> buffer)
             where T : unmanaged
         {
-            fixed (T* bufPtr = buffer)
+            var dataset = H5D.open(location, name);
+            if (dataset < 0)
             {
-                return read_dataset(location, name, type, (IntPtr)bufPtr);
+                return -1;
+            }
+            try
+            {
+                return H5D.read(dataset, type, H5S.ALL, H5S.ALL, H5P.DEFAULT, buffer);
+            }
+            finally
+            {
+                H5D.close(dataset);
             }
         }
 
@@ -88,6 +131,14 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int get_dataset_info(long location, string name, Span<ulong> dimensions, out H5T.class_t typeClass, out UIntPtr typeSize)
         {
+            typeClass = default;
+            typeSize = UIntPtr.Zero;
+            if (get_dataset_ndims(location, name, out var rank) < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(dimensions.Length, (ulong)rank, nameof(dimensions), true);
+
             fixed (ulong* dimsPtr = dimensions)
             {
                 return get_dataset_info(location, name, (IntPtr)dimsPtr, out typeClass, out typeSize);
@@ -107,9 +158,18 @@ namespace HDF.PInvoke
         public static int get_attribute<T>(long location, string objectName, string attributeName, long type, Span<T> buffer)
             where T : unmanaged
         {
-            fixed (T* bufPtr = buffer)
+            var attribute = H5A.open_by_name(location, objectName, attributeName);
+            if (attribute < 0)
             {
-                return get_attribute(location, objectName, attributeName, type, (IntPtr)bufPtr);
+                return -1;
+            }
+            try
+            {
+                return H5A.read(attribute, type, buffer);
+            }
+            finally
+            {
+                H5A.close(attribute);
             }
         }
 
@@ -125,6 +185,14 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int get_attribute_info(long location, string objectName, string attributeName, Span<ulong> dimensions, out H5T.class_t typeClass, out UIntPtr typeSize)
         {
+            typeClass = default;
+            typeSize = UIntPtr.Zero;
+            if (get_attribute_ndims(location, objectName, attributeName, out var rank) < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(dimensions.Length, (ulong)rank, nameof(dimensions), true);
+
             fixed (ulong* dimsPtr = dimensions)
             {
                 return get_attribute_info(location, objectName, attributeName, (IntPtr)dimsPtr, out typeClass, out typeSize);
@@ -225,6 +293,23 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int read_image(long loc_id, string dset_name, Span<byte> buffer)
         {
+            var dataset = H5D.open(loc_id, dset_name);
+            if (dataset < 0)
+            {
+                return -1;
+            }
+            try
+            {
+                if (!SpanValidation.Dataset<byte>(dataset, H5T.NATIVE_UCHAR, H5S.ALL, H5S.ALL, buffer.Length, nameof(buffer)))
+                {
+                    return -1;
+                }
+            }
+            finally
+            {
+                H5D.close(dataset);
+            }
+
             fixed (byte* ptr = buffer)
             {
                 return read_image(loc_id, dset_name, (IntPtr)ptr);
@@ -284,6 +369,13 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int get_palette(long loc_id, string image_name, int pal_number, Span<byte> pal_data)
         {
+            Span<ulong> dimensions = stackalloc ulong[2];
+            if (get_palette_info(loc_id, image_name, pal_number, dimensions) < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(pal_data.Length, checked(dimensions[0] * dimensions[1]), nameof(pal_data));
+
             fixed (byte* dataPtr = pal_data)
             {
                 return get_palette(loc_id, image_name, pal_number, (IntPtr)dataPtr);
@@ -303,6 +395,13 @@ namespace HDF.PInvoke
         public static int append<T>(long table_id, ReadOnlySpan<T> data)
             where T : unmanaged
         {
+            // H5PTget_type returns a borrowed identifier owned by the packet table.
+            var type = get_type(table_id);
+            if (type < 0 || !SpanValidation.Packed<T>(type, (ulong)data.Length, data.Length, nameof(data)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = data)
             {
                 return append(table_id, (nuint)data.Length, (IntPtr)ptr);
@@ -319,6 +418,13 @@ namespace HDF.PInvoke
         public static int get_next<T>(long table_id, Span<T> data)
             where T : unmanaged
         {
+            // H5PTget_type returns a borrowed identifier owned by the packet table.
+            var type = get_type(table_id);
+            if (type < 0 || !SpanValidation.Packed<T>(type, (ulong)data.Length, data.Length, nameof(data)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = data)
             {
                 return get_next(table_id, (nuint)data.Length, (IntPtr)ptr);
@@ -336,6 +442,13 @@ namespace HDF.PInvoke
         public static int read_packets<T>(long table_id, ulong start, Span<T> data)
             where T : unmanaged
         {
+            // H5PTget_type returns a borrowed identifier owned by the packet table.
+            var type = get_type(table_id);
+            if (type < 0 || !SpanValidation.Packed<T>(type, (ulong)data.Length, data.Length, nameof(data)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = data)
             {
                 return read_packets(table_id, start, (nuint)data.Length, (IntPtr)ptr);
@@ -401,6 +514,13 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int get_dset_dims(long did, Span<ulong> cur_dims)
         {
+            var rank = SpanValidation.DatasetRank(did);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(cur_dims.Length, (ulong)rank, nameof(cur_dims));
+
             fixed (ulong* ptr = cur_dims)
             {
                 return get_dset_dims(did, (IntPtr)ptr);
@@ -420,6 +540,28 @@ namespace HDF.PInvoke
         public static int get_dset_elmts<T>(long did, ReadOnlySpan<ulong> prev_dims, ReadOnlySpan<ulong> cur_dims, string fields, Span<T> buf)
             where T : unmanaged
         {
+            var rank = SpanValidation.DatasetRank(did);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(prev_dims.Length, (ulong)rank, nameof(prev_dims));
+            SpanValidation.Capacity(cur_dims.Length, (ulong)rank, nameof(cur_dims));
+            ulong currentElements = 1, intersectionElements = 1;
+            for (var dimension = 0; dimension < rank; dimension++)
+            {
+                currentElements = checked(currentElements * cur_dims[dimension]);
+                intersectionElements = checked(intersectionElements * Math.Min(prev_dims[dimension], cur_dims[dimension]));
+            }
+            var typeSize = get_dset_type_size(did, fields).ToUInt64();
+            if (typeSize == 0)
+            {
+                return -1;
+            }
+            if (currentElements - intersectionElements > checked((ulong)buf.Length * (ulong)sizeof(T)) / typeSize)
+            {
+                throw new ArgumentException("The span is too small for the newly appended elements.", nameof(buf));
+            }
             if (prev_dims.Length != cur_dims.Length)
             {
                 throw new ArgumentException("Previous and current dimension spans must have equal rank.");

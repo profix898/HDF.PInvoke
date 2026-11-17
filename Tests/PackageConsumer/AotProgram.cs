@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -221,6 +221,25 @@ internal static unsafe class Program
 
             // 4. Compressed high-level append + custom-filtered dataset + transitive CLong/CULong check.
             Check(file = H5F.create(path, H5F.ACC_EXCL));
+            var textType = H5T.copy(H5T.C_S1);
+            var scalar = H5S.create(H5S.class_t.SCALAR);
+            long strings = -1;
+            try
+            {
+                Check(H5T.set_size(textType, H5T.VARIABLE));
+                Check(H5T.set_cset(textType, H5T.cset_t.UTF8));
+                Check(strings = H5D.create(file, "text", textType, scalar));
+                Check(H5D.write_utf8_strings(strings, ["Größe 🌍"]));
+                Check(H5D.read_utf8_strings(strings, out var decoded));
+                if (decoded.Length != 1 || decoded[0] != "Größe 🌍")
+                    throw new InvalidOperationException("Variable-length UTF-8 round trip failed.");
+            }
+            finally
+            {
+                if (strings >= 0) H5D.close(strings);
+                H5S.close(scalar);
+                H5T.close(textType);
+            }
             Check(group = H5G.create(file, "target"));
             Check(H5G.close(group));
             group = -1;
@@ -260,6 +279,20 @@ internal static unsafe class Program
             Check(H5P.set_filter(customDcpl, customFilter, 0, ReadOnlySpan<uint>.Empty));
             Check(customDataset = H5D.create(file, "xor_2d", H5T.NATIVE_INT, space, H5P.DEFAULT, customDcpl));
             Span<int> grid = [1, 2, 3, 4];
+            // A sliced span must be rejected before native code can read beyond its boundary.
+            var shortBufferRejected = false;
+            try
+            {
+                H5D.write<int>(customDataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, grid.Slice(0, 1));
+            }
+            catch (ArgumentException)
+            {
+                shortBufferRejected = true;
+            }
+            if (!shortBufferRejected)
+            {
+                throw new InvalidOperationException("NativeAOT span boundary check failed.");
+            }
 
             // 5. Multidimensional zero-allocation H5D.iterate<T> span bridge.
             var coordinateSum = 0ul;
@@ -319,7 +352,7 @@ internal static unsafe class Program
             }
 
             Span<int> values = stackalloc int[3];
-            Check(H5D.read(dataset, H5T.NATIVE_INT, H5S.ALL, H5S.ALL, H5P.DEFAULT, values));
+            Check(H5D.read(dataset, H5T.NATIVE_INT, H5S.BLOCK, H5S.ALL, H5P.DEFAULT, values));
 
             if (values[0] != 17 || values[1] != -42 || values[2] != 12345)
             {

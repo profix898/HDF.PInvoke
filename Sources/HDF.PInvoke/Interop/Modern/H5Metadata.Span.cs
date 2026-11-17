@@ -385,6 +385,13 @@ namespace HDF.PInvoke
         [OverloadResolutionPriority(1)]
         public static int get_array_dims(long adtype_id, Span<ulong> dims)
         {
+            var rank = get_array_ndims(adtype_id);
+            if (rank < 0)
+            {
+                return -1;
+            }
+            SpanValidation.Capacity(dims.Length, (ulong)rank, nameof(dims));
+
             fixed (ulong* dimsPtr = dims)
             {
                 return get_array_dims_native(adtype_id, dimsPtr);
@@ -403,6 +410,14 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int convert(long src_type_id, long dest_type_id, IntPtr nelmts, Span<byte> buf, Span<byte> background = default, long plist_id = H5P.DEFAULT)
         {
+            var count = checked((ulong)nelmts.ToInt64());
+            if (!SpanValidation.Packed<byte>(src_type_id, count, buf.Length, nameof(buf)) ||
+                !SpanValidation.Packed<byte>(dest_type_id, count, buf.Length, nameof(buf)) ||
+                (!background.IsEmpty && !SpanValidation.Packed<byte>(dest_type_id, count, background.Length, nameof(background))))
+            {
+                return -1;
+            }
+
             fixed (byte* bufPtr = buf, bkgPtr = background)
             {
                 return convert(src_type_id, dest_type_id, nelmts, (IntPtr)bufPtr, (IntPtr)bkgPtr, plist_id);
@@ -420,6 +435,11 @@ namespace HDF.PInvoke
         public static int enum_insert<T>(long dtype_id, string name, in T value)
             where T : unmanaged
         {
+            if (!SpanValidation.Scalar<T>(dtype_id, nameof(value)))
+            {
+                return -1;
+            }
+
             fixed (T* ptr = &value)
             {
                 return enum_insert(dtype_id, name, (IntPtr)ptr);
@@ -437,6 +457,11 @@ namespace HDF.PInvoke
         public static int enum_nameof<T>(long dtype_id, in T value, Span<byte> utf8Name)
             where T : unmanaged
         {
+            if (!SpanValidation.Scalar<T>(dtype_id, nameof(value)))
+            {
+                return -1;
+            }
+
             fixed (T* valPtr = &value)
             fixed (byte* namePtr = utf8Name)
             {
@@ -456,6 +481,10 @@ namespace HDF.PInvoke
             where T : unmanaged
         {
             value = default;
+            if (!SpanValidation.Scalar<T>(dtype_id, nameof(value)))
+            {
+                return -1;
+            }
 
             fixed (T* ptr = &value)
             {
