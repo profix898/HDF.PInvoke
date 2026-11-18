@@ -142,6 +142,15 @@ namespace UnitTests
                 Assert.IsTrue(H5IM.link_palette(file, "indexed", "palette") >= 0);
                 Assert.IsTrue(H5IM.get_npalettes(file, "indexed", out palettes) >= 0);
                 Assert.AreEqual(1L, palettes);
+                Assert.IsTrue(H5IM.get_palette_info(file, "indexed", 1, (IntPtr)dimensions) < 0);
+                Assert.IsTrue(H5IM.get_palette(file, "indexed", -1, (IntPtr)output) < 0);
+                // A linked dataset with a third dimension is not a valid palette.
+                var malformedSpace = H5S.create_simple(3, new ulong[] { 1, 1, 1 }, null);
+                var malformed = H5D.create(file, "bad_palette", H5T.NATIVE_UCHAR, malformedSpace);
+                H5D.close(malformed);
+                H5S.close(malformedSpace);
+                Assert.IsTrue(H5IM.link_palette(file, "indexed", "bad_palette") >= 0);
+                Assert.IsTrue(H5IM.get_palette_info(file, "indexed", 1, (IntPtr)dimensions) < 0);
                 Assert.IsTrue(H5IM.get_palette_info(file, "indexed", 0, (IntPtr)dimensions) >= 0);
                 Assert.AreEqual(2UL, dimensions[0]);
                 Assert.AreEqual(3UL, dimensions[1]);

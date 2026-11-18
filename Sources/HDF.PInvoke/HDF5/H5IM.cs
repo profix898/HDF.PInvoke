@@ -47,12 +47,88 @@ namespace HDF.PInvoke
         public static partial int get_npalettes(long loc_id, string image_name, out long npals);
 
         /// <summary>Gets the two unsigned 64-bit dimensions of an attached palette.</summary>
-        [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5IMget_palette_info", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-        public static partial int get_palette_info(long loc_id, string image_name, int pal_number, IntPtr pal_dims);
+        public static int get_palette_info(long loc_id, string image_name, int pal_number, IntPtr pal_dims) =>
+            pal_dims == IntPtr.Zero ? -1 : ReadPalette(loc_id, image_name, pal_number, pal_dims, IntPtr.Zero, -1);
 
-        /// <summary>Reads an attached palette into caller-owned storage sized from its dimensions.</summary>
-        [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5IMget_palette", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-        public static partial int get_palette(long loc_id, string image_name, int pal_number, IntPtr pal_data);
+        /// <summary>Reads a two-dimensional palette into caller-owned storage sized from its dimensions.</summary>
+        public static int get_palette(long loc_id, string image_name, int pal_number, IntPtr pal_data) =>
+            pal_data == IntPtr.Zero ? -1 : ReadPalette(loc_id, image_name, pal_number, IntPtr.Zero, pal_data, -1);
+
+        /// <summary>Checks the reference index, dataset rank and byte capacity before copying palette data.</summary>
+        private static int ReadPalette(long location, string name, int index, IntPtr dimensions, IntPtr data, int capacity)
+        {
+            if (index < 0)
+            {
+                return -1;
+            }
+
+            long image = -1, attribute = -1, refsSpace = -1, palette = -1, paletteSpace = -1;
+            try
+            {
+                image = H5D.open(location, name);
+                if (image < 0)
+                {
+                    return -1;
+                }
+
+                attribute = H5A.open(image, "PALETTE");
+                if (attribute < 0 || (refsSpace = H5A.get_space(attribute)) < 0)
+                {
+                    return -1;
+                }
+
+                var count = H5S.get_simple_extent_npoints(refsSpace);
+                var refSize = H5T.get_size(H5T.STD_REF_OBJ).ToInt64();
+                if (index >= count || refSize <= 0 || count > int.MaxValue / refSize)
+                {
+                    return -1;
+                }
+
+                // Request the legacy object-reference memory type, irrespective of the attribute's stored width.
+                var refs = new byte[(int)(count * refSize)];
+                fixed (byte* first = refs)
+                {
+                    if (H5A.read(attribute, H5T.STD_REF_OBJ, (IntPtr)first) < 0)
+                    {
+                        return -1;
+                    }
+
+                    palette = H5R.dereference(image, H5P.DEFAULT, H5R.type_t.OBJECT, (IntPtr)(first + index * refSize));
+                }
+
+                if (palette < 0 || H5I.get_type(palette) != H5I.type_t.DATASET ||
+                    (paletteSpace = H5D.get_space(palette)) < 0 || H5S.get_simple_extent_ndims(paletteSpace) != 2)
+                {
+                    return -1;
+                }
+
+                if (dimensions != IntPtr.Zero)
+                {
+                    return H5S.get_simple_extent_dims(paletteSpace, (ulong*)dimensions, null) < 0 ? -1 : 0;
+                }
+
+                var elements = H5S.get_simple_extent_npoints(paletteSpace);
+                if (elements < 0)
+                {
+                    return -1;
+                }
+
+                if (capacity >= 0 && elements > capacity)
+                {
+                    throw new ArgumentException("The destination is too small for the palette.", "pal_data");
+                }
+
+                return H5D.read(palette, H5T.NATIVE_UCHAR, paletteSpace, H5S.ALL, H5P.DEFAULT, data);
+            }
+            finally
+            {
+                if (paletteSpace >= 0) H5S.close(paletteSpace);
+                if (palette >= 0) H5I.dec_ref(palette);
+                if (refsSpace >= 0) H5S.close(refsSpace);
+                if (attribute >= 0) H5A.close(attribute);
+                if (image >= 0) H5D.close(image);
+            }
+        }
 
         /// <summary>Returns positive if a dataset follows the HDF5 image convention, zero if not, or negative on error.</summary>
         [LibraryImport(Constants.HLDLLFileName, EntryPoint = "H5IMis_image", StringMarshalling = StringMarshalling.Utf8), UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]

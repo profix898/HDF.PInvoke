@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -226,6 +226,7 @@ namespace HDF.PInvoke
         /// <param name="filter_mask">Receives the filter mask indicating which filters were skipped.</param>
         /// <param name="buf">Destination buffer receiving the raw chunk bytes.</param>
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
+        /// <exception cref="ArgumentException">The offset is empty or the destination cannot hold the entire encoded chunk.</exception>
         public static int read_chunk(long dset_id, long dxpl_id, ReadOnlySpan<ulong> offset, ref uint filter_mask, Span<byte> buf)
         {
 
@@ -234,7 +235,13 @@ namespace HDF.PInvoke
                 throw new ArgumentException("Chunk offset coordinates must not be empty.", nameof(offset));
             }
 
-            return read_chunk2(dset_id, dxpl_id, offset, out filter_mask, buf, out _);
+            var status = read_chunk2(dset_id, dxpl_id, offset, out filter_mask, buf, out var required);
+            if (status >= 0 && required.ToUInt64() > (ulong)buf.Length)
+            {
+                throw new ArgumentException("The destination is too small for the encoded chunk.", nameof(buf));
+            }
+
+            return status;
         }
 
         /// <summary>

@@ -1,12 +1,25 @@
-# Migrating from the 1.10.x wrapper
+# Migrating from HDF.PInvoke 1.10.11 to 2.2.0
 
-HDF.PInvoke 2.2 is not a guaranteed source-compatible or binary-compatible replacement for the 1.10.x wrapper. Ordinary file, dataset, group and attribute operations retain their familiar entry points. Recompile consumers and review the corrected interop declarations below. This comparison uses the repository's 1.10.11-era declarations; applications upgrading from earlier releases may encounter additional historical changes.
+Recompile applications and libraries that reference HDF.PInvoke. Most applications using ordinary file, group, dataset and attribute operations on x64 should need few source edits. Allow more time for custom native loading, callbacks, and code that marshals HDF5 structures itself.
+
+The comparison uses the DLL from the [published 1.10.11 package](https://www.nuget.org/packages/HDF.PInvoke/1.10.11) and both managed DLLs in 2.2.0. Of 886 public methods and property accessors declared on top-level types in 1.10.11, 857 retain their parameter and return types on both targets. The same 29 signatures changed or disappeared on each. Delegates, fields, constants and optional argument defaults are assessed separately below. The 1.10.11 wrapper bundled native HDF5 1.14.3 with 1.10 API compatibility.
+
+## Estimated migration effort
+
+| Use in the application | Estimated impact | What to do |
+|---|---|---|
+| Ordinary dataset I/O with package-provided native libraries on x64 | Low | Recompile and exercise a representative read/write round trip. Test non-ASCII names and any file-format compatibility requirement. |
+| Native boolean flags, filter queries or statistics | Low to moderate | Update flag variables and supply correctly sized output buffers. |
+| Cache configuration, native struct access or custom installers | Moderate | Update field and parameter types, review manual marshalling and test native loading from the installed application. |
+| Custom filters, links, property callbacks or datatype converters | High for users of these extension points | Adapt callback signatures and test native invocation, pointer indirection and ownership. |
+| A required 32-bit Windows process | Blocking with the supplied binaries | Move the host to a supported 64-bit architecture or retain the older deployment. |
 
 ## Source changes
 
 | API or type | Migration |
 |---|---|
 | Native `hbool_t` parameters and fields | Use `byte` instead of `uint`, with 0 for false and 1 for true. Update matching `ref` variables and callback parameters. |
+| `H5I.type_t.REFERENCE` | Remove uses of this identifier category. For a reference-typed dataset, inspect its datatype class using `H5T.get_class` and `H5T.class_t.REFERENCE`. |
 | `H5T.find` | Replace `ref H5T.cdata_t` with `out IntPtr`. The returned conversion-data pointer is borrowed; marshal its contents if needed without freeing native-owned storage. |
 | `H5T.conv_t` | Replace `ref H5T.cdata_t` with `IntPtr` (`H5T_cdata_t*`) for the borrowed native conversion-state structure. |
 | `H5F.get_page_buffering_stats` | Supply five `uint[]` output buffers, each with at least two elements, instead of scalar integers. |
@@ -27,15 +40,21 @@ HDF.PInvoke 2.2 is not a guaranteed source-compatible or binary-compatible repla
 | `H5Z.class_t` | `name` is a UTF-8 `string` instead of `byte*`, and `H5Z.CLASS_T_VERS` defines the structure version. |
 | Explicit native-loading setup | Old `bin32`/`bin64` path constants and `ResolvePathToExternalDependencies()` are removed from both targets. Normal package loading is automatic. Use `NativeDependencies.Configure(absoluteDirectory)` for a private installation before first use, and `H5.open()` when explicit initialization is needed. `NativePathSetting` remains an AppContext key rather than an app.config lookup. |
 
-The ABI corrections prevent incorrect memory access and make the same declarations work on Windows and Unix. Existing compatibility entry points remain where supported; the newly added token-aware object APIs and modern owning references do not require applications to replace their existing reference operations immediately.
+The boolean correction affects `H5.allocate_memory`, `H5.is_library_threadsafe`, `H5I.clear_type`, `H5O.are_mdc_flushes_disabled`, the `H5F` dataset-attribute hints and metadata-cache logging status, and the corresponding flags in `H5P` core-driver settings, write tracking, file-space strategy, object timestamps, eviction, hints and logging. It also affects fields such as `H5A.info_t.corder_valid`, `H5L.info_t.corder_valid`, `H5G.info_t.mounted`, `H5T.cdata_t.recalc` and the cache configuration flags. Integer literals 0 and 1 often still compile, while a matching by-reference variable must have the exact new type.
 
-## Changes that can compile without preserving behavior
+## Behavior changes even when recompilation succeeds
 
-Strings consistently use UTF-8. Buffer capacities are byte counts, not character counts. Raw byte-array input names must be NUL-terminated. Callback pointers and buffers are borrowed unless their documentation explicitly transfers ownership; never retain them beyond their native lifetime.
+| Affected code | What changes | Migration or verification |
+|---|---|---|
+| Calls to `H5P.set_libver_bounds` that omit `high` or pass `H5F.libver_t.LATEST` | Recompiling changes the upper bound from 2 (`V110`) to 5 (`V200`). This permits newer on-disk structures. | If HDF5 1.10 readers must open newly written files, specify `V110` as the upper bound and open a representative file with the oldest supported reader. Setting bounds does not downgrade existing files. |
+| Persisted enum values, numeric comparisons and lookup tables | The old `H5I.type_t.REFERENCE` value 7 now denotes `ATTR`. Value 6 changed from `ATTR` to `MAP`. Identifier, object, reference, datatype and library-version count sentinels also changed. | Translate stored values using the producing version. Use named members and update tables indexed by ordinal. |
+| User-defined link registration | `H5L.LINK_CLASS_T_VERS` changed from 0 to 1. A hard-coded 0 still compiles. | Set the structure version from the named constant and update the traversal callback signature. |
+| Native filenames, configuration and deployment scripts | `Constants.DLLFileName` and `HLDLLFileName` now hold the logical names `hdf5` and `hdf5_hl`. Old app.config settings and directory layouts no longer select the native runtime. | Use the package runtime assets or configure a private directory before first use. Remove old native binaries from the deployment and test from the installed location. |
+| Non-ASCII strings and output buffers | Strings use UTF-8. A character count can underestimate the required byte capacity. Raw byte-array input names require a NUL terminator. | Size buffers in bytes and allow room for the terminator where required. Exercise non-ASCII names and callback data. |
+| Modern span overloads and sparse selections | Undersized slices can throw before native I/O. A sparse memory selection can address beyond the number of selected elements. | Size the span for the native memory datatype and selected addresses, or use `H5S.BLOCK` for packed memory with an explicit file selection. |
+| Raw struct copies and callback pointers | Updated field widths change native layout. Borrowed callback arguments are valid only for their documented lifetime. | Update mirrored structs and serializers. Copy any callback data that must survive the call. |
 
-Enum values and structure layouts match HDF5 2.2. Do not persist raw enum ordinals, assume old native type counts, or reinterpret structure bytes using a historical layout. `H5F.libver_t.LATEST` permits the newest supported file format. Select an explicit `V110` upper bound when new files must remain readable by HDF5 1.10; bounds do not downgrade existing files or enable newer features in an older format.
-
-The loader requires the supplied HDF5 2.2.x native libraries. Updating the managed package while retaining old native DLLs or shared objects is unsupported. Optional driver methods may throw `PlatformNotSupportedException` when the packaged native build does not export them.
+The loader requires compatible native HDF5 2.2.x libraries. Optional driver methods can throw `PlatformNotSupportedException` when the packaged serial build does not export them.
 
 ## Target and deployment requirements
 

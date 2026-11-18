@@ -369,16 +369,9 @@ namespace HDF.PInvoke
         /// <returns>A non-negative value if successful; otherwise a negative value.</returns>
         public static int get_palette(long loc_id, string image_name, int pal_number, Span<byte> pal_data)
         {
-            Span<ulong> dimensions = stackalloc ulong[2];
-            if (get_palette_info(loc_id, image_name, pal_number, dimensions) < 0)
-            {
-                return -1;
-            }
-            SpanValidation.Capacity(pal_data.Length, checked(dimensions[0] * dimensions[1]), nameof(pal_data));
-
             fixed (byte* dataPtr = pal_data)
             {
-                return get_palette(loc_id, image_name, pal_number, (IntPtr)dataPtr);
+                return ReadPalette(loc_id, image_name, pal_number, IntPtr.Zero, (IntPtr)dataPtr, pal_data.Length);
             }
         }
     }

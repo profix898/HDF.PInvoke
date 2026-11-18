@@ -119,6 +119,7 @@ namespace UnitTests
                 Assert.IsTrue(H5D.get_chunk_storage_size(dset, [0, 0], ref queriedBytes) >= 0);
                 Assert.AreEqual(chunkSize, queriedBytes);
 
+                Assert.ThrowsExactly<ArgumentException>(() => H5D.read_chunk(dset, H5P.DEFAULT, [0, 0], ref filterMask, Span<byte>.Empty));
                 Span<byte> rawChunk = stackalloc byte[(int)queriedBytes];
                 Assert.IsTrue(H5D.read_chunk2(dset, H5P.DEFAULT, [0, 0], out var chunkFilters, rawChunk, out var actualChunkSize) >= 0);
                 Assert.AreEqual(queriedBytes, actualChunkSize.ToUInt64());
@@ -256,6 +257,9 @@ namespace UnitTests
                 Span<byte> palRead = stackalloc byte[6];
                 Assert.IsTrue(H5IM.get_palette(file, "img8", 0, palRead) >= 0);
                 Assert.AreEqual((byte)60, palRead[5]);
+                Assert.IsTrue(H5IM.get_palette_info(file, "img8", 1, palDims) < 0);
+                Assert.IsTrue(H5IM.get_palette(file, "img8", -1, palRead) < 0);
+                Assert.ThrowsExactly<ArgumentException>(() => H5IM.get_palette(file, "img8", 0, new byte[5].AsSpan()));
 
                 table = H5PT.create_fl(file, "packets", H5T.NATIVE_INT64, 4, 0);
                 Assert.IsTrue(table >= 0);

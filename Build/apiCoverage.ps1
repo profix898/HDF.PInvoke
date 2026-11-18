@@ -14,6 +14,9 @@ $covered = @{}
 [regex]::Matches($bindingText, 'EntryPoint\s*=\s*"(H5\w+)"') | ForEach-Object { $covered[$_.Groups[1].Value] = $true }
 # These public methods deliberately route through managed loader logic rather than a direct declaration.
 $covered['H5dont_atexit'] = $true
+# Palette reads use core bindings to check bounds and close all temporary IDs.
+$covered['H5IMget_palette'] = $true
+$covered['H5IMget_palette_info'] = $true
 $replacements = @{
     H5Acreate1 = 'H5Acreate2'
     H5Aget_num_attrs = 'H5Oget_info3'
